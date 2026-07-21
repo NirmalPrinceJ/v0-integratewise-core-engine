@@ -137,37 +137,74 @@ const departments = [
 ]
 
 export function CommandCenterView() {
-  const [activeSurface, setActiveSurface] = useState('overview')
-
-  const surfaces = [
-    { id: 'overview', label: 'Overview', icon: BarChart3 },
-    { id: 'inbox', label: 'Inbox', icon: Mail },
-    { id: 'tasks', label: 'Tasks', icon: ListTodo },
-    { id: 'approvals', label: 'Approvals', icon: ThumbsUp },
-    { id: 'executions', label: 'Executions', icon: Rocket },
-  ]
+  const [storeOpen, setStoreOpen] = useState(false)
+  const [askOpen, setAskOpen] = useState(false)
+  const [assignOpen, setAssignOpen] = useState(false)
+  const [approveOpen, setApproveOpen] = useState(false)
 
   return (
-    <div className="space-y-6 p-6 max-w-7xl mx-auto">
-      {/* Customer Zero Banner */}
-      <CustomerZeroBanner />
+    <div className="flex flex-col h-screen bg-background">
+      {/* Part 1: L1 Global Composed Workbench Shell (Sticky Top) */}
+      <div className="sticky top-0 z-20 bg-slate-950 border-b border-slate-700 p-4">
+        <CustomerZeroBanner />
+      </div>
 
-      {/* Surface Navigation */}
-      <Tabs value={activeSurface} onValueChange={setActiveSurface} className="w-full">
-        <TabsList className="grid w-full grid-cols-5 bg-slate-900 border border-slate-700">
-          {surfaces.map((surface) => {
-            const Icon = surface.icon
-            return (
-              <TabsTrigger key={surface.id} value={surface.id} className="flex items-center gap-2">
-                <Icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{surface.label}</span>
-              </TabsTrigger>
-            )
-          })}
-        </TabsList>
+      {/* Part 1 Continued: Four Universal Modules (L1 Global Shell) */}
+      <div className="sticky top-[100px] z-10 bg-slate-950 border-b border-slate-700">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          {/* Module Row 1: Heads Up + Decide */}
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            {/* Heads Up Alerts */}
+            <Card className="bg-slate-900 border-slate-700 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <AlertCircle className="w-5 h-5 text-red-500" />
+                <h3 className="font-semibold text-white">Heads Up</h3>
+              </div>
+              <div className="space-y-2 max-h-24 overflow-y-auto">
+                <div className="text-sm p-2 bg-red-500/10 border border-red-500/20 rounded text-red-300">⚠️ Acme renewal at risk</div>
+                <div className="text-sm p-2 bg-amber-500/10 border border-amber-500/20 rounded text-amber-300">🎯 Lead score improved: TechCorp Inc</div>
+              </div>
+            </Card>
 
-        {/* Overview Surface */}
-        <TabsContent value="overview" className="space-y-6 mt-6">
+            {/* Decide Queue */}
+            <Card className="bg-slate-900 border-slate-700 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                <h3 className="font-semibold text-white">Decide Queue</h3>
+              </div>
+              <div className="space-y-2 max-h-24 overflow-y-auto">
+                <div className="text-sm p-2 bg-blue-500/10 border border-blue-500/20 rounded text-blue-300">Twin: Extend contract terms</div>
+                <div className="text-sm p-2 bg-blue-500/10 border border-blue-500/20 rounded text-blue-300">Twin: Flag expansion opportunity</div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Module Row 2: Knowledge Hub + Daily Priorities */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Knowledge Hub */}
+            <Card className="bg-slate-900 border-slate-700 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Briefcase className="w-5 h-5 text-blue-500" />
+                <h3 className="font-semibold text-white">Knowledge Hub</h3>
+              </div>
+              <div className="text-sm text-slate-400">SOP: Renewal negotiation playbook • Pattern: High NPS = expansion ready</div>
+            </Card>
+
+            {/* Daily Priorities */}
+            <Card className="bg-slate-900 border-slate-700 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Clock className="w-5 h-5 text-amber-500" />
+                <h3 className="font-semibold text-white">Daily Priorities</h3>
+              </div>
+              <div className="text-sm text-slate-400">3 calls scheduled • 5 tasks due • Focus time: 2-3pm PST</div>
+            </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* Part 2: Dynamic Department Canvas (Scrollable Middle) */}
+      <div className="flex-1 overflow-y-auto bg-background">
+        <div className="max-w-7xl mx-auto px-6 py-6">
           {/* Main Grid */}
           <div className="grid gap-6">
         {/* KPI Grid */}
@@ -312,110 +349,81 @@ export function CommandCenterView() {
         </div>
         </TabsContent>
 
-        {/* Inbox Surface */}
-        <TabsContent value="inbox" className="space-y-6 mt-6">
-          <Card className="bg-slate-900 border-slate-700 p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Unified Inbox</h2>
-            <p className="text-slate-400 mb-4">Consolidated messages from Slack, Email, and Notifications</p>
-            <div className="space-y-3">
-              {[
-                { from: 'Sarah Chen', source: 'Slack', subject: 'Acme contract update needed', time: '2 min ago' },
-                { from: 'support@acme.com', source: 'Email', subject: 'Renewal inquiry - 50+ seats', time: '15 min ago' },
-                { from: 'System', source: 'Alert', subject: 'High priority support ticket', time: '1 hour ago' },
-              ].map((msg, i) => (
-                <div key={i} className="p-4 bg-slate-800/50 rounded-lg hover:bg-slate-800 cursor-pointer transition border-l-2 border-blue-500">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium text-white text-sm">{msg.from}</span>
-                    <Badge variant="outline" className="text-xs bg-slate-700 text-slate-300 border-0">{msg.source}</Badge>
+          {/* Department Canvas Content - CSM Hub Example */}
+          <h2 className="text-lg font-semibold text-white mb-4">CSM Accounts Hub</h2>
+          
+          {/* Account Grid */}
+          <div className="grid grid-cols-1 gap-4">
+            {[
+              { name: 'Acme Corporation', health: 'at-risk', arr: '$250K', renewal: '30 days', owner: 'Sarah Chen', lastTouch: '2 days ago', risk: 'High' },
+              { name: 'TechCorp Inc', health: 'healthy', arr: '$125K', renewal: '120 days', owner: 'Mike Johnson', lastTouch: '5 days ago', risk: 'None' },
+              { name: 'StartUp Labs', health: 'healthy', arr: '$50K', renewal: '180 days', owner: 'Sarah Chen', lastTouch: '1 day ago', risk: 'None' },
+            ].map((account, i) => (
+              <Card key={i} className="bg-slate-900 border-slate-700 hover:bg-slate-800/70 cursor-pointer transition p-4">
+                <div className="grid grid-cols-7 gap-4 items-center">
+                  <div>
+                    <h3 className="font-medium text-white">{account.name}</h3>
+                    <p className="text-sm text-slate-400">Contact: {account.owner}</p>
                   </div>
-                  <p className="text-sm text-slate-300">{msg.subject}</p>
-                  <p className="text-xs text-slate-500 mt-1">{msg.time}</p>
+                  <Badge className={`justify-center text-xs ${account.health === 'at-risk' ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'}`}>{account.health}</Badge>
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-white">{account.arr}</p>
+                    <p className="text-xs text-slate-400">ARR</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-white">{account.renewal}</p>
+                    <p className="text-xs text-slate-400">Renewal</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-slate-300">{account.lastTouch}</p>
+                    <p className="text-xs text-slate-500">Last Touch</p>
+                  </div>
+                  <Badge className={`justify-center text-xs ${account.risk === 'High' ? 'bg-red-500/20 text-red-400' : 'bg-slate-500/20 text-slate-400'}`}>{account.risk}</Badge>
+                  <Button size="sm" variant="outline" className="border-slate-600">View</Button>
                 </div>
-              ))}
-            </div>
-          </Card>
-        </TabsContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
 
-        {/* Tasks Surface */}
-        <TabsContent value="tasks" className="space-y-6 mt-6">
-          <Card className="bg-slate-900 border-slate-700 p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Interactive Tasks</h2>
-            <p className="text-slate-400 mb-4">Tasks unified from Asana, Linear, and local Spine</p>
-            <div className="space-y-3">
-              {[
-                { title: 'Close Acme renewal deal', priority: 'high', dueIn: '2 days', status: 'in-progress' },
-                { title: 'Review support SLA compliance', priority: 'medium', dueIn: '5 days', status: 'todo' },
-                { title: 'Update product roadmap', priority: 'low', dueIn: '1 week', status: 'todo' },
-              ].map((task, i) => (
-                <div key={i} className="p-4 bg-slate-800/50 rounded-lg hover:bg-slate-800 cursor-pointer transition border-l-4 border-emerald-500">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium text-white">{task.title}</span>
-                    <Badge className={`text-xs ${task.priority === 'high' ? 'bg-red-500/20 text-red-400' : task.priority === 'medium' ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-500/20 text-slate-400'}`}>
-                      {task.priority}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-slate-300">Due {task.dueIn}</p>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </TabsContent>
-
-        {/* Approvals Surface */}
-        <TabsContent value="approvals" className="space-y-6 mt-6">
-          <Card className="bg-slate-900 border-slate-700 p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Pending Approvals</h2>
-            <p className="text-slate-400 mb-4">Actions awaiting your authorization</p>
-            <div className="space-y-3">
-              {[
-                { action: 'Contract signature', entity: 'Acme Corp', amount: '$125K', reason: 'Annual renewal' },
-                { action: 'Discount approval', entity: 'TechCorp Inc', amount: '15% off', reason: 'Volume commitment' },
-                { action: 'Access grant', entity: 'Jane Doe', resource: 'Admin Panel', reason: 'Promotion to manager' },
-              ].map((appr, i) => (
-                <div key={i} className="p-4 bg-slate-800/50 rounded-lg border-l-4 border-amber-500">
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <span className="font-medium text-white block">{appr.action}</span>
-                      <span className="text-sm text-slate-400">{appr.entity}</span>
-                    </div>
-                    <span className="text-lg font-semibold text-amber-400">{appr.amount || appr.resource}</span>
-                  </div>
-                  <div className="flex gap-2 mt-3">
-                    <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white">Approve</Button>
-                    <Button size="sm" variant="outline" className="border-slate-600">Reject</Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </TabsContent>
-
-        {/* Executions Surface */}
-        <TabsContent value="executions" className="space-y-6 mt-6">
-          <Card className="bg-slate-900 border-slate-700 p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Capability Executions</h2>
-            <p className="text-slate-400 mb-4">Live agent and workflow executions</p>
-            <div className="space-y-3">
-              {[
-                { capability: 'Lead Qualification', status: 'completed', duration: '2.3s', result: 'Qualified - MQL' },
-                { capability: 'Account Health Score', status: 'running', duration: '1.8s (ongoing)', result: 'Computing score...' },
-                { capability: 'Proposal Generation', status: 'queued', duration: 'pending', result: 'Waiting to run' },
-              ].map((exec, i) => (
-                <div key={i} className="p-4 bg-slate-800/50 rounded-lg border-l-4 border-blue-500">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium text-white">{exec.capability}</span>
-                    <Badge className={`text-xs ${exec.status === 'completed' ? 'bg-emerald-500/20 text-emerald-400' : exec.status === 'running' ? 'bg-blue-500/20 text-blue-400 animate-pulse' : 'bg-slate-500/20 text-slate-400'}`}>
-                      {exec.status}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-slate-300">{exec.result}</p>
-                  <p className="text-xs text-slate-500 mt-1">{exec.duration}</p>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      {/* Part 3: Twin Footer (Sticky Bottom with 4 OODA Buttons) */}
+      <div className="sticky bottom-0 z-20 bg-slate-950 border-t border-slate-700 p-4">
+        <div className="max-w-7xl mx-auto flex justify-center gap-4">
+          <Button 
+            size="lg" 
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 flex items-center gap-2"
+            onClick={() => setStoreOpen(true)}
+          >
+            <Database className="w-5 h-5" />
+            Store in Spine
+          </Button>
+          <Button 
+            size="lg" 
+            className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-8 flex items-center gap-2"
+            onClick={() => setAskOpen(true)}
+          >
+            <Zap className="w-5 h-5" />
+            Ask Your Twin
+          </Button>
+          <Button 
+            size="lg" 
+            className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 flex items-center gap-2"
+            onClick={() => setAssignOpen(true)}
+          >
+            <Users className="w-5 h-5" />
+            Assign Your Twin
+          </Button>
+          <Button 
+            size="lg" 
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 flex items-center gap-2"
+            onClick={() => setApproveOpen(true)}
+          >
+            <CheckCircle2 className="w-5 h-5" />
+            Approve Action
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }
