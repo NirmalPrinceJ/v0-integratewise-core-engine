@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CustomerZeroBanner } from '@/components/customer-zero-banner'
 import { OperationalTimeline } from '@/components/operational-timeline'
 import {
@@ -347,7 +346,6 @@ export function CommandCenterView() {
           </div>
         </Card>
         </div>
-        </TabsContent>
 
           {/* Department Canvas Content - CSM Hub Example */}
           <h2 className="text-lg font-semibold text-white mb-4">CSM Accounts Hub</h2>
