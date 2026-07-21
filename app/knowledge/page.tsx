@@ -1,6 +1,8 @@
 import { AppShell } from "@/components/app-shell"
 import { KnowledgeView } from "@/components/views/knowledge-view"
 
+export const dynamic = "force-dynamic"
+
 export const metadata = {
   title: "Knowledge Hub | IntegrateWise OS",
   description: "Create and manage internal documentation and playbooks",
