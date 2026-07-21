@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode, useState } from 'react'
+import { ReactNode, useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -11,7 +11,10 @@ import {
   CheckCircle2,
   X,
   ChevronDown,
+  Loader,
 } from 'lucide-react'
+import { useTwinSignals } from '@/lib/hooks/use-twin'
+import type { TwinSignal } from '@/lib/ai/twin/engine'
 
 interface WorkbenchShellProps {
   title: string
@@ -35,6 +38,7 @@ export function WorkbenchShell({
   isLoading = false,
 }: WorkbenchShellProps) {
   const [showTwinSignals, setShowTwinSignals] = useState(false)
+  const { signals, isLoading: signalsLoading } = useTwinSignals()
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -132,26 +136,24 @@ export function WorkbenchShell({
           {/* Twin Signals Feed (Collapsible) */}
           {showTwinSignals && (
             <div className="mt-4 pt-4 border-t space-y-2">
-              <div className="text-xs font-semibold text-muted-foreground mb-3">Twin Signals</div>
-              <div className="space-y-2 max-h-32 overflow-y-auto">
-                <TwinSignalCard
-                  type="risk"
-                  title="Account at Risk"
-                  message="Account engagement down 40% this month. Consider outreach."
-                  confidence={0.92}
-                />
-                <TwinSignalCard
-                  type="opportunity"
-                  title="Upsell Opportunity"
-                  message="Contact changed roles at account. Target for new product bundle."
-                  confidence={0.87}
-                />
-                <TwinSignalCard
-                  type="action"
-                  title="Follow-up Due"
-                  message="Schedule renewal call by EOW per SLA."
-                  confidence={0.95}
-                />
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-xs font-semibold text-muted-foreground">Twin Signals</div>
+                {signalsLoading && <Loader className="w-3 h-3 animate-spin" />}
+              </div>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {signals && signals.length > 0 ? (
+                  signals.map((signal: TwinSignal) => (
+                    <TwinSignalCard
+                      key={signal.id}
+                      type={signal.type}
+                      title={signal.title}
+                      message={signal.description}
+                      confidence={signal.confidence}
+                    />
+                  ))
+                ) : (
+                  <div className="text-xs text-muted-foreground py-2">No signals at this time</div>
+                )}
               </div>
             </div>
           )}
