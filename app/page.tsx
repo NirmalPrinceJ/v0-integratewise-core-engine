@@ -1,10 +1,10 @@
 import { AppShell } from "@/components/app-shell"
-import { CustomerZeroView } from "@/components/views/customer-zero-view"
+import { CommandCenterView } from "@/components/views/command-center-view"
 
 export default function Home() {
   return (
     <AppShell>
-      <CustomerZeroView />
+      <CommandCenterView />
     </AppShell>
   )
 }
