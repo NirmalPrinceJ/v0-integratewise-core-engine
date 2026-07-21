@@ -3,8 +3,6 @@
 import useSWR from "swr"
 import { createClient } from "@/lib/supabase/client"
 
-const supabase = createClient()
-
 // Generic fetcher for Supabase
 async function fetcher<T>(
   table: string,
@@ -15,6 +13,7 @@ async function fetcher<T>(
     filters?: { column: string; value: unknown }[]
   },
 ): Promise<T[]> {
+  const supabase = createClient()
   let query = supabase.from(table).select(options?.select || "*")
 
   if (options?.filters) {
