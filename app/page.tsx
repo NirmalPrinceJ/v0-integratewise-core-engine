@@ -13,6 +13,7 @@ export default function Home() {
           </Link>
           <div className="flex items-center gap-8">
             <div className="hidden md:flex items-center gap-6 text-sm">
+              <Link href="/customer-zero" className="text-muted-foreground hover:text-foreground transition">Customer Zero</Link>
               <Link href="#" className="text-muted-foreground hover:text-foreground transition">Platform</Link>
               <Link href="#" className="text-muted-foreground hover:text-foreground transition">Workbenches</Link>
               <Link href="#" className="text-muted-foreground hover:text-foreground transition">Capabilities</Link>
