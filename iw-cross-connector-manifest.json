@@ -1,0 +1,68 @@
+{
+  "version": "1.0.0",
+  "network": "integratewise-spine-network",
+  "description": "Cross-repo capability manifest — all repos consume from integratewise-live Gateway",
+  "platform": {
+    "repo": "NirmalPrinceJ/integratewise-live",
+    "gateway": "https://gateway.dev.integratewise.ai",
+    "mcp_endpoint": "https://mcp.integratewise.ai",
+    "auth": "https://accounts.integratewise.ai"
+  },
+  "consumers": [
+    {
+      "repo": "NirmalPrinceJ/v0-integratewise-core-engine",
+      "name": "Customer Zero",
+      "url": "https://customerzero.integratewise.ai",
+      "persona": "Operator / Founder",
+      "departments": ["SALES","CUSTOMER_SUCCESS","MARKETING","PRODUCT_ENGINEERING","FINANCE","SERVICE","BIZOPS","PERSONAL","REVOPS"],
+      "gateway_calls": [
+        "GET /api/v1/workspace/projection/:department",
+        "GET /api/v1/workspace/entities",
+        "GET /api/v1/integrations",
+        "POST /api/v1/capabilities/resolve",
+        "POST /api/v1/twin/handoff",
+        "POST /api/v1/twin/handoff/:id/approve"
+      ],
+      "vercel_deployment": "customer-zero",
+      "env_vars_needed": ["NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY","CLERK_SECRET_KEY","NEXT_PUBLIC_GATEWAY_URL"]
+    },
+    {
+      "repo": "NirmalPrinceJ/Business_Intelligence",
+      "name": "Business Intelligence",
+      "url": "https://bi.integratewise.ai",
+      "persona": "CFO / Analyst / Board",
+      "departments": ["FINANCE","SALES","REVOPS","BIZOPS"],
+      "gateway_calls": [
+        "GET /api/v1/workspace/projection/FINANCE",
+        "GET /api/v1/workspace/projection/SALES",
+        "GET /api/v1/workspace/projection/REVOPS",
+        "GET /api/v1/workspace/readiness",
+        "POST /api/v1/brainstorm",
+        "GET /api/v1/cognitive/insights"
+      ],
+      "vercel_deployment": "business-intelligence",
+      "env_vars_needed": ["NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY","CLERK_SECRET_KEY","NEXT_PUBLIC_GATEWAY_URL"]
+    }
+  ],
+  "mcp_connectors": [
+    {
+      "name": "integratewise-continuity-bridge",
+      "package": "@integratewise/mcp-connector",
+      "publish_to": ["claude-desktop","chatgpt","cursor","replit","windsurf","zed"],
+      "tools": ["spine_query","workbench_get","connector_list","spine_propose","twin_ask","capability_run"],
+      "install": "npm install -g @integratewise/mcp-connector"
+    }
+  ],
+  "vercel_integrations": [
+    {
+      "name": "integratewise-spine",
+      "marketplace_url": "https://vercel.com/integrations/integratewise",
+      "injects_env_vars": [
+        "INTEGRATEWISE_GATEWAY_URL",
+        "INTEGRATEWISE_TENANT_ID",
+        "INTEGRATEWISE_API_TOKEN"
+      ],
+      "enables": "Any Vercel project can read/write Spine data once integration installed"
+    }
+  ]
+}

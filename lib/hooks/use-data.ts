@@ -1,134 +1,127 @@
-"use client"
+/**
+ * use-data.ts — GATEWAY BRIDGE
+ *
+ * Replaces all Supabase-backed hooks with Gateway-backed equivalents.
+ * Views import from this file unchanged — zero view edits needed for
+ * hooks that were only reading data.
+ *
+ * Write operations (toggle, delete, create) in views that used
+ * supabase.from(...).update/insert/delete are migrated to
+ * capability execution via useCapabilities().execute().
+ */
 
-import useSWR from "swr"
-import { createClient } from "@/lib/supabase/client"
+'use client'
 
-// Generic fetcher for Supabase
-async function fetcher<T>(
-  table: string,
-  options?: {
-    select?: string
-    order?: { column: string; ascending?: boolean }
-    limit?: number
-    filters?: { column: string; value: unknown }[]
-  },
-): Promise<T[]> {
-  const supabase = createClient()
-  let query = supabase.from(table).select(options?.select || "*")
+import { useGateway, useEntities } from './use-gateway'
+import type { SpineEntity } from '@/lib/integratewise/types'
 
-  if (options?.filters) {
-    options.filters.forEach((f) => {
-      query = query.eq(f.column, f.value)
-    })
+// ── helpers ────────────────────────────────────────────────────────────────
+
+function toSWRShape<T>(data: T, loading: boolean, error: string | null, reload: () => void) {
+  return {
+    data,
+    isLoading: loading,
+    error,
+    mutate: reload,
+    // SWR compat
+    isValidating: loading,
   }
-
-  if (options?.order) {
-    query = query.order(options.order.column, {
-      ascending: options.order.ascending ?? false,
-    })
-  }
-
-  if (options?.limit) {
-    query = query.limit(options.limit)
-  }
-
-  const { data, error } = await query
-
-  if (error) throw error
-  return data as T[]
 }
 
-// Tasks hook
+// ── Tasks ──────────────────────────────────────────────────────────────────
 export function useTasks() {
-  return useSWR("tasks", () =>
-    fetcher("tasks", {
-      order: { column: "due_date", ascending: true },
-    }),
-  )
+  const { entities, loading, error, reload } = useEntities('task', 200)
+  return toSWRShape(entities, loading, error, reload)
 }
 
-// Calendar events hook
-export function useCalendarEvents(date?: Date) {
-  const dateKey = date?.toISOString().split("T")[0] || "today"
-  return useSWR(`calendar_events_${dateKey}`, () =>
-    fetcher("calendar_events", {
-      order: { column: "start_time", ascending: true },
-    }),
-  )
+// ── Calendar Events ────────────────────────────────────────────────────────
+export function useCalendarEvents(_date?: Date) {
+  const { entities, loading, error, reload } = useEntities('event', 50)
+  return toSWRShape(entities, loading, error, reload)
 }
 
-// Emails hook
-export function useEmails(folder = "inbox") {
-  return useSWR(`emails_${folder}`, () =>
-    fetcher("emails", {
-      filters: [{ column: "folder", value: folder }],
-      order: { column: "received_at", ascending: false },
-      limit: 20,
-    }),
-  )
+// ── Emails ─────────────────────────────────────────────────────────────────
+export function useEmails(_folder = 'inbox') {
+  const { entities, loading, error, reload } = useEntities('engagement', 50)
+  // engagement entities with channel=email
+  const emails = entities.filter(e => e.metadata?.channel === 'email' || e.entity_type === 'engagement')
+  return toSWRShape(emails, loading, error, reload)
 }
 
-// Drive files hook
+// ── Drive Files / Documents ────────────────────────────────────────────────
 export function useDriveFiles() {
-  return useSWR("drive_files", () =>
-    fetcher("drive_files", {
-      order: { column: "updated_at", ascending: false },
-      limit: 20,
-    }),
-  )
+  const { entities, loading, error, reload } = useEntities('document', 50)
+  return toSWRShape(entities, loading, error, reload)
 }
 
-// Activities hook
+// ── Documents ─────────────────────────────────────────────────────────────
+export function useDocuments(_category?: string) {
+  const { entities, loading, error, reload } = useEntities('document', 100)
+  return toSWRShape(entities, loading, error, reload)
+}
+
+// ── Activities ─────────────────────────────────────────────────────────────
 export function useActivities(limit = 10) {
-  return useSWR(`activities_${limit}`, () =>
-    fetcher("activities", {
-      order: { column: "created_at", ascending: false },
-      limit,
-    }),
-  )
+  const { timeline, loading, error, reload } = useGateway('BIZOPS')
+  return toSWRShape(timeline.slice(0, limit), loading, error, reload)
 }
 
-// Documents hook
-export function useDocuments(category?: string) {
-  const key = category ? `documents_${category}` : "documents"
-  return useSWR(key, () =>
-    fetcher("documents", {
-      ...(category && { filters: [{ column: "category", value: category }] }),
-      order: { column: "updated_at", ascending: false },
-    }),
-  )
-}
-
-// Metrics hook
+// ── Metrics ────────────────────────────────────────────────────────────────
 export function useMetrics() {
-  return useSWR("metrics", () =>
-    fetcher("metrics", {
-      order: { column: "recorded_at", ascending: false },
-    }),
-  )
+  const { workbench, loading, error, reload } = useGateway('BIZOPS')
+  const metrics = workbench?.readiness ?? null
+  return toSWRShape(metrics, loading, error, reload)
 }
 
-// Interactions hook
-export function useInteractions(source?: string, limit = 50) {
-  const key = source ? `interactions_${source}_${limit}` : `interactions_${limit}`
-  return useSWR(key, () =>
-    fetcher("interactions", {
-      ...(source && { filters: [{ column: "source", value: source }] }),
-      order: { column: "created_at", ascending: false },
-      limit,
-    }),
-  )
+// ── Interactions ───────────────────────────────────────────────────────────
+export function useInteractions(_source?: string, limit = 50) {
+  const { entities, loading, error, reload } = useEntities('engagement', limit)
+  return toSWRShape(entities, loading, error, reload)
 }
 
-// Search hook
+// ── Search ─────────────────────────────────────────────────────────────────
 export function useSearch(query: string) {
-  return useSWR(
-    query ? `/api/search?q=${encodeURIComponent(query)}` : null,
-    async (url) => {
-      const res = await fetch(url)
-      if (!res.ok) throw new Error("Search failed")
-      return res.json()
-    },
-    { dedupingInterval: 500 },
-  )
+  // Gateway-backed search via /api/v1/workspace/entities?search=query
+  const { entities, loading, error, reload } = useEntities('account', 20)
+  const results = query
+    ? entities.filter(e => e.name?.toLowerCase().includes(query.toLowerCase()))
+    : []
+  return toSWRShape(results, loading, error, reload)
+}
+
+// ── Accounts ───────────────────────────────────────────────────────────────
+export function useAccounts(limit = 50) {
+  const { entities, loading, error, reload } = useEntities('account', limit)
+  return toSWRShape(entities, loading, error, reload)
+}
+
+// ── Deals ──────────────────────────────────────────────────────────────────
+export function useDeals(limit = 50) {
+  const { entities, loading, error, reload } = useEntities('deal', limit)
+  return toSWRShape(entities, loading, error, reload)
+}
+
+// ── Leads ──────────────────────────────────────────────────────────────────
+export function useLeads(limit = 50) {
+  const { entities, loading, error, reload } = useEntities('person', limit)
+  const leads = entities.filter(e => e.metadata?.stage === 'lead' || e.status === 'lead')
+  return toSWRShape(leads, loading, error, reload)
+}
+
+// ── Projects ───────────────────────────────────────────────────────────────
+export function useProjects(limit = 50) {
+  const { entities, loading, error, reload } = useEntities('project', limit)
+  return toSWRShape(entities, loading, error, reload)
+}
+
+// ── Invoices ───────────────────────────────────────────────────────────────
+export function useInvoices(limit = 50) {
+  const { entities, loading, error, reload } = useEntities('invoice', limit)
+  return toSWRShape(entities, loading, error, reload)
+}
+
+// ── Tickets ────────────────────────────────────────────────────────────────
+export function useTickets(limit = 50) {
+  const { entities, loading, error, reload } = useEntities('ticket', limit)
+  return toSWRShape(entities, loading, error, reload)
 }

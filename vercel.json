@@ -1,12 +1,16 @@
 {
-  "crons": [
+  "framework": "nextjs",
+  "buildCommand": "next build",
+  "outputDirectory": ".next",
+  "regions": ["sin1"],
+  "headers": [
     {
-      "path": "/api/cron/daily-insights",
-      "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/cron/hourly-insights",
-      "schedule": "0 * * * *"
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
     }
   ]
 }

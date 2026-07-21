@@ -1,23 +1,13 @@
-import { auth } from "@clerk/nextjs/server"
-import { redirect } from "next/navigation"
-import { AppShell } from "@/components/app-shell"
+import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
+import { AppShell } from '@/components/app-shell'
 
-export const dynamic = "force-dynamic"
-
-export default async function AppLayout({
+export default async function AuthenticatedLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   const { userId } = await auth()
-
-  if (!userId) {
-    redirect("/sign-in")
-  }
-
-  return (
-    <AppShell>
-      {children}
-    </AppShell>
-  )
+  if (!userId) redirect('/sign-in')
+  return <AppShell>{children}</AppShell>
 }

@@ -1,200 +1,203 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Plus, Calendar, User, Flag, MoreHorizontal } from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { useTasks } from "@/lib/hooks/use-data"
-import { createClient } from "@/lib/supabase/client"
-import { cn } from "@/lib/utils"
+import { useState, useCallback } from 'react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Plus, Calendar, Flag, MoreHorizontal, Loader2 } from 'lucide-react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { useEntities, useCapabilities } from '@/lib/hooks/use-gateway'
+import type { SpineEntity } from '@/lib/integratewise/types'
+import { cn } from '@/lib/utils'
 
-const priorityColors = {
-  low: "bg-slate-500/10 text-slate-500",
-  medium: "bg-amber-500/10 text-amber-500",
-  high: "bg-rose-500/10 text-rose-500",
+const priorityColors: Record<string, string> = {
+  low:    'bg-slate-500/10 text-slate-500',
+  medium: 'bg-amber-500/10 text-amber-500',
+  high:   'bg-rose-500/10 text-rose-500',
 }
 
 function formatDate(dateStr: string | null) {
-  if (!dateStr) return ""
+  if (!dateStr) return ''
   const date = new Date(dateStr)
   const today = new Date()
   const tomorrow = new Date(today)
   tomorrow.setDate(tomorrow.getDate() + 1)
+  if (date.toDateString() === today.toDateString()) return 'Today'
+  if (date.toDateString() === tomorrow.toDateString()) return 'Tomorrow'
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
 
-  if (date.toDateString() === today.toDateString()) return "Today"
-  if (date.toDateString() === tomorrow.toDateString()) return "Tomorrow"
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+function TaskRow({ task, onToggle, onDelete }: {
+  task: SpineEntity
+  onToggle: (id: string, status: string) => void
+  onDelete: (id: string) => void
+}) {
+  const done     = task.status === 'done'
+  const priority = task.metadata?.priority ?? 'medium'
+  const dueDate  = task.metadata?.due_date ?? null
+
+  return (
+    <div className={cn(
+      'flex items-start gap-3 p-3 rounded-lg border hover:bg-muted/30 transition-colors group',
+      done && 'opacity-60'
+    )}>
+      <Checkbox
+        checked={done}
+        onCheckedChange={() => onToggle(task.id, task.status)}
+        className="mt-0.5"
+      />
+      <div className="flex-1 min-w-0">
+        <p className={cn('text-sm font-medium', done && 'line-through text-muted-foreground')}>
+          {task.name}
+        </p>
+        {task.metadata?.description && (
+          <p className="text-xs text-muted-foreground mt-0.5 truncate">
+            {task.metadata.description}
+          </p>
+        )}
+        <div className="flex items-center gap-2 mt-1.5">
+          <Badge variant="secondary" className={cn('text-xs px-1.5', priorityColors[priority])}>
+            <Flag className="w-2.5 h-2.5 mr-1" />{priority}
+          </Badge>
+          {dueDate && (
+            <span className="text-xs text-muted-foreground flex items-center gap-1">
+              <Calendar className="w-3 h-3" />{formatDate(dueDate)}
+            </span>
+          )}
+          {task.metadata?.assignee && (
+            <span className="text-xs text-muted-foreground">{task.metadata.assignee}</span>
+          )}
+        </div>
+      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100">
+            <MoreHorizontal className="w-3 h-3" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => onToggle(task.id, task.status)}>
+            {done ? 'Mark as todo' : 'Mark as done'}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => onDelete(task.id)}
+            className="text-destructive focus:text-destructive"
+          >
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  )
 }
 
 export function TasksView() {
-  const { data: tasks, mutate } = useTasks()
+  const { entities, loading, reload } = useEntities('task', 100)
+  const { execute } = useCapabilities()
   const [newTaskOpen, setNewTaskOpen] = useState(false)
+  const [creating, setCreating] = useState(false)
   const [newTask, setNewTask] = useState({
-    title: "",
-    description: "",
-    priority: "medium",
-    status: "todo",
-    assignee: "",
-    due_date: "",
+    title: '', description: '', priority: 'medium', due_date: '', assignee: '',
   })
 
-  const toggleTask = async (id: string, currentStatus: string) => {
-    const supabase = createClient()
-    const newStatus = currentStatus === "done" ? "todo" : "done"
-    await supabase.from("tasks").update({ status: newStatus }).eq("id", id)
-    mutate()
-  }
+  const toggleTask = useCallback(async (id: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'done' ? 'todo' : 'done'
+    try {
+      await execute('task:update', { id, fields: { status: newStatus } })
+      reload()
+    } catch (e) {
+      console.error('[TasksView] toggle failed', e)
+    }
+  }, [execute, reload])
 
-  const deleteTask = async (id: string) => {
-    const supabase = createClient()
-    await supabase.from("tasks").delete().eq("id", id)
-    mutate()
-  }
+  const deleteTask = useCallback(async (id: string) => {
+    try {
+      await execute('task:delete', { id })
+      reload()
+    } catch (e) {
+      console.error('[TasksView] delete failed', e)
+    }
+  }, [execute, reload])
 
-  const createTask = async () => {
+  const createTask = useCallback(async () => {
     if (!newTask.title.trim()) return
-    const supabase = createClient()
-    await supabase.from("tasks").insert({
-      title: newTask.title,
-      description: newTask.description,
-      priority: newTask.priority,
-      status: newTask.status,
-      assignee: newTask.assignee || null,
-      due_date: newTask.due_date || null,
-    })
-    setNewTask({ title: "", description: "", priority: "medium", status: "todo", assignee: "", due_date: "" })
-    setNewTaskOpen(false)
-    mutate()
-  }
+    setCreating(true)
+    try {
+      await execute('task:create', {
+        title:       newTask.title,
+        description: newTask.description,
+        priority:    newTask.priority,
+        due_date:    newTask.due_date || null,
+        assignee:    newTask.assignee || null,
+        status:      'todo',
+      })
+      setNewTask({ title: '', description: '', priority: 'medium', due_date: '', assignee: '' })
+      setNewTaskOpen(false)
+      reload()
+    } catch (e) {
+      console.error('[TasksView] create failed', e)
+    } finally {
+      setCreating(false)
+    }
+  }, [newTask, execute, reload])
 
-  const todoTasks = tasks?.filter((t: any) => t.status === "todo") || []
-  const inProgressTasks = tasks?.filter((t: any) => t.status === "in_progress" || t.status === "in-progress") || []
-  const doneTasks = tasks?.filter((t: any) => t.status === "done") || []
-
-  const TaskCard = ({ task }: { task: any }) => (
-    <Card className="bg-card hover:bg-muted/50 transition-colors">
-      <CardContent className="p-4">
-        <div className="flex items-start gap-3">
-          <Checkbox
-            checked={task.status === "done"}
-            onCheckedChange={() => toggleTask(task.id, task.status)}
-            className="mt-1"
-          />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2">
-              <p
-                className={cn(
-                  "font-medium",
-                  task.status === "done" ? "line-through text-muted-foreground" : "text-card-foreground",
-                )}
-              >
-                {task.title}
-              </p>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-6 w-6 flex-shrink-0">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>Edit</DropdownMenuItem>
-                  <DropdownMenuItem>Move to...</DropdownMenuItem>
-                  <DropdownMenuItem className="text-destructive" onClick={() => deleteTask(task.id)}>
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-            {task.description && <p className="text-sm text-muted-foreground mt-1">{task.description}</p>}
-            <div className="flex flex-wrap items-center gap-2 mt-3">
-              <Badge
-                variant="secondary"
-                className={cn("text-xs", priorityColors[task.priority as keyof typeof priorityColors])}
-              >
-                <Flag className="h-3 w-3 mr-1" />
-                {task.priority}
-              </Badge>
-              {task.due_date && (
-                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  {formatDate(task.due_date)}
-                </span>
-              )}
-              {task.assignee && (
-                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <User className="h-3 w-3" />
-                  {task.assignee}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
-
-  const LoadingSkeleton = () => (
-    <div className="space-y-3">
-      {[1, 2, 3].map((i) => (
-        <Skeleton key={i} className="h-24 w-full" />
-      ))}
-    </div>
-  )
+  const todo = entities.filter(t => t.status !== 'done')
+  const done = entities.filter(t => t.status === 'done')
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Tasks & Actions</h1>
-          <p className="text-muted-foreground">Manage and track your team's work</p>
+          <h2 className="text-2xl font-bold">Tasks</h2>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {todo.length} open · {done.length} completed
+          </p>
         </div>
         <Dialog open={newTaskOpen} onOpenChange={setNewTaskOpen}>
           <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              New Task
+            <Button size="sm" className="gap-2">
+              <Plus className="w-4 h-4" />New Task
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-lg">
             <DialogHeader>
-              <DialogTitle>Create New Task</DialogTitle>
+              <DialogTitle>Create Task</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
+            <div className="space-y-4">
+              <div>
+                <Label>Title</Label>
                 <Input
-                  id="title"
                   value={newTask.title}
-                  onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                  onChange={e => setNewTask(p => ({ ...p, title: e.target.value }))}
                   placeholder="Task title..."
+                  autoFocus
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+              <div>
+                <Label>Description</Label>
                 <Textarea
-                  id="description"
                   value={newTask.description}
-                  onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                  placeholder="Task description..."
+                  onChange={e => setNewTask(p => ({ ...p, description: e.target.value }))}
+                  placeholder="Optional details..."
+                  rows={3}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
+                <div>
                   <Label>Priority</Label>
-                  <Select value={newTask.priority} onValueChange={(v) => setNewTask({ ...newTask, priority: v })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
+                  <Select
+                    value={newTask.priority}
+                    onValueChange={v => setNewTask(p => ({ ...p, priority: v }))}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="low">Low</SelectItem>
                       <SelectItem value="medium">Medium</SelectItem>
@@ -202,116 +205,74 @@ export function TasksView() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="due_date">Due Date</Label>
+                <div>
+                  <Label>Due date</Label>
                   <Input
-                    id="due_date"
                     type="date"
                     value={newTask.due_date}
-                    onChange={(e) => setNewTask({ ...newTask, due_date: e.target.value })}
+                    onChange={e => setNewTask(p => ({ ...p, due_date: e.target.value }))}
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="assignee">Assignee</Label>
+              <div>
+                <Label>Assignee</Label>
                 <Input
-                  id="assignee"
                   value={newTask.assignee}
-                  onChange={(e) => setNewTask({ ...newTask, assignee: e.target.value })}
-                  placeholder="Assignee name..."
+                  onChange={e => setNewTask(p => ({ ...p, assignee: e.target.value }))}
+                  placeholder="Name or email..."
                 />
               </div>
-              <Button onClick={createTask} className="w-full">
-                Create Task
+              <Button
+                onClick={createTask}
+                disabled={creating || !newTask.title.trim()}
+                className="w-full gap-2"
+              >
+                {creating && <Loader2 className="w-4 h-4 animate-spin" />}
+                {creating ? 'Creating…' : 'Create Task'}
               </Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
-      <Tabs defaultValue="board" className="space-y-4">
-        <TabsList className="bg-muted">
-          <TabsTrigger value="board">Board</TabsTrigger>
-          <TabsTrigger value="list">List</TabsTrigger>
+      <Tabs defaultValue="open">
+        <TabsList>
+          <TabsTrigger value="open">Open ({todo.length})</TabsTrigger>
+          <TabsTrigger value="done">Completed ({done.length})</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="board" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* To Do Column */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="font-medium text-foreground flex items-center gap-2">
-                  To Do
-                  <Badge variant="secondary" className="text-xs">
-                    {todoTasks.length}
-                  </Badge>
-                </h3>
-              </div>
-              {!tasks ? (
-                <LoadingSkeleton />
-              ) : (
-                <div className="space-y-3">
-                  {todoTasks.map((task: any) => (
-                    <TaskCard key={task.id} task={task} />
-                  ))}
+        <TabsContent value="open" className="mt-4">
+          <Card>
+            <CardContent className="p-3 space-y-1">
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} className="h-16 rounded-lg" />
+                ))
+              ) : todo.length === 0 ? (
+                <div className="py-12 text-center text-sm text-muted-foreground">
+                  No open tasks. Create one to get started.
                 </div>
-              )}
-            </div>
-
-            {/* In Progress Column */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="font-medium text-foreground flex items-center gap-2">
-                  In Progress
-                  <Badge variant="secondary" className="text-xs">
-                    {inProgressTasks.length}
-                  </Badge>
-                </h3>
-              </div>
-              {!tasks ? (
-                <LoadingSkeleton />
               ) : (
-                <div className="space-y-3">
-                  {inProgressTasks.map((task: any) => (
-                    <TaskCard key={task.id} task={task} />
-                  ))}
-                </div>
+                todo.map(t => (
+                  <TaskRow key={t.id} task={t} onToggle={toggleTask} onDelete={deleteTask} />
+                ))
               )}
-            </div>
-
-            {/* Done Column */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="font-medium text-foreground flex items-center gap-2">
-                  Done
-                  <Badge variant="secondary" className="text-xs">
-                    {doneTasks.length}
-                  </Badge>
-                </h3>
-              </div>
-              {!tasks ? (
-                <LoadingSkeleton />
-              ) : (
-                <div className="space-y-3">
-                  {doneTasks.map((task: any) => (
-                    <TaskCard key={task.id} task={task} />
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </TabsContent>
-
-        <TabsContent value="list" className="space-y-4">
-          {!tasks ? (
-            <LoadingSkeleton />
-          ) : (
-            <div className="space-y-3">
-              {tasks.map((task: any) => (
-                <TaskCard key={task.id} task={task} />
-              ))}
-            </div>
-          )}
+        <TabsContent value="done" className="mt-4">
+          <Card>
+            <CardContent className="p-3 space-y-1">
+              {done.length === 0 ? (
+                <div className="py-12 text-center text-sm text-muted-foreground">
+                  No completed tasks yet.
+                </div>
+              ) : (
+                done.map(t => (
+                  <TaskRow key={t.id} task={t} onToggle={toggleTask} onDelete={deleteTask} />
+                ))
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
