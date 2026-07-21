@@ -1,8 +1,10 @@
 /**
  * Spine Service Layer
- * Core business logic for entity operations, validation, and querying
+ * Calls the Gateway API to fetch and mutate Spine entities
+ * All workbench data flows through this layer
  */
 
+import { IntegrateWiseClient } from '@/lib/integratewise/client'
 import {
   SpineEntity,
   SpineEntityType,
@@ -13,222 +15,296 @@ import {
   SpineRelationship,
 } from '@/lib/types/spine'
 
-// In-memory cache for entity types (in production, fetch from DB)
-const entityTypeCache: Map<string, SpineEntityType> = new Map()
+const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+const cache = new Map<string, { data: unknown; timestamp: number }>()
 
-// Mock data for demonstration
-const mockEntityTypes: SpineEntityType[] = [
-  {
-    id: '1',
-    name: 'account',
-    plural: 'accounts',
-    description: 'Company account',
-    icon: 'building-2',
-    color: '#3B82F6',
-    fields: [],
-    relationships: ['contacts', 'deals', 'tasks'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: '2',
-    name: 'contact',
-    plural: 'contacts',
-    description: 'Person contact',
-    icon: 'user',
-    color: '#8B5CF6',
-    fields: [],
-    relationships: ['account', 'meetings', 'emails'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: '3',
-    name: 'deal',
-    plural: 'deals',
-    description: 'Sales opportunity',
-    icon: 'briefcase',
-    color: '#10B981',
-    fields: [],
-    relationships: ['account', 'tasks'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: '4',
-    name: 'task',
-    plural: 'tasks',
-    description: 'Todo item',
-    icon: 'check-square',
-    color: '#06B6D4',
-    fields: [],
-    relationships: ['account', 'deal', 'assignee'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-]
+function getCacheKey(key: string): string {
+  return `spine:${key}`
+}
 
-/**
- * Get all entity type definitions
- */
-export async function getEntityTypes(): Promise<SpineEntityType[]> {
-  if (entityTypeCache.size === 0) {
-    mockEntityTypes.forEach(type => entityTypeCache.set(type.name, type))
+function getCached<T>(key: string): T | null {
+  const cacheKey = getCacheKey(key)
+  const entry = cache.get(cacheKey)
+  
+  if (!entry) return null
+  if (Date.now() - entry.timestamp > CACHE_TTL) {
+    cache.delete(cacheKey)
+    return null
   }
-  return Array.from(entityTypeCache.values())
+  
+  return entry.data as T
+}
+
+function setCache<T>(key: string, data: T): T {
+  const cacheKey = getCacheKey(key)
+  cache.set(cacheKey, { data, timestamp: Date.now() })
+  return data
+}
+
+function invalidatePatternCache(pattern?: string): void {
+  if (!pattern) {
+    cache.clear()
+    return
+  }
+  
+  const keys = Array.from(cache.keys())
+  keys.forEach(key => {
+    if (key.includes(pattern)) {
+      cache.delete(key)
+    }
+  })
 }
 
 /**
- * Get specific entity type
+ * Get all entity types from the Gateway API
  */
-export async function getEntityType(typeName: string): Promise<SpineEntityType | null> {
-  const types = await getEntityTypes()
-  return types.find(t => t.name === typeName) || null
+export async function getEntityTypes(client: IntegrateWiseClient): Promise<SpineEntityType[]> {
+  const cached = getCached<SpineEntityType[]>('entity-types')
+  if (cached) return cached
+
+  try {
+    const response = await client.get('/api/v1/workspace/spine/entity-types')
+    const entityTypes = response.data?.entity_types || []
+    return setCache('entity-types', entityTypes)
+  } catch (error) {
+    console.error('[v0] Failed to fetch entity types:', error)
+    return []
+  }
 }
 
 /**
- * Get entities of a specific type
+ * Get a specific entity type by name
+ */
+export async function getEntityType(
+  client: IntegrateWiseClient,
+  typeName: string
+): Promise<SpineEntityType | null> {
+  const entityTypes = await getEntityTypes(client)
+  return entityTypes.find(t => t.name === typeName) || null
+}
+
+/**
+ * Get paginated list of entities of a specific type
  */
 export async function getEntities(
+  client: IntegrateWiseClient,
   type: string,
   filter?: SpineEntityFilter
 ): Promise<SpineEntityListResponse> {
-  // In production, this would query the database
-  // For now, return mock data
-  return {
-    entities: [],
-    total: 0,
-    limit: filter?.limit || 50,
-    offset: filter?.offset || 0,
-    hasMore: false,
+  const { limit = 50, offset = 0 } = filter || {}
+  
+  const cacheKey = `entities:${type}:${offset}:${limit}`
+  const cached = getCached<SpineEntityListResponse>(cacheKey)
+  if (cached) return cached
+
+  try {
+    const params = new URLSearchParams({
+      type,
+      limit: limit.toString(),
+      offset: offset.toString(),
+    })
+
+    const response = await client.get(`/api/v1/workspace/spine/entities?${params}`)
+    const result: SpineEntityListResponse = {
+      entities: response.data?.entities || [],
+      total: response.data?.total || 0,
+      limit,
+      offset,
+      hasMore: (offset + limit) < (response.data?.total || 0),
+    }
+    return setCache(cacheKey, result)
+  } catch (error) {
+    console.error('[v0] Failed to fetch entities:', error)
+    return { entities: [], total: 0, limit, offset, hasMore: false }
   }
 }
 
 /**
- * Get single entity
+ * Get a single entity by type and ID
  */
 export async function getEntity<T = Record<string, unknown>>(
+  client: IntegrateWiseClient,
   type: string,
   id: string
 ): Promise<SpineEntity<T> | null> {
-  // In production, query from spine_entities table
-  return null
+  const cacheKey = `entity:${type}:${id}`
+  const cached = getCached<SpineEntity<T>>(cacheKey)
+  if (cached) return cached
+
+  try {
+    const response = await client.get(`/api/v1/workspace/spine/entities/${type}/${id}`)
+    const entity = response.data?.entity
+    if (entity) {
+      return setCache(cacheKey, entity)
+    }
+    return null
+  } catch (error) {
+    console.error('[v0] Failed to fetch entity:', error)
+    return null
+  }
 }
 
 /**
- * Create new entity
+ * Create a new entity in the Spine
  */
 export async function createEntity<T = Record<string, unknown>>(
+  client: IntegrateWiseClient,
   type: string,
   data: T,
   metadata?: Record<string, unknown>
 ): Promise<SpineEntity<T>> {
-  const entityType = await getEntityType(type)
-  if (!entityType) {
-    throw new Error(`Unknown entity type: ${type}`)
+  try {
+    const response = await client.post(`/api/v1/workspace/spine/entities`, {
+      type,
+      data,
+      metadata,
+    })
+    
+    const entity = response.data?.entity
+    if (entity) {
+      invalidatePatternCache(`entities:${type}`)
+      return entity
+    }
+    throw new Error('Failed to create entity')
+  } catch (error) {
+    console.error('[v0] Failed to create entity:', error)
+    throw error
   }
-
-  const entity: SpineEntity<T> = {
-    id: crypto.randomUUID(),
-    type,
-    data,
-    metadata,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  }
-
-  // In production:
-  // 1. Validate data against field schema
-  // 2. Insert into spine_entities table
-  // 3. Create timeline entry
-  // 4. Invalidate cache
-
-  return entity
 }
 
 /**
- * Update entity
+ * Update an existing entity in the Spine
  */
 export async function updateEntity<T = Record<string, unknown>>(
+  client: IntegrateWiseClient,
   type: string,
   id: string,
   data: Partial<T>,
   userId?: string
 ): Promise<SpineEntity<T>> {
-  const existingEntity = await getEntity<T>(type, id)
-  if (!existingEntity) {
-    throw new Error(`Entity not found: ${type}/${id}`)
+  try {
+    const response = await client.patch(
+      `/api/v1/workspace/spine/entities/${type}/${id}`,
+      {
+        data,
+        updated_by: userId,
+      }
+    )
+    
+    const entity = response.data?.entity
+    if (entity) {
+      invalidatePatternCache(`entity:${type}:${id}`)
+      invalidatePatternCache(`entities:${type}`)
+      return entity
+    }
+    throw new Error('Failed to update entity')
+  } catch (error) {
+    console.error('[v0] Failed to update entity:', error)
+    throw error
   }
-
-  const updatedEntity: SpineEntity<T> = {
-    ...existingEntity,
-    data: { ...existingEntity.data, ...data },
-    updatedAt: new Date(),
-    updatedBy: userId,
-  }
-
-  // In production:
-  // 1. Validate partial data
-  // 2. Update spine_entities
-  // 3. Create timeline entry with oldValue/newValue
-  // 4. Emit event to Twin for observation
-  // 5. Invalidate cache
-
-  return updatedEntity
 }
 
 /**
  * Delete entity (soft delete)
  */
-export async function deleteEntity(type: string, id: string, userId?: string): Promise<void> {
-  // In production:
-  // 1. Soft delete (mark as deleted)
-  // 2. Create timeline entry
-  // 3. Invalidate relationships
-  // 4. Emit to Twin
+export async function deleteEntity(
+  client: IntegrateWiseClient,
+  type: string,
+  id: string,
+  userId?: string
+): Promise<void> {
+  try {
+    await client.delete(`/api/v1/workspace/spine/entities/${type}/${id}`, {
+      deleted_by: userId,
+    })
+    
+    invalidatePatternCache(`entity:${type}:${id}`)
+    invalidatePatternCache(`entities:${type}`)
+  } catch (error) {
+    console.error('[v0] Failed to delete entity:', error)
+    throw error
+  }
 }
 
 /**
  * Get related entities
  */
 export async function getRelated(
+  client: IntegrateWiseClient,
   entityId: string,
   query?: SpineRelationshipQuery
 ): Promise<SpineRelationship[]> {
-  // In production: Query spine_relationships table
-  return []
+  const cacheKey = `related:${entityId}:${query?.type || 'all'}`
+  const cached = getCached<SpineRelationship[]>(cacheKey)
+  if (cached) return cached
+
+  try {
+    const params = new URLSearchParams({
+      entity_id: entityId,
+    })
+    
+    if (query?.type) {
+      params.append('relationship_type', query.type)
+    }
+
+    const response = await client.get(`/api/v1/workspace/spine/relationships?${params}`)
+    const related = response.data?.relationships || []
+    return setCache(cacheKey, related)
+  } catch (error) {
+    console.error('[v0] Failed to fetch related entities:', error)
+    return []
+  }
 }
 
 /**
- * Get entity timeline
+ * Get entity timeline/audit trail
  */
 export async function getTimeline(
+  client: IntegrateWiseClient,
   entityId: string,
   limit: number = 50
 ): Promise<SpineTimelineEvent[]> {
-  // In production: Query spine_timeline table
-  return []
+  const cacheKey = `timeline:${entityId}:${limit}`
+  const cached = getCached<SpineTimelineEvent[]>(cacheKey)
+  if (cached) return cached
+
+  try {
+    const params = new URLSearchParams({
+      entity_id: entityId,
+      limit: limit.toString(),
+    })
+
+    const response = await client.get(`/api/v1/workspace/spine/timeline?${params}`)
+    const timeline = response.data?.timeline || []
+    return setCache(cacheKey, timeline)
+  } catch (error) {
+    console.error('[v0] Failed to fetch timeline:', error)
+    return []
+  }
 }
 
 /**
  * Validate entity data against schema
  */
-export async function validateEntityData(type: string, data: unknown): Promise<boolean> {
-  const entityType = await getEntityType(type)
+export async function validateEntityData(
+  client: IntegrateWiseClient,
+  type: string,
+  data: unknown
+): Promise<boolean> {
+  const entityType = await getEntityType(client, type)
   if (!entityType) return false
 
-  // In production: Check required fields, types, constraints
-  return true
+  // Validate required fields
+  const requiredFields = entityType.fields?.filter(f => f.required) || []
+  const dataObj = data as Record<string, unknown>
+  
+  return requiredFields.every(field => field.name in dataObj)
 }
 
 /**
  * Cache management
  */
-export function invalidateCache(type?: string): void {
-  if (type) {
-    entityTypeCache.delete(type)
-  } else {
-    entityTypeCache.clear()
-  }
+export function invalidateCache(pattern?: string): void {
+  invalidatePatternCache(pattern)
 }
 
