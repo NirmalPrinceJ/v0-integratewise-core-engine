@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode, useState, useEffect } from 'react'
+import { ReactNode, useState, useEffect, Suspense } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -13,8 +13,39 @@ import {
   ChevronDown,
   Loader,
 } from 'lucide-react'
-import { useTwinSignals } from '@/lib/hooks/use-twin'
 import type { TwinSignal } from '@/lib/ai/twin/engine'
+
+// Lazy load the twin signals hook to prevent router initialization errors
+const TwinSignalsFeed = ({ isExpanded }: { isExpanded: boolean }) => {
+  const { useTwinSignals } = require('@/lib/hooks/use-twin')
+  const { signals, isLoading: signalsLoading } = useTwinSignals()
+
+  if (!isExpanded) return null
+
+  return (
+    <div className="mt-4 pt-4 border-t space-y-2">
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-xs font-semibold text-muted-foreground">Twin Signals</div>
+        {signalsLoading && <Loader className="w-3 h-3 animate-spin" />}
+      </div>
+      <div className="space-y-2 max-h-48 overflow-y-auto">
+        {signals && signals.length > 0 ? (
+          signals.map((signal: TwinSignal) => (
+            <TwinSignalCard
+              key={signal.id}
+              type={signal.type}
+              title={signal.title}
+              message={signal.description}
+              confidence={signal.confidence}
+            />
+          ))
+        ) : (
+          <div className="text-xs text-muted-foreground py-2">No signals at this time</div>
+        )}
+      </div>
+    </div>
+  )
+}
 
 interface WorkbenchShellProps {
   title: string
@@ -38,7 +69,6 @@ export function WorkbenchShell({
   isLoading = false,
 }: WorkbenchShellProps) {
   const [showTwinSignals, setShowTwinSignals] = useState(false)
-  const { signals, isLoading: signalsLoading } = useTwinSignals()
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -134,29 +164,9 @@ export function WorkbenchShell({
           </div>
 
           {/* Twin Signals Feed (Collapsible) */}
-          {showTwinSignals && (
-            <div className="mt-4 pt-4 border-t space-y-2">
-              <div className="flex items-center justify-between mb-3">
-                <div className="text-xs font-semibold text-muted-foreground">Twin Signals</div>
-                {signalsLoading && <Loader className="w-3 h-3 animate-spin" />}
-              </div>
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {signals && signals.length > 0 ? (
-                  signals.map((signal: TwinSignal) => (
-                    <TwinSignalCard
-                      key={signal.id}
-                      type={signal.type}
-                      title={signal.title}
-                      message={signal.description}
-                      confidence={signal.confidence}
-                    />
-                  ))
-                ) : (
-                  <div className="text-xs text-muted-foreground py-2">No signals at this time</div>
-                )}
-              </div>
-            </div>
-          )}
+          <Suspense fallback={null}>
+            <TwinSignalsFeed isExpanded={showTwinSignals} />
+          </Suspense>
         </div>
       </footer>
     </div>
