@@ -1,9 +1,8 @@
-import fetch from 'node-fetch';
-
 /**
  * Coda Template Analyzer
  * Fetches and analyzes all templates in your Coda workspace
  * Maps templates to company operations, departments, and capabilities
+ * Note: This module uses native fetch available in Node.js 18+
  */
 
 interface CodaDoc {

@@ -2,101 +2,70 @@
 
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { Lock } from 'lucide-react'
+import { Lock, Zap, Brain, Users, Layers } from 'lucide-react'
 
 export function Hero() {
-  const aiSurfaces = [
-    { name: 'ChatGPT', icon: '🤖' },
-    { name: 'Claude', icon: '🧠' },
-    { name: 'Perplexity', icon: '🔍' },
-    { name: 'Hermes', icon: '✨' },
-  ]
-
-  const ecosystemApps = [
-    { name: 'Salesforce', icon: '☁️' },
-    { name: 'HubSpot', icon: '🎯' },
-    { name: 'Slack', icon: '💬' },
-    { name: 'Teams', icon: '👥' },
-    { name: 'Gmail', icon: '📧' },
-    { name: 'Outlook', icon: '📮' },
-    { name: 'Notion', icon: '📝' },
-    { name: 'Google Drive', icon: '📁' },
-  ]
-
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-background overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-background pointer-events-none opacity-50" />
       
       <div className="relative w-full max-w-7xl mx-auto px-6 py-20 space-y-12">
-        {/* Left Side Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <p className="text-sm font-semibold text-primary uppercase tracking-wider">
-                AI-NATIVE. OPERATIONAL. GOVERNED.
-              </p>
-              <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-tight">
-                Your <span className="text-primary">Last Auth</span> to Complete Your Ecosystem
-              </h1>
-              <p className="text-lg text-muted-foreground max-w-xl">
-                One authentication. Every capability. Everywhere you work. Connect your AI, business applications, and teams into a single operational capability fabric. Stay in ChatGPT, Claude, Hermes, or your workbench while IntegrateWise securely executes work across your connected ecosystem.
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="bg-primary hover:bg-primary/90">
-                Start Free
-              </Button>
-              <Button size="lg" variant="outline">
-                Watch Demo
-              </Button>
-            </div>
-
-            <div className="flex items-center gap-2 text-xs text-muted-foreground pt-4">
-              <Lock className="w-4 h-4" />
-              <span>Enterprise grade security • SOC 2 • GDPR • HIPAA • ISO 27001</span>
-            </div>
+        {/* Main Content */}
+        <div className="text-center space-y-8 max-w-4xl mx-auto">
+          <div className="space-y-4">
+            <p className="text-sm font-semibold text-slate-400 uppercase tracking-widest">
+              Operating System for Scaling Companies
+            </p>
+            <h1 className="text-6xl md:text-7xl font-bold tracking-tight leading-tight">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-100 via-blue-400 to-slate-100">
+                Customer Zero
+              </span>
+            </h1>
+            <p className="text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
+              The intelligence layer for your business. AI-powered twins execute decisions across 12 departments, 65+ integrations, and every operational workflow.
+            </p>
           </div>
 
-          {/* Right Side: AI Surfaces → iW Hub → Ecosystem */}
-          <div className="relative h-full min-h-96 lg:min-h-[500px]">
-            <div className="absolute inset-0 flex items-center justify-center">
-              {/* AI Surfaces Section */}
-              <div className="absolute top-0 left-0 right-0 text-center space-y-3">
-                <p className="text-xs font-semibold text-muted-foreground uppercase">AI SURFACES</p>
-                <div className="flex justify-center gap-3 flex-wrap">
-                  {aiSurfaces.map((surface) => (
-                    <div key={surface.name} className="w-14 h-14 rounded-lg bg-muted border border-border flex items-center justify-center text-xl hover:border-primary/50 transition">
-                      {surface.icon}
-                    </div>
-                  ))}
-                  <div className="w-14 h-14 rounded-lg bg-muted border border-border flex items-center justify-center text-xl hover:border-primary/50 transition">
-                    •••
-                  </div>
-                </div>
-              </div>
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+            <Button size="lg" className="bg-white text-black hover:bg-slate-100 font-semibold" asChild>
+              <Link href="/customer-zero">Launch Platform</Link>
+            </Button>
+            <Button size="lg" variant="outline" className="border-slate-600 text-slate-200 hover:bg-slate-800">
+              View Documentation
+            </Button>
+          </div>
 
-              {/* Central Hub */}
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 space-y-3 text-center">
-                <div className="w-20 h-20 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center mx-auto">
-                  <span className="text-2xl font-bold text-primary">iW</span>
-                </div>
-                <p className="text-xs font-semibold text-muted-foreground">UNIVERSAL CAPABILITY FABRIC</p>
-                <p className="text-xs text-muted-foreground max-w-xs">Human intent → Governed execution</p>
-              </div>
+          <div className="flex items-center justify-center gap-2 text-xs text-slate-400 pt-6">
+            <Lock className="w-4 h-4" />
+            <span>Enterprise-grade • SOC 2 • GDPR • HIPAA</span>
+          </div>
+        </div>
 
-              {/* Ecosystem Apps */}
-              <div className="absolute bottom-0 left-0 right-0 space-y-3">
-                <p className="text-xs font-semibold text-muted-foreground uppercase text-center">YOUR CONNECTED ECOSYSTEM</p>
-                <div className="grid grid-cols-4 gap-2 max-w-sm mx-auto">
-                  {ecosystemApps.slice(0, 8).map((app) => (
-                    <div key={app.name} className="w-12 h-12 rounded-lg bg-muted border border-border flex items-center justify-center text-lg hover:border-primary/50 transition" title={app.name}>
-                      {app.icon}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+        {/* Core Features */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-12">
+          <div className="group p-6 rounded-lg border border-slate-700 bg-slate-900/50 hover:border-blue-400/50 transition">
+            <Brain className="w-8 h-8 text-blue-400 mb-3 group-hover:scale-110 transition" />
+            <h3 className="font-semibold text-slate-100 mb-2">AI Twins</h3>
+            <p className="text-sm text-slate-400">Twin agents execute decisions autonomously with human oversight</p>
+          </div>
+          
+          <div className="group p-6 rounded-lg border border-slate-700 bg-slate-900/50 hover:border-blue-400/50 transition">
+            <Zap className="w-8 h-8 text-blue-400 mb-3 group-hover:scale-110 transition" />
+            <h3 className="font-semibold text-slate-100 mb-2">OODA Loops</h3>
+            <p className="text-sm text-slate-400">Observe, Orient, Decide, Act—governance built into every workflow</p>
+          </div>
+          
+          <div className="group p-6 rounded-lg border border-slate-700 bg-slate-900/50 hover:border-blue-400/50 transition">
+            <Users className="w-8 h-8 text-blue-400 mb-3 group-hover:scale-110 transition" />
+            <h3 className="font-semibold text-slate-100 mb-2">12 Workbenches</h3>
+            <p className="text-sm text-slate-400">Department-specific UIs for Sales, CSM, Marketing, Finance & more</p>
+          </div>
+          
+          <div className="group p-6 rounded-lg border border-slate-700 bg-slate-900/50 hover:border-blue-400/50 transition">
+            <Layers className="w-8 h-8 text-blue-400 mb-3 group-hover:scale-110 transition" />
+            <h3 className="font-semibold text-slate-100 mb-2">65+ Integrations</h3>
+            <p className="text-sm text-slate-400">Connected to all your tools through unified capability fabric</p>
           </div>
         </div>
       </div>

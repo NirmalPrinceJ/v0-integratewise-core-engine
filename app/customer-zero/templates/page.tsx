@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function TemplatesPage() {
   const {
@@ -112,13 +111,20 @@ export default function TemplatesPage() {
         </Card>
       </div>
 
-      {/* Info Alert */}
-      <Alert>
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>
-          Each template includes pre-configured fields, views, actions, and integrations tailored to specific operational needs. Create instances to start using templates for your team.
-        </AlertDescription>
-      </Alert>
+      {/* Info Card */}
+      <Card className="border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/20">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <AlertCircle className="h-4 w-4" />
+            Template Information
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            Each template includes pre-configured fields, views, actions, and integrations tailored to specific operational needs. Create instances to start using templates for your team.
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Templates Grid */}
       <TemplatesGrid
