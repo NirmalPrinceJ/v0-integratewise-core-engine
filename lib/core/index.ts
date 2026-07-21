@@ -28,6 +28,9 @@ export * from "./workbenches";
 // Connector & MCP Integration
 export * from "./connectors";
 
+// Operational Templates
+export * from "./templates";
+
 // Re-export for convenience
 export { CapabilityEngine } from "./capability-engine/engine";
 export { ContextBuilder } from "./capability-context/context-builder";
@@ -37,3 +40,5 @@ export { OperatingCalendarEngine, createDefaultOperatingCalendar } from "./sched
 export { TwinMemoryManager } from "./twin-memory";
 export { WorkbenchManager } from "./workbenches";
 export { ConnectorManager } from "./connectors";
+export { TemplateManager, templateManager } from "./templates/manager";
+export { getTemplateRegistry } from "./templates/definitions";
