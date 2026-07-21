@@ -151,7 +151,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       refreshToken = tokenData.refresh_token
     }
 
-    // Store in database
+    // Store in database using tenant-scoped storage
     const supabase = await createClient()
 
     // Get current user (demo mode fallback)
@@ -159,9 +159,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       data: { user },
     } = await supabase.auth.getUser()
     const userId = user?.id || "00000000-0000-0000-0000-000000000000" // Demo user fallback
+    const tenantId = `tenant_${userId}` // Tenant-level scoping
 
     const { error: dbError } = await supabase.from("connectors").upsert(
       {
+        tenant_id: tenantId, // TENANT-LEVEL SCOPE
         user_id: userId,
         provider,
         status: "connected",
@@ -174,12 +176,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         updated_at: new Date().toISOString(),
       },
       {
-        onConflict: "user_id,provider",
+        onConflict: "tenant_id,provider", // Unique per tenant, not per user
       },
     )
 
     if (dbError) {
-      console.error("Database error storing connector:", dbError)
+      console.error(`[v0] Database error storing connector for tenant ${tenantId}:`, dbError)
     }
 
     // Clear state cookie and redirect

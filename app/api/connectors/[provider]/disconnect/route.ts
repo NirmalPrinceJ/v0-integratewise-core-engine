@@ -10,6 +10,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     data: { user },
   } = await supabase.auth.getUser()
   const userId = user?.id || "00000000-0000-0000-0000-000000000000"
+  const tenantId = `tenant_${userId}` // Tenant-level scoping
 
   const { error } = await supabase
     .from("connectors")
@@ -20,12 +21,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       expires_at: null,
       updated_at: new Date().toISOString(),
     })
-    .eq("user_id", userId)
+    .eq("tenant_id", tenantId) // TENANT-LEVEL SCOPE
     .eq("provider", provider)
 
   if (error) {
+    console.error(`[v0] Error disconnecting ${provider} for tenant ${tenantId}:`, error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  return NextResponse.json({ success: true })
+  return NextResponse.json({ success: true, message: `${provider} disconnected from tenant` })
 }
