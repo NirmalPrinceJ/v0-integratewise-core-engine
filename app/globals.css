@@ -3,150 +3,106 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Enterprise Design System - Customer Zero Operational Platform
-   Color Palette: 5-color system (Primary, Secondary, Success, Warning, Danger)
-   Built for accessibility, clarity, and operational efficiency
-*/
+/* Webflow-inspired cooler theme with light sidebar and indigo accents */
 :root {
-  /* Neutral Background - Clean workspace */
-  --background: oklch(0.98 0.001 250);
-  --foreground: oklch(0.15 0.01 250);
+  /* Main background - soft off-white */
+  --background: oklch(0.985 0.002 250);
+  --foreground: oklch(0.2 0.02 250);
 
-  /* Cards & Surfaces */
+  /* Cards - clean white */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.01 250);
+  --card-foreground: oklch(0.2 0.02 250);
 
-  /* Popovers & Overlays */
+  /* Popovers */
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.01 250);
+  --popover-foreground: oklch(0.2 0.02 250);
 
-  /* Primary - IntegrateWise Blue (Trust & Stability) */
-  --primary: oklch(0.52 0.18 260);
+  /* Primary - Webflow indigo/blue */
+  --primary: oklch(0.55 0.18 265);
   --primary-foreground: oklch(1 0 0);
 
-  /* Secondary - Deep Gray (Enterprise) */
-  --secondary: oklch(0.22 0.01 250);
-  --secondary-foreground: oklch(0.98 0 0);
+  /* Secondary - soft gray */
+  --secondary: oklch(0.96 0.005 250);
+  --secondary-foreground: oklch(0.3 0.02 250);
 
-  /* Success - Emerald (Operational Health) */
-  --success: oklch(0.57 0.15 155);
-  --success-foreground: oklch(1 0 0);
+  /* Muted - light gray */
+  --muted: oklch(0.96 0.005 250);
+  --muted-foreground: oklch(0.5 0.02 250);
 
-  /* Warning - Amber (Caution) */
-  --warning: oklch(0.68 0.15 80);
-  --warning-foreground: oklch(1 0 0);
+  /* Accent - soft indigo */
+  --accent: oklch(0.95 0.02 265);
+  --accent-foreground: oklch(0.45 0.15 265);
 
-  /* Danger - Red (Critical) */
-  --destructive: oklch(0.55 0.2 20);
+  /* Destructive */
+  --destructive: oklch(0.55 0.2 25);
   --destructive-foreground: oklch(1 0 0);
 
-  /* Muted - Light Gray (Secondary text) */
-  --muted: oklch(0.92 0.003 250);
-  --muted-foreground: oklch(0.5 0.01 250);
+  /* Borders - subtle gray */
+  --border: oklch(0.92 0.005 250);
+  --input: oklch(0.92 0.005 250);
+  --ring: oklch(0.55 0.18 265);
 
-  /* Accent - Cyan (Highlights) */
-  --accent: oklch(0.6 0.18 200);
-  --accent-foreground: oklch(1 0 0);
-
-  /* UI Elements */
-  --border: oklch(0.88 0.003 250);
-  --input: oklch(0.94 0.003 250);
-  --ring: oklch(0.52 0.18 260);
-
-  /* Charts - Accessible palette */
-  --chart-1: oklch(0.52 0.18 260);
-  --chart-2: oklch(0.6 0.18 200);
-  --chart-3: oklch(0.57 0.15 155);
-  --chart-4: oklch(0.68 0.15 80);
-  --chart-5: oklch(0.45 0.2 20);
+  /* Charts - cool blue palette */
+  --chart-1: oklch(0.55 0.18 265);
+  --chart-2: oklch(0.65 0.15 265);
+  --chart-3: oklch(0.5 0.2 200);
+  --chart-4: oklch(0.6 0.15 280);
+  --chart-5: oklch(0.45 0.1 250);
 
   --radius: 0.5rem;
 
-  /* Sidebar - Enterprise dark */
-  --sidebar: oklch(0.96 0.002 250);
-  --sidebar-foreground: oklch(0.2 0.01 250);
-  --sidebar-primary: oklch(0.52 0.18 260);
+  /* Sidebar - light with subtle gray, Webflow-style */
+  --sidebar: oklch(0.99 0.002 250);
+  --sidebar-foreground: oklch(0.35 0.02 250);
+  --sidebar-primary: oklch(0.55 0.18 265);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.94 0.002 250);
-  --sidebar-accent-foreground: oklch(0.52 0.18 260);
-  --sidebar-border: oklch(0.9 0.002 250);
-  --sidebar-ring: oklch(0.52 0.18 260);
-  --sidebar-muted: oklch(0.92 0.002 250);
+  --sidebar-accent: oklch(0.96 0.02 265);
+  --sidebar-accent-foreground: oklch(0.45 0.15 265);
+  --sidebar-border: oklch(0.94 0.005 250);
+  --sidebar-ring: oklch(0.55 0.18 265);
+  --sidebar-muted: oklch(0.96 0.005 250);
 }
 
-/* Dark mode - Enterprise operational platform (reduced eye strain)
-   Optimized for monitoring dashboards & continuous operations
-*/
+/* Dark mode - cooler slate tones */
 .dark {
-  /* Dark charcoal background - professional & focused */
-  --background: oklch(0.11 0.01 250);
-  --foreground: oklch(0.95 0.01 250);
-
-  /* Card surfaces - slightly elevated */
-  --card: oklch(0.15 0.01 250);
-  --card-foreground: oklch(0.95 0.01 250);
-
-  /* Popovers */
-  --popover: oklch(0.15 0.01 250);
-  --popover-foreground: oklch(0.95 0.01 250);
-
-  /* Primary - Bright IntegrateWise Blue */
-  --primary: oklch(0.65 0.18 260);
-  --primary-foreground: oklch(0.1 0 0);
-
-  /* Secondary - Light Gray (enterprise text) */
-  --secondary: oklch(0.85 0.01 250);
-  --secondary-foreground: oklch(0.1 0 0);
-
-  /* Success - Bright Emerald */
-  --success: oklch(0.68 0.15 155);
-  --success-foreground: oklch(0.1 0 0);
-
-  /* Warning - Bright Amber */
-  --warning: oklch(0.75 0.15 80);
-  --warning-foreground: oklch(0.1 0 0);
-
-  /* Danger - Bright Red */
-  --destructive: oklch(0.65 0.2 20);
-  --destructive-foreground: oklch(0.95 0 0);
-
-  /* Muted - Medium Gray */
-  --muted: oklch(0.25 0.01 250);
-  --muted-foreground: oklch(0.7 0.01 250);
-
-  /* Accent - Bright Cyan */
-  --accent: oklch(0.7 0.18 200);
-  --accent-foreground: oklch(0.1 0 0);
-
-  /* UI Elements */
-  --border: oklch(0.25 0.01 250);
-  --input: oklch(0.2 0.01 250);
-  --ring: oklch(0.65 0.18 260);
-
-  /* Charts - High contrast for monitoring */
-  --chart-1: oklch(0.65 0.18 260);
-  --chart-2: oklch(0.7 0.18 200);
-  --chart-3: oklch(0.68 0.15 155);
-  --chart-4: oklch(0.75 0.15 80);
-  --chart-5: oklch(0.65 0.2 20);
-
-  /* Sidebar - Slightly lighter than background */
-  --sidebar: oklch(0.13 0.01 250);
-  --sidebar-foreground: oklch(0.95 0.01 250);
-  --sidebar-primary: oklch(0.65 0.18 260);
-  --sidebar-primary-foreground: oklch(0.1 0 0);
-  --sidebar-accent: oklch(0.22 0.01 250);
-  --sidebar-accent-foreground: oklch(0.65 0.18 260);
-  --sidebar-border: oklch(0.2 0.01 250);
-  --sidebar-ring: oklch(0.65 0.18 260);
-  --sidebar-muted: oklch(0.22 0.01 250);
+  --background: oklch(0.14 0.015 260);
+  --foreground: oklch(0.95 0 0);
+  --card: oklch(0.18 0.015 260);
+  --card-foreground: oklch(0.95 0 0);
+  --popover: oklch(0.18 0.015 260);
+  --popover-foreground: oklch(0.95 0 0);
+  --primary: oklch(0.65 0.18 265);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.25 0.015 260);
+  --secondary-foreground: oklch(0.95 0 0);
+  --muted: oklch(0.22 0.015 260);
+  --muted-foreground: oklch(0.65 0 0);
+  --accent: oklch(0.25 0.03 265);
+  --accent-foreground: oklch(0.75 0.15 265);
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.28 0.015 260);
+  --input: oklch(0.28 0.015 260);
+  --ring: oklch(0.65 0.18 265);
+  --chart-1: oklch(0.65 0.18 265);
+  --chart-2: oklch(0.55 0.12 265);
+  --chart-3: oklch(0.6 0.18 200);
+  --chart-4: oklch(0.55 0.15 280);
+  --chart-5: oklch(0.5 0.1 250);
+  --sidebar: oklch(0.12 0.015 260);
+  --sidebar-foreground: oklch(0.95 0 0);
+  --sidebar-primary: oklch(0.65 0.18 265);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.22 0.03 265);
+  --sidebar-accent-foreground: oklch(0.75 0.15 265);
+  --sidebar-border: oklch(0.22 0.015 260);
+  --sidebar-ring: oklch(0.65 0.18 265);
+  --sidebar-muted: oklch(0.22 0.015 260);
 }
 
 @theme inline {
   --font-sans: "Inter", "Inter Fallback", system-ui, sans-serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback";
-  
-  /* Color Tokens */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -157,10 +113,6 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  --color-success: var(--success);
-  --color-success-foreground: var(--success-foreground);
-  --color-warning: var(--warning);
-  --color-warning-foreground: var(--warning-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
@@ -175,14 +127,10 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  
-  /* Border Radius */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  
-  /* Sidebar */
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -192,59 +140,13 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-muted: var(--sidebar-muted);
-  
-  /* Typography Scales - Enterprise standards */
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  
-  --line-height-tight: 1.25;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.625;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  
-  html {
-    @apply scroll-smooth;
-  }
-  
   body {
-    @apply bg-background text-foreground antialiased;
-    font-size: var(--font-size-base);
-    line-height: var(--line-height-normal);
-  }
-  
-  /* Typography Hierarchy */
-  h1 {
-    @apply text-3xl font-bold leading-tight tracking-tight;
-  }
-  
-  h2 {
-    @apply text-2xl font-semibold leading-tight tracking-tight;
-  }
-  
-  h3 {
-    @apply text-xl font-semibold leading-tight;
-  }
-  
-  h4 {
-    @apply text-lg font-semibold;
-  }
-  
-  h5, h6 {
-    @apply text-base font-semibold;
-  }
-  
-  /* Ensure good focus states */
-  :focus-visible {
-    @apply outline-2 outline-offset-2 outline-ring;
+    @apply bg-background text-foreground;
   }
 }
