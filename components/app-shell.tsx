@@ -1,7 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { useState, useEffect } from "react"
+import { Suspense, useState, useEffect } from "react"
 import { Sidebar } from "@/components/sidebar"
 import { CommandSearch } from "@/components/command-search"
 import { AIAssistant } from "@/components/ai-assistant"
@@ -115,7 +115,9 @@ export function AppShell({ children }: AppShellProps) {
 
       {/* Main content area */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <DemoBanner />
+        <Suspense fallback={null}>
+          <DemoBanner />
+        </Suspense>
         <header className="h-14 border-b border-border bg-card/80 backdrop-blur-sm flex items-center px-4 gap-4 sticky top-0 z-10">
           <Button
             variant="ghost"
