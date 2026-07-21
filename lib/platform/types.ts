@@ -24,6 +24,80 @@ export type HealthStatus = "healthy" | "degraded" | "down"
 export type RunStatus = "running" | "idle" | "paused" | "error"
 export type Trend = "up" | "down" | "flat"
 
+// ============ ADAPTIVE SPINE TYPES ============
+
+export type SpineFieldType = "text" | "number" | "email" | "date" | "boolean" | "json" | "reference" | "uuid"
+
+export interface SpineField {
+  id: string
+  name: string
+  fieldType: SpineFieldType
+  required: boolean
+  indexed: boolean
+  searchable: boolean
+  displayOrder?: number
+  validationRules?: Record<string, unknown>
+}
+
+export interface SpineEntityType {
+  id: string
+  name: string
+  plural: string
+  description?: string
+  icon?: string
+  color?: string
+  category: "CRM" | "Operations" | "Communication" | "Knowledge" | "Finance" | "Organization"
+  fields: SpineField[]
+  relationships?: string[] // relationship type names
+  createdAt: string
+  updatedAt: string
+}
+
+export interface SpineEntity {
+  id: string
+  tenantId: string
+  typeId: string
+  typeName: string
+  data: Record<string, unknown>
+  metadata?: Record<string, unknown>
+  createdAt: string
+  updatedAt: string
+  createdBy: string
+  updatedBy: string
+}
+
+export interface SpineRelationship {
+  id: string
+  tenantId: string
+  sourceEntityId: string
+  targetEntityId: string
+  relationshipType: string
+  relationshipName: string
+  metadata?: Record<string, unknown>
+  createdAt: string
+}
+
+export interface SpineTimelineEntry {
+  id: string
+  tenantId: string
+  entityId: string
+  entityTypeId: string
+  action: "create" | "update" | "delete" | "relate" | "unrelate"
+  fieldName?: string
+  oldValue?: unknown
+  newValue?: unknown
+  source: "api" | "ui" | "connector" | "twin" | "import"
+  sourceId?: string
+  userId: string
+  createdAt: string
+  metadata?: {
+    reasoning?: string
+    proposalId?: string
+    confidenceScore?: number
+    [key: string]: unknown
+  }
+}
+
 /** Identity surface */
 export interface Organization {
   id: string
