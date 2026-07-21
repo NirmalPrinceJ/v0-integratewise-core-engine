@@ -1,0 +1,75 @@
+site_name: IntegrateWise Developer & Partner Docs
+site_description: IntegrateWise developer and partner documentation
+site_author: IntegrateWise
+repo_url: https://github.com/integratewise/integratewise-live
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+extra:
+  social:
+    - icon: material/github
+      link: https://github.com/integratewise
+  version:
+    provider: mike
+
+nav:
+  - Welcome:
+      - Docs Home: site/content/00-index.md
+      - Getting Started: site/content/01-getting-started.md
+      - Quickstart: site/content/02-quickstart.md
+  - Architecture:
+      - Platform Overview: site/content/10-architecture-overview.md
+      - Runtime Topology: site/content/11-runtime-topology.md
+  - Integration:
+      - Integration Manager: site/content/20-integration-manager.md
+      - Connectors: site/content/21-connectors.md
+      - Capability Fabric: site/content/22-capability-fabric.md
+  - Core Concepts:
+      - Adaptive Spine: site/content/30-adaptive-spine.md
+      - Governance & Approval: site/content/31-governance.md
+      - Hermes & Execution: site/content/32-hermes-execution.md
+      - Configuration Manager: site/content/33-configuration.md
+  - Operations:
+      - Deployment: site/content/41-deployment.md
+      - Observability: site/content/42-observability.md
+      - Troubleshooting: site/content/50-troubleshooting.md
+  - Reference:
+      - Glossary: site/content/51-glossary.md
+      - Roadmap: site/content/52-roadmap.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - tables
+  - attr_list
+  - md_in_html
+
+plugins:
+  - search

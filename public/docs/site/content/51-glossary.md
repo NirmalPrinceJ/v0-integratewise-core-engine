@@ -1,0 +1,42 @@
+# Glossary
+
+Use these definitions when writing integrations, reviewing proposals, or debugging IntegrateWise behavior.
+
+- Adaptive Spine: The canonical context and continuity network that owns operational truth.
+- Active Context Bundle: The product-language name for the ContinuityBundle delivered to runtime.
+- Approval Center: The user-facing governance surface for reviewing, approving, rejecting, delegating, and dispatching proposals.
+- API Connector: Structured external system connectivity for REST, GraphQL, and gRPC.
+- API Wrapper: A normalized capability adapter for non-standard or legacy external APIs.
+- Approval Token: The minted evidence that a proposed consequential action passed governance.
+- Canary Context: Use only if defined in tenant policy; otherwise do not conflate with canonical test data.
+- Capability Fabric: The resolver that maps available adapter capabilities into actionable platform actions under policy.
+- Common Connected Surface: The logical operational layer across independent connected systems. Logical, not a datastore.
+- Compact Load: Not a canonical term; use Creamy, Delta, or Streaming Load.
+- Config Version: The immutable monotonic identifier tied to a CompiledTenantConfig snapshot used for execution-plan pinning.
+- Continuity Bridge: The separate contract that delivers the Active Context Bundle to runtime.
+- Contract: A strict typed interface declaring required capability, inputs, and expected output format.
+- Creamy Load: Deep initial hydration for historical continuity formation.
+- Customer Zero: IntegrateWise internal operations using the full stack.
+- Delta Load: Time-window polling ingestion that absorbs ongoing changes.
+- ExecutionPlan: The immutable, approved, versioned plan describing exact steps, authority, evidence, impact, and rollback for a consequential action.
+- Hermes: Execution coordinator only; receives authorized ExecutionPlans and dispatches runtime adapters.
+- Integration Manager: Governs connection lifecycle, auth, MCP discovery, webhook termination, and transport health. Limited to ConnectionProviderRegistry.
+- MCP Connector: Model Context Protocol path for dynamic tool, resource, and prompt exposure under governed interception.
+- Memory Fabric: Tiered memory system covering Working Context, Candidate Memory, and Promoted Memory.
+- OODA: Observe, Orient, Decide, Act. Internal operating model, not usually surfaced to users.
+- Outcome Event: The completed execution result emitted after provider confirmation, sync, and promotion evaluation.
+- Plan Builder: Creates immutable ExecutionPlans from proposals, capability contracts, and governance decisions.
+- Pre-Proposal Gate: Authority, scope, and policy check before proposal execution.
+- Post-Proposal Gate: Risk, evidence, confidence, and approval requirement check after proposal creation.
+- Provider Registry: Directory of active, authenticated adapters with lifecycle state and health signatures.
+- Promotion: The capability-aware, governance-aware decision to adopt resulting provider state as canonical Spine truth.
+- Projection: A governed view assembled from Spine state for Workbench consumption.
+- Runtime Adapter: Lowest-level transport or compute environment executing dispatched commands under sandbox and isolation boundaries.
+- Secrets Provider: Resolves credentials just-in-time for adapter use.
+- Spine: Short form for Adaptive Spine.
+- Streaming Load: Continuous event-driven ingestion from webhook or queue sources.
+- Sync Engine: Bidirectional reconciler between the State Substrate and external providers.
+- Tenant Isolation: Hard partition boundary enforced programmatically at provider and query layers.
+- Twin: Silent partner that prepares outputs, detects change, retrieves context, and proposes actions. Does not execute consequential actions independently.
+- Universal Governance: The cross-phase authority boundary enforcing pre- and post-proposal checks.
+- Workbench: The primary compositional operating hub by department or role.

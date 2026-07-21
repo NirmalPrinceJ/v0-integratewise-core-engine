@@ -1,4 +1,6 @@
 import { Suspense } from "react"
+
+export const dynamic = "force-dynamic"
 import { AppShell } from "@/components/app-shell"
 import { IntegrationsView } from "@/components/views/integrations-view"
 

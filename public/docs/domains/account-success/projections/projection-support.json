@@ -1,0 +1,143 @@
+{
+  "projection_id": "projection-support",
+  "domain": "account_success",
+  "version": "1.0.0",
+  "target_roles": ["support_engineer", "support_manager"],
+  "spine_entities": {
+    "include": ["account", "person", "product", "deployment"],
+    "exclude": [
+      "organization",
+      "contract",
+      "subscription",
+      "integration",
+      "environment",
+      "meeting",
+      "task",
+      "objective",
+      "initiative"
+    ]
+  },
+  "memory_types": {
+    "include": ["cases", "errors", "incidents", "sla", "usage"],
+    "exclude": [
+      "health",
+      "risk",
+      "engagement",
+      "timeline",
+      "insights",
+      "recommendations",
+      "architecture_assessment",
+      "technical_debt",
+      "forecast",
+      "business_context",
+      "stakeholder_intelligence",
+      "sentiment",
+      "signals",
+      "evidence"
+    ]
+  },
+  "relationship_depth": {
+    "direct": 1,
+    "indirect": 2
+  },
+  "field_policy": {
+    "account": [
+      "id",
+      "canonical_id",
+      "name",
+      "industry",
+      "region",
+      "tier",
+      "arr_usd",
+      "contract_start",
+      "contract_end"
+    ],
+    "person": ["id", "canonical_id", "name", "email", "role", "department", "seniority"],
+    "product": ["id", "canonical_id", "name", "sku", "version", "category"],
+    "deployment": [
+      "id",
+      "canonical_id",
+      "environment_type",
+      "region",
+      "status",
+      "version",
+      "last_deployed_at"
+    ],
+    "cases": [
+      "id",
+      "score",
+      "score_label",
+      "reasoning",
+      "confidence",
+      "contributing_factors",
+      "generated_by",
+      "valid_from",
+      "valid_until"
+    ],
+    "errors": [
+      "id",
+      "score",
+      "score_label",
+      "reasoning",
+      "confidence",
+      "contributing_factors",
+      "generated_by",
+      "valid_from",
+      "valid_until"
+    ],
+    "incidents": [
+      "id",
+      "score",
+      "score_label",
+      "reasoning",
+      "confidence",
+      "contributing_factors",
+      "generated_by",
+      "valid_from",
+      "valid_until"
+    ],
+    "sla": [
+      "id",
+      "score",
+      "score_label",
+      "reasoning",
+      "confidence",
+      "contributing_factors",
+      "generated_by",
+      "valid_from",
+      "valid_until"
+    ],
+    "usage": [
+      "id",
+      "score",
+      "score_label",
+      "reasoning",
+      "confidence",
+      "contributing_factors",
+      "generated_by",
+      "valid_from",
+      "valid_until"
+    ]
+  },
+  "governance_gates": {
+    "can_act": ["support_engineer", "support_manager"],
+    "can_approve": ["support_manager"],
+    "can_admin": ["admin"]
+  },
+  "navigation": {
+    "primary": ["accounts", "cases", "incidents", "deployments"],
+    "secondary": ["errors", "sla", "usage"]
+  },
+  "entity_360": {
+    "account": {
+      "tabs": ["overview", "cases", "incidents", "deployments", "sla", "contacts"],
+      "metrics": [
+        "open_case_count",
+        "active_incident_count",
+        "avg_sla_compliance",
+        "deployment_health",
+        "last_contact_date"
+      ]
+    }
+  }
+}

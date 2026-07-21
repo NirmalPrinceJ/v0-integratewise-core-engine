@@ -1,0 +1,420 @@
+{
+  "domain": "account_success",
+  "version": "1.0.0",
+  "generated_at": "2026-07-06T00:00:00Z",
+  "source": "SPINE_DOMAIN.md + SPINE_INTELLIGENCE_AGENT.md",
+  "indexes": [
+    {
+      "entity_type": "account",
+      "searchable_fields": ["name", "industry", "region", "tier"],
+      "boost_fields": {
+        "name": 3.0,
+        "industry": 1.5,
+        "region": 1.0,
+        "tier": 1.2
+      },
+      "filters": [
+        "industry",
+        "region",
+        "tier",
+        "arr_usd",
+        "contract_start",
+        "contract_end",
+        "tenant_id"
+      ],
+      "vector_index": true,
+      "vector_fields": ["name", "industry"]
+    },
+    {
+      "entity_type": "person",
+      "searchable_fields": ["name", "email", "role", "department"],
+      "boost_fields": {
+        "name": 3.0,
+        "email": 2.0,
+        "role": 1.5,
+        "department": 1.0
+      },
+      "filters": ["role", "department", "seniority", "tenant_id"],
+      "vector_index": true,
+      "vector_fields": ["name", "role", "department"]
+    },
+    {
+      "entity_type": "organization",
+      "searchable_fields": ["name", "legal_name", "industry", "region", "website"],
+      "boost_fields": {
+        "name": 3.0,
+        "legal_name": 2.5,
+        "industry": 1.5,
+        "region": 1.0
+      },
+      "filters": ["industry", "size", "region", "tenant_id"],
+      "vector_index": true,
+      "vector_fields": ["name", "industry"]
+    },
+    {
+      "entity_type": "contract",
+      "searchable_fields": ["name", "type", "status"],
+      "boost_fields": {
+        "name": 3.0,
+        "type": 1.5,
+        "status": 1.0
+      },
+      "filters": ["type", "status", "value", "currency", "start_date", "end_date", "tenant_id"],
+      "vector_index": false,
+      "vector_fields": []
+    },
+    {
+      "entity_type": "subscription",
+      "searchable_fields": ["plan_name", "status"],
+      "boost_fields": {
+        "plan_name": 3.0,
+        "status": 1.0
+      },
+      "filters": ["status", "billing_period", "amount", "currency", "tenant_id"],
+      "vector_index": false,
+      "vector_fields": []
+    },
+    {
+      "entity_type": "product",
+      "searchable_fields": ["name", "description", "sku", "category"],
+      "boost_fields": {
+        "name": 3.0,
+        "description": 2.0,
+        "sku": 2.5,
+        "category": 1.5
+      },
+      "filters": ["category", "pricing_model", "tenant_id"],
+      "vector_index": true,
+      "vector_fields": ["name", "description"]
+    },
+    {
+      "entity_type": "deployment",
+      "searchable_fields": ["name", "environment", "version", "region", "url"],
+      "boost_fields": {
+        "name": 3.0,
+        "environment": 1.5,
+        "version": 1.2,
+        "region": 1.0
+      },
+      "filters": ["status", "environment", "region", "tenant_id"],
+      "vector_index": false,
+      "vector_fields": []
+    },
+    {
+      "entity_type": "integration",
+      "searchable_fields": ["name", "type", "provider", "endpoint_url"],
+      "boost_fields": {
+        "name": 3.0,
+        "type": 2.0,
+        "provider": 2.5
+      },
+      "filters": ["type", "status", "provider", "tenant_id"],
+      "vector_index": false,
+      "vector_fields": []
+    },
+    {
+      "entity_type": "environment",
+      "searchable_fields": ["name", "type", "region", "cloud_provider"],
+      "boost_fields": {
+        "name": 3.0,
+        "type": 2.0,
+        "region": 1.0
+      },
+      "filters": ["type", "region", "status", "cloud_provider", "tenant_id"],
+      "vector_index": false,
+      "vector_fields": []
+    },
+    {
+      "entity_type": "meeting",
+      "searchable_fields": ["title", "description", "location"],
+      "boost_fields": {
+        "title": 3.0,
+        "description": 2.0,
+        "location": 1.0
+      },
+      "filters": ["type", "status", "tenant_id"],
+      "vector_index": true,
+      "vector_fields": ["title", "description"]
+    },
+    {
+      "entity_type": "task",
+      "searchable_fields": ["title", "description"],
+      "boost_fields": {
+        "title": 3.0,
+        "description": 2.0
+      },
+      "filters": ["status", "priority", "due_date", "tenant_id"],
+      "vector_index": true,
+      "vector_fields": ["title", "description"]
+    },
+    {
+      "entity_type": "objective",
+      "searchable_fields": ["title", "description", "type"],
+      "boost_fields": {
+        "title": 3.0,
+        "description": 2.0,
+        "type": 1.5
+      },
+      "filters": ["type", "status", "target_date", "tenant_id"],
+      "vector_index": true,
+      "vector_fields": ["title", "description"]
+    },
+    {
+      "entity_type": "initiative",
+      "searchable_fields": ["title", "description"],
+      "boost_fields": {
+        "title": 3.0,
+        "description": 2.0
+      },
+      "filters": ["status", "start_date", "end_date", "tenant_id"],
+      "vector_index": true,
+      "vector_fields": ["title", "description"]
+    },
+    {
+      "entity_type": "health",
+      "searchable_fields": ["score_label", "reasoning"],
+      "boost_fields": {
+        "score_label": 2.0,
+        "reasoning": 1.5
+      },
+      "filters": ["score", "score_label", "confidence", "entity_type", "canonical_id", "tenant_id"],
+      "vector_index": true,
+      "vector_fields": ["reasoning"]
+    },
+    {
+      "entity_type": "risk",
+      "searchable_fields": ["score_label", "reasoning"],
+      "boost_fields": {
+        "score_label": 2.0,
+        "reasoning": 1.5
+      },
+      "filters": ["score", "score_label", "confidence", "entity_type", "canonical_id", "tenant_id"],
+      "vector_index": true,
+      "vector_fields": ["reasoning"]
+    },
+    {
+      "entity_type": "sentiment",
+      "searchable_fields": ["score_label", "reasoning"],
+      "boost_fields": {
+        "score_label": 2.0,
+        "reasoning": 1.5
+      },
+      "filters": ["score", "score_label", "confidence", "entity_type", "canonical_id", "tenant_id"],
+      "vector_index": true,
+      "vector_fields": ["reasoning"]
+    },
+    {
+      "entity_type": "signals",
+      "searchable_fields": ["signal_type", "description", "severity"],
+      "boost_fields": {
+        "signal_type": 3.0,
+        "description": 2.0,
+        "severity": 1.5
+      },
+      "filters": ["signal_type", "severity", "source", "entity_type", "canonical_id", "tenant_id"],
+      "vector_index": true,
+      "vector_fields": ["description"]
+    },
+    {
+      "entity_type": "usage",
+      "searchable_fields": ["metric_name", "unit"],
+      "boost_fields": {
+        "metric_name": 3.0,
+        "unit": 1.0
+      },
+      "filters": ["metric_name", "period", "entity_type", "canonical_id", "tenant_id"],
+      "vector_index": false,
+      "vector_fields": []
+    },
+    {
+      "entity_type": "architecture_assessment",
+      "searchable_fields": ["assessment_type", "reasoning", "findings"],
+      "boost_fields": {
+        "assessment_type": 3.0,
+        "reasoning": 2.0,
+        "findings": 1.5
+      },
+      "filters": [
+        "assessment_type",
+        "score",
+        "confidence",
+        "entity_type",
+        "canonical_id",
+        "tenant_id"
+      ],
+      "vector_index": true,
+      "vector_fields": ["reasoning", "findings"]
+    },
+    {
+      "entity_type": "technical_debt",
+      "searchable_fields": ["debt_type", "description", "impact"],
+      "boost_fields": {
+        "debt_type": 3.0,
+        "description": 2.0,
+        "impact": 1.5
+      },
+      "filters": [
+        "debt_type",
+        "severity",
+        "confidence",
+        "entity_type",
+        "canonical_id",
+        "tenant_id"
+      ],
+      "vector_index": true,
+      "vector_fields": ["description", "impact"]
+    },
+    {
+      "entity_type": "business_context",
+      "searchable_fields": ["context_type", "summary", "key_points"],
+      "boost_fields": {
+        "context_type": 2.0,
+        "summary": 3.0,
+        "key_points": 2.0
+      },
+      "filters": ["context_type", "confidence", "entity_type", "canonical_id", "tenant_id"],
+      "vector_index": true,
+      "vector_fields": ["summary", "key_points"]
+    },
+    {
+      "entity_type": "engagement",
+      "searchable_fields": ["engagement_type", "summary", "sentiment", "participants"],
+      "boost_fields": {
+        "engagement_type": 2.0,
+        "summary": 3.0,
+        "sentiment": 1.5,
+        "participants": 1.0
+      },
+      "filters": [
+        "engagement_type",
+        "sentiment",
+        "confidence",
+        "entity_type",
+        "canonical_id",
+        "tenant_id"
+      ],
+      "vector_index": true,
+      "vector_fields": ["summary"]
+    },
+    {
+      "entity_type": "stakeholder_intelligence",
+      "searchable_fields": ["relationship_type", "insights", "recommendations"],
+      "boost_fields": {
+        "relationship_type": 2.0,
+        "insights": 3.0,
+        "recommendations": 2.0
+      },
+      "filters": [
+        "relationship_type",
+        "influence_level",
+        "confidence",
+        "entity_type",
+        "canonical_id",
+        "tenant_id"
+      ],
+      "vector_index": true,
+      "vector_fields": ["insights", "recommendations"]
+    },
+    {
+      "entity_type": "recommendations",
+      "searchable_fields": ["recommendation_type", "title", "description", "expected_impact"],
+      "boost_fields": {
+        "recommendation_type": 2.0,
+        "title": 3.0,
+        "description": 2.0,
+        "expected_impact": 1.5
+      },
+      "filters": [
+        "recommendation_type",
+        "priority",
+        "confidence",
+        "entity_type",
+        "canonical_id",
+        "tenant_id"
+      ],
+      "vector_index": true,
+      "vector_fields": ["title", "description"]
+    },
+    {
+      "entity_type": "insights",
+      "searchable_fields": ["insight_type", "title", "description"],
+      "boost_fields": {
+        "insight_type": 2.0,
+        "title": 3.0,
+        "description": 2.0
+      },
+      "filters": ["insight_type", "confidence", "entity_type", "canonical_id", "tenant_id"],
+      "vector_index": true,
+      "vector_fields": ["title", "description"]
+    },
+    {
+      "entity_type": "evidence",
+      "searchable_fields": ["evidence_type", "source", "content"],
+      "boost_fields": {
+        "evidence_type": 2.0,
+        "source": 1.5,
+        "content": 3.0
+      },
+      "filters": [
+        "evidence_type",
+        "source",
+        "relevance",
+        "entity_type",
+        "canonical_id",
+        "tenant_id"
+      ],
+      "vector_index": true,
+      "vector_fields": ["content"]
+    },
+    {
+      "entity_type": "timeline",
+      "searchable_fields": ["event_type", "title", "description"],
+      "boost_fields": {
+        "event_type": 2.0,
+        "title": 3.0,
+        "description": 2.0
+      },
+      "filters": ["event_type", "status", "date", "entity_type", "canonical_id", "tenant_id"],
+      "vector_index": true,
+      "vector_fields": ["title", "description"]
+    },
+    {
+      "entity_type": "forecast",
+      "searchable_fields": ["forecast_type", "metric"],
+      "boost_fields": {
+        "forecast_type": 3.0,
+        "metric": 2.0
+      },
+      "filters": [
+        "forecast_type",
+        "period",
+        "confidence",
+        "entity_type",
+        "canonical_id",
+        "tenant_id"
+      ],
+      "vector_index": false,
+      "vector_fields": []
+    },
+    {
+      "entity_type": "relationship",
+      "searchable_fields": ["relation_type", "from_type", "to_type"],
+      "boost_fields": {
+        "relation_type": 3.0,
+        "from_type": 1.5,
+        "to_type": 1.5
+      },
+      "filters": ["relation_type", "from_type", "to_type", "tenant_id"],
+      "vector_index": false,
+      "vector_fields": []
+    }
+  ],
+  "global_settings": {
+    "default_boost": 1.0,
+    "max_results_per_entity": 50,
+    "cross_entity_search": true,
+    "tenant_scoped": true,
+    "fuzzy_match_enabled": true,
+    "vector_similarity_threshold": 0.75
+  }
+}

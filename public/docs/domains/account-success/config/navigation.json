@@ -1,0 +1,319 @@
+{
+  "navigation": [
+    {
+      "label": "Accounts",
+      "route": "/accounts",
+      "projection_id": "projection-account-success",
+      "required_role": ["csm", "account_manager", "cs_lead", "admin"],
+      "icon": "building",
+      "priority": 10,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Health",
+      "route": "/health",
+      "projection_id": "projection-account-success",
+      "required_role": ["csm", "account_manager", "cs_lead", "admin"],
+      "icon": "heart",
+      "priority": 20,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Renewals",
+      "route": "/renewals",
+      "projection_id": "projection-account-success",
+      "required_role": ["csm", "account_manager", "cs_lead", "admin"],
+      "icon": "rotate",
+      "priority": 30,
+      "nav_group": "primary"
+    },
+    {
+      "label": "QBRs",
+      "route": "/qbrs",
+      "projection_id": "projection-account-success",
+      "required_role": ["csm", "account_manager", "cs_lead", "admin"],
+      "icon": "presentation",
+      "priority": 40,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Tasks",
+      "route": "/tasks",
+      "projection_id": "projection-account-success",
+      "required_role": ["csm", "account_manager", "cs_lead", "admin"],
+      "icon": "checklist",
+      "priority": 50,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Timeline",
+      "route": "/timeline",
+      "projection_id": "projection-account-success",
+      "required_role": ["csm", "account_manager", "cs_lead", "admin"],
+      "icon": "calendar",
+      "priority": 110,
+      "nav_group": "secondary"
+    },
+    {
+      "label": "Insights",
+      "route": "/insights",
+      "projection_id": "projection-account-success",
+      "required_role": ["csm", "account_manager", "cs_lead", "admin"],
+      "icon": "lightbulb",
+      "priority": 120,
+      "nav_group": "secondary"
+    },
+    {
+      "label": "Accounts",
+      "route": "/accounts",
+      "projection_id": "projection-technical-account-success",
+      "required_role": ["tam", "solution_engineer", "admin"],
+      "icon": "building",
+      "priority": 10,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Deployments",
+      "route": "/deployments",
+      "projection_id": "projection-technical-account-success",
+      "required_role": ["tam", "solution_engineer", "admin"],
+      "icon": "rocket",
+      "priority": 20,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Integrations",
+      "route": "/integrations",
+      "projection_id": "projection-technical-account-success",
+      "required_role": ["tam", "solution_engineer", "admin"],
+      "icon": "plug",
+      "priority": 30,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Architecture",
+      "route": "/architecture",
+      "projection_id": "projection-technical-account-success",
+      "required_role": ["tam", "solution_engineer", "admin"],
+      "icon": "network",
+      "priority": 40,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Usage",
+      "route": "/usage",
+      "projection_id": "projection-technical-account-success",
+      "required_role": ["tam", "solution_engineer", "admin"],
+      "icon": "chart",
+      "priority": 50,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Technical Debt",
+      "route": "/technical-debt",
+      "projection_id": "projection-technical-account-success",
+      "required_role": ["tam", "solution_engineer", "admin"],
+      "icon": "warning",
+      "priority": 110,
+      "nav_group": "secondary"
+    },
+    {
+      "label": "Signals",
+      "route": "/signals",
+      "projection_id": "projection-technical-account-success",
+      "required_role": ["tam", "solution_engineer", "admin"],
+      "icon": "bell",
+      "priority": 120,
+      "nav_group": "secondary"
+    },
+    {
+      "label": "Accounts",
+      "route": "/accounts",
+      "projection_id": "projection-executive",
+      "required_role": ["executive", "cs_lead", "admin"],
+      "icon": "building",
+      "priority": 10,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Revenue",
+      "route": "/revenue",
+      "projection_id": "projection-executive",
+      "required_role": ["executive", "cs_lead", "admin"],
+      "icon": "dollar",
+      "priority": 20,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Risk",
+      "route": "/risk",
+      "projection_id": "projection-executive",
+      "required_role": ["executive", "cs_lead", "admin"],
+      "icon": "shield-alert",
+      "priority": 30,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Forecast",
+      "route": "/forecast",
+      "projection_id": "projection-executive",
+      "required_role": ["executive", "cs_lead", "admin"],
+      "icon": "trending",
+      "priority": 40,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Health",
+      "route": "/health",
+      "projection_id": "projection-executive",
+      "required_role": ["executive", "cs_lead", "admin"],
+      "icon": "heart",
+      "priority": 50,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Timeline",
+      "route": "/timeline",
+      "projection_id": "projection-executive",
+      "required_role": ["executive", "cs_lead", "admin"],
+      "icon": "calendar",
+      "priority": 110,
+      "nav_group": "secondary"
+    },
+    {
+      "label": "Business Context",
+      "route": "/business-context",
+      "projection_id": "projection-executive",
+      "required_role": ["executive", "cs_lead", "admin"],
+      "icon": "briefcase",
+      "priority": 120,
+      "nav_group": "secondary"
+    },
+    {
+      "label": "Accounts",
+      "route": "/accounts",
+      "projection_id": "projection-implementation",
+      "required_role": ["onboarding_manager", "project_lead", "admin"],
+      "icon": "building",
+      "priority": 10,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Milestones",
+      "route": "/milestones",
+      "projection_id": "projection-implementation",
+      "required_role": ["onboarding_manager", "project_lead", "admin"],
+      "icon": "flag",
+      "priority": 20,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Tasks",
+      "route": "/tasks",
+      "projection_id": "projection-implementation",
+      "required_role": ["onboarding_manager", "project_lead", "admin"],
+      "icon": "checklist",
+      "priority": 30,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Objectives",
+      "route": "/objectives",
+      "projection_id": "projection-implementation",
+      "required_role": ["onboarding_manager", "project_lead", "admin"],
+      "icon": "target",
+      "priority": 40,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Go-Live",
+      "route": "/go-live",
+      "projection_id": "projection-implementation",
+      "required_role": ["onboarding_manager", "project_lead", "admin"],
+      "icon": "launch",
+      "priority": 50,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Timeline",
+      "route": "/timeline",
+      "projection_id": "projection-implementation",
+      "required_role": ["onboarding_manager", "project_lead", "admin"],
+      "icon": "calendar",
+      "priority": 110,
+      "nav_group": "secondary"
+    },
+    {
+      "label": "Signals",
+      "route": "/signals",
+      "projection_id": "projection-implementation",
+      "required_role": ["onboarding_manager", "project_lead", "admin"],
+      "icon": "bell",
+      "priority": 120,
+      "nav_group": "secondary"
+    },
+    {
+      "label": "Accounts",
+      "route": "/accounts",
+      "projection_id": "projection-support",
+      "required_role": ["support_engineer", "support_manager", "admin"],
+      "icon": "building",
+      "priority": 10,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Cases",
+      "route": "/cases",
+      "projection_id": "projection-support",
+      "required_role": ["support_engineer", "support_manager", "admin"],
+      "icon": "ticket",
+      "priority": 20,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Incidents",
+      "route": "/incidents",
+      "projection_id": "projection-support",
+      "required_role": ["support_engineer", "support_manager", "admin"],
+      "icon": "alert",
+      "priority": 30,
+      "nav_group": "primary"
+    },
+    {
+      "label": "SLA",
+      "route": "/sla",
+      "projection_id": "projection-support",
+      "required_role": ["support_engineer", "support_manager", "admin"],
+      "icon": "clock",
+      "priority": 40,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Deployments",
+      "route": "/deployments",
+      "projection_id": "projection-support",
+      "required_role": ["support_engineer", "support_manager", "admin"],
+      "icon": "rocket",
+      "priority": 50,
+      "nav_group": "primary"
+    },
+    {
+      "label": "Errors",
+      "route": "/errors",
+      "projection_id": "projection-support",
+      "required_role": ["support_engineer", "support_manager", "admin"],
+      "icon": "bug",
+      "priority": 110,
+      "nav_group": "secondary"
+    },
+    {
+      "label": "Usage",
+      "route": "/usage",
+      "projection_id": "projection-support",
+      "required_role": ["support_engineer", "support_manager", "admin"],
+      "icon": "chart",
+      "priority": 120,
+      "nav_group": "secondary"
+    }
+  ]
+}

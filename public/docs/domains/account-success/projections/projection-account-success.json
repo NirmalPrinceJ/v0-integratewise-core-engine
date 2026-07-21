@@ -1,0 +1,263 @@
+{
+  "projection_id": "projection-account-success",
+  "domain": "account_success",
+  "version": "1.0.0",
+  "target_roles": ["csm", "account_manager", "cs_lead"],
+  "spine_entities": {
+    "include": ["account", "person", "organization", "contract", "subscription", "meeting", "task"],
+    "exclude": ["deployment", "integration", "environment", "product", "initiative", "objective"]
+  },
+  "memory_types": {
+    "include": ["health", "risk", "engagement", "timeline", "insights", "recommendations"],
+    "exclude": [
+      "architecture_assessment",
+      "technical_debt",
+      "forecast",
+      "usage",
+      "signals",
+      "business_context",
+      "stakeholder_intelligence",
+      "sentiment",
+      "evidence"
+    ]
+  },
+  "relationship_depth": {
+    "direct": 1,
+    "indirect": 2
+  },
+  "field_policy": {
+    "account": [
+      "name",
+      "industry",
+      "region",
+      "tier",
+      "arr_usd",
+      "contract_start",
+      "contract_end",
+      "status",
+      "owner_id",
+      "created_at",
+      "updated_at"
+    ],
+    "person": [
+      "name",
+      "email",
+      "role",
+      "department",
+      "seniority",
+      "phone",
+      "is_primary_contact",
+      "created_at",
+      "updated_at"
+    ],
+    "organization": [
+      "name",
+      "industry",
+      "region",
+      "size",
+      "type",
+      "parent_organization_id",
+      "created_at",
+      "updated_at"
+    ],
+    "contract": [
+      "name",
+      "type",
+      "start_date",
+      "end_date",
+      "value_usd",
+      "status",
+      "renewal_date",
+      "auto_renew",
+      "created_at",
+      "updated_at"
+    ],
+    "subscription": [
+      "plan",
+      "status",
+      "start_date",
+      "end_date",
+      "mrr_usd",
+      "billing_frequency",
+      "seats",
+      "created_at",
+      "updated_at"
+    ],
+    "meeting": [
+      "title",
+      "type",
+      "scheduled_at",
+      "duration_minutes",
+      "status",
+      "attendees",
+      "outcomes",
+      "created_at",
+      "updated_at"
+    ],
+    "task": [
+      "title",
+      "description",
+      "status",
+      "priority",
+      "due_date",
+      "assigned_to",
+      "account_id",
+      "created_at",
+      "updated_at"
+    ],
+    "health": [
+      "score",
+      "score_label",
+      "reasoning",
+      "contributing_factors",
+      "confidence",
+      "generated_by",
+      "valid_from",
+      "created_at"
+    ],
+    "risk": [
+      "score",
+      "score_label",
+      "reasoning",
+      "contributing_factors",
+      "severity",
+      "confidence",
+      "generated_by",
+      "valid_from",
+      "created_at"
+    ],
+    "engagement": [
+      "score",
+      "score_label",
+      "reasoning",
+      "last_interaction_date",
+      "interaction_count",
+      "confidence",
+      "generated_by",
+      "valid_from",
+      "created_at"
+    ],
+    "timeline": [
+      "events",
+      "milestones",
+      "projected_date",
+      "reasoning",
+      "confidence",
+      "generated_by",
+      "valid_from",
+      "created_at"
+    ],
+    "insights": [
+      "insight_type",
+      "summary",
+      "detail",
+      "confidence",
+      "evidence",
+      "generated_by",
+      "valid_from",
+      "created_at"
+    ],
+    "recommendations": [
+      "action_type",
+      "description",
+      "priority",
+      "expected_impact",
+      "confidence",
+      "due_date",
+      "generated_by",
+      "valid_from",
+      "created_at"
+    ]
+  },
+  "governance_gates": {
+    "can_act": ["csm", "account_manager"],
+    "can_approve": ["cs_lead"],
+    "can_admin": ["admin"]
+  },
+  "navigation": {
+    "primary": [
+      {
+        "label": "Accounts",
+        "route": "/accounts",
+        "icon": "building",
+        "priority": 1
+      },
+      {
+        "label": "Health",
+        "route": "/health",
+        "icon": "heart-pulse",
+        "priority": 2
+      },
+      {
+        "label": "Renewals",
+        "route": "/renewals",
+        "icon": "calendar",
+        "priority": 3
+      },
+      {
+        "label": "QBRs",
+        "route": "/qbrs",
+        "icon": "presentation",
+        "priority": 4
+      },
+      {
+        "label": "Tasks",
+        "route": "/tasks",
+        "icon": "check-square",
+        "priority": 5
+      }
+    ],
+    "secondary": [
+      {
+        "label": "Timeline",
+        "route": "/timeline",
+        "icon": "clock",
+        "priority": 6
+      },
+      {
+        "label": "Insights",
+        "route": "/insights",
+        "icon": "lightbulb",
+        "priority": 7
+      },
+      {
+        "label": "Risks",
+        "route": "/risks",
+        "icon": "alert-triangle",
+        "priority": 8
+      },
+      {
+        "label": "Recommendations",
+        "route": "/recommendations",
+        "icon": "zap",
+        "priority": 9
+      }
+    ]
+  },
+  "entity_360": {
+    "account": {
+      "tabs": [
+        "overview",
+        "health",
+        "contacts",
+        "contracts",
+        "engagement",
+        "timeline",
+        "insights",
+        "risks",
+        "recommendations",
+        "tasks"
+      ],
+      "metrics": [
+        "health_score",
+        "arr_usd",
+        "days_to_renewal",
+        "engagement_frequency",
+        "risk_score",
+        "open_task_count",
+        "last_meeting_date",
+        "contract_value_usd"
+      ]
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
 
+import { ClerkProvider } from "@clerk/nextjs"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 
@@ -45,12 +46,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="font-sans antialiased">
-        {children}
-        <Analytics />
-      </body>
-    </html>
+    <ClerkProvider publishableKey={publishableKey}>
+      <html lang="en" className={inter.variable}>
+        <body className="font-sans antialiased">
+          {children}
+          <Analytics />
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }

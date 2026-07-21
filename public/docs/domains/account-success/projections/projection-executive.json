@@ -1,0 +1,86 @@
+{
+  "projection_id": "projection-executive",
+  "domain": "account_success",
+  "version": "1.0.0",
+  "target_roles": ["executive", "admin", "cs_lead"],
+  "spine_entities": {
+    "include": ["account", "organization", "contract", "subscription"],
+    "exclude": [
+      "person",
+      "deployment",
+      "integration",
+      "environment",
+      "product",
+      "meeting",
+      "task",
+      "objective",
+      "initiative"
+    ]
+  },
+  "memory_types": {
+    "include": ["health", "risk", "forecast", "revenue", "business_context"],
+    "exclude": [
+      "engagement",
+      "timeline",
+      "insights",
+      "recommendations",
+      "sentiment",
+      "signals",
+      "usage",
+      "architecture_assessment",
+      "technical_debt",
+      "stakeholder_intelligence",
+      "evidence",
+      "cases",
+      "errors",
+      "incidents",
+      "sla",
+      "milestones"
+    ]
+  },
+  "relationship_depth": {
+    "direct": 1,
+    "indirect": 2
+  },
+  "field_policy": {
+    "account": ["name", "industry", "region", "tier", "arr_usd", "contract_start", "contract_end"],
+    "organization": ["name", "legal_name", "industry", "region"],
+    "contract": ["contract_value", "start_date", "end_date", "status", "renewal_date"],
+    "subscription": ["plan_name", "quantity", "start_date", "end_date", "mrr", "arr"],
+    "health": ["score", "score_label", "reasoning", "confidence"],
+    "risk": ["score", "score_label", "reasoning", "confidence"],
+    "forecast": ["forecasted_arr", "forecasted_churn", "forecast_date", "confidence"],
+    "revenue": ["recognized_revenue", "deferred_revenue", "billing_period"],
+    "business_context": ["summary", "key_initiatives", "market_position", "competitive_landscape"]
+  },
+  "governance_gates": {
+    "can_act": ["executive", "admin"],
+    "can_approve": ["executive", "admin"],
+    "can_admin": ["admin"]
+  },
+  "navigation": {
+    "primary": ["accounts", "portfolio", "forecast", "renewals", "risks"],
+    "secondary": ["business_context", "health_trends"]
+  },
+  "entity_360": {
+    "account": {
+      "tabs": [
+        "overview",
+        "health",
+        "contracts",
+        "subscriptions",
+        "forecast",
+        "risks",
+        "business_context"
+      ],
+      "metrics": [
+        "health_score",
+        "arr_usd",
+        "total_contract_value",
+        "days_to_renewal",
+        "risk_score",
+        "forecasted_arr"
+      ]
+    }
+  }
+}

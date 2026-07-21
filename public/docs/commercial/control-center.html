@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IntegrateWise · Commercial Control Center</title>
+<style>
+  :root{
+    --bg:#fafaf8; --panel:#ffffff; --ink:#1a1a1a; --ink2:#555; --ink3:#8a8a86;
+    --line:#e8e6e1; --accent:#1f4e8c; --accent2:#0e7c5a; --warn:#b45309; --red:#b3261e;
+    --chip:#eef2f8; --chip2:#eaf5f0; --mono:ui-monospace,'SF Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;font-size:15px}
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+  nav{border-right:1px solid var(--line);padding:28px 18px;position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--panel)}
+  nav .logo{font-weight:700;font-size:16px;margin-bottom:2px}
+  nav .cat{font-size:11.5px;color:var(--ink3);margin-bottom:22px;line-height:1.4}
+  nav a{display:block;padding:6px 10px;border-radius:7px;color:var(--ink2);font-size:13.5px;margin-bottom:1px}
+  nav a:hover{background:var(--bg);text-decoration:none;color:var(--ink)}
+  nav .sec{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin:18px 0 6px 10px}
+  main{padding:36px 44px;max-width:1060px}
+  h1{font-size:25px;letter-spacing:-.01em}
+  h2{font-size:17px;margin:0 0 14px;display:flex;align-items:center;gap:8px}
+  h2 .n{font:600 11px var(--mono);color:var(--ink3)}
+  .sub{color:var(--ink2);margin:6px 0 26px;font-size:14.5px}
+  .stamp{font:11.5px var(--mono);color:var(--ink3)}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px 26px;margin-bottom:22px;scroll-margin-top:20px}
+  .doctrine{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:4px}
+  .doctrine div{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13.5px}
+  .doctrine b{display:block;font-size:14px;margin-bottom:3px}
+  .doctrine span{color:var(--ink3);font-size:11.5px}
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+  .pillars div{border-left:3px solid var(--accent);background:var(--bg);padding:12px 14px;border-radius:0 10px 10px 0;font-size:13.5px}
+  .pillars b{display:block}
+  .pillars span{color:var(--ink2)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);padding:7px 10px;border-bottom:1px solid var(--line)}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .chip{display:inline-block;background:var(--chip);color:var(--accent);border-radius:20px;padding:1.5px 10px;font-size:11.5px;font-weight:600;white-space:nowrap}
+  .chip.g{background:var(--chip2);color:var(--accent2)}
+  .chip.o{background:#fdf0e3;color:var(--warn)}
+  .chip.r{background:#fbeae9;color:var(--red)}
+  .check{display:flex;gap:10px;align-items:flex-start;padding:8px 4px;border-bottom:1px solid var(--line);font-size:13.5px}
+  .check:last-child{border-bottom:none}
+  .check input{margin-top:3px;accent-color:var(--accent2);width:15px;height:15px;flex:none}
+  .check .t b{font-weight:600}
+  .check .t span{color:var(--ink3);font-size:12.5px;display:block}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  .kr{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+  .kr:last-child{border-bottom:none}
+  .obj{font-weight:650;margin:14px 0 4px;font-size:14px}
+  .obj:first-child{margin-top:0}
+  .links li{margin:7px 0;font-size:14px;list-style:none}
+  .links .d{color:var(--ink3);font-size:12.5px}
+  .metric{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:6px}
+  .metric div{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .metric b{font-size:19px;display:block;letter-spacing:-.01em}
+  .metric span{font-size:11.5px;color:var(--ink3);line-height:1.35;display:block;margin-top:2px}
+  .note{background:var(--bg);border-left:3px solid var(--warn);border-radius:0 10px 10px 0;padding:12px 16px;font-size:13.5px;color:var(--ink2);margin-top:14px}
+  code{font:12.5px var(--mono);background:var(--bg);border:1px solid var(--line);padding:1px 6px;border-radius:5px}
+  .never{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .never span{background:#fbeae9;color:var(--red);border-radius:8px;padding:3px 10px;font-size:12.5px}
+  footer{color:var(--ink3);font-size:12px;padding:10px 4px 40px}
+  @media(max-width:900px){.wrap{grid-template-columns:1fr}nav{position:static;height:auto;display:flex;flex-wrap:wrap;gap:4px}nav .sec{display:none}.cols,.pillars{grid-template-columns:1fr}main{padding:22px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <div class="logo">IntegrateWise</div>
+  <div class="cat">Workspace for Human and AI Collaborative Work</div>
+  <div class="sec">Command</div>
+  <a href="#canon">Canon</a>
+  <a href="#gates">Phase Gates</a>
+  <a href="#okrs">Q3 OKRs</a>
+  <a href="#metrics">Metrics</a>
+  <div class="sec">Operate</div>
+  <a href="#launch">Launch Checklist</a>
+  <a href="#rhythm">Weekly Rhythm</a>
+  <a href="#pricing">Price Book</a>
+  <a href="#decisions">Decision Log</a>
+  <div class="sec">Library</div>
+  <a href="#map">The Map</a>
+  <a href="#repo">Repo Index (79)</a>
+  <a href="#sync">Coda Sync Status</a>
+</nav>
+<main>
+  <h1>Commercial Control Center</h1>
+  <p class="sub">One screen over the whole commercial operating system. Canonical source: <code>docs/commercial/</code> (git). This file: <code>docs/commercial/control-center.html</code> — open it in any browser; checkbox state saves locally.</p>
+  <p class="stamp">SYNCED 2026-07-21 · Stage: P0 Prove (design partners) · Next milestone: the lighter day → Q4 launch gate</p>
+
+  <section id="canon">
+    <h2><span class="n">01</span> The Canon</h2>
+    <div class="doctrine">
+      <div><b>"Truth you own. AI you rent. Approval in between."</b><span>brand doctrine — the signature</span></div>
+      <div><b>"My work already knows its context. AI prepared the hard parts. I decide."</b><span>experience promise</span></div>
+      <div><b>"Every AI remembers. Only IntegrateWise remembers the truth."</b><span>trust line</span></div>
+      <div><b>"The Twin prepares. The human approves."</b><span>governance law</span></div>
+      <div><b>"AI never owns organizational truth. The Adaptive Spine owns truth."</b><span>architecture doctrine</span></div>
+      <div><b>"The next piece of work starts where the last one ended."</b><span>continuity promise</span></div>
+    </div>
+    <div class="pillars">
+      <div><b>One Workspace</b><span>vs. Fragmentation — "Dashboards show work. Workbenches do work."</span></div>
+      <div><b>A Twin on the Bench</b><span>vs. Amnesia — "Copilots visit your apps. IntegrateWise is where work lives."</span></div>
+      <div><b>Truth You Own</b><span>vs. Anarchy — approval gates, audit, TruthLayer</span></div>
+    </div>
+    <p style="margin-top:14px;font-size:13.5px"><b>Stack:</b> Workspace → Shared Workbench → Human + Twin Collaboration → Capability Execution → Organizational Continuity &nbsp;·&nbsp; <b>Enemies:</b> Amnesia · Babysitting · Hallucination · Human API</p>
+    <div class="never"><span>✕ "OS" / "platform" as category</span><span>✕ "Capability Fabric" customer-facing</span><span>✕ assistant/chatbot/copilot for the Twin</span><span>✕ "replace your CRM"</span><span>✕ autonomy promises</span></div>
+  </section>
+
+  <section id="gates">
+    <h2><span class="n">02</span> Phase Gates <span class="chip o">P0 · PROVE</span></h2>
+    <table>
+      <tr><th>Phase</th><th>Exit criteria</th><th>Status</th></tr>
+      <tr><td><b>P0 Prove</b><br><span class="stamp">now → Q4 2026</span></td><td>4 paying · activation ≥70% pattern · 1 documented catch/account · repeatable demo→POV→close</td><td><span class="chip o">IN PROGRESS</span></td></tr>
+      <tr><td><b>P1 Repeat</b><br><span class="stamp">Q1–Q3 2027</span></td><td>25 customers · S1→Won ≥20% · POV win ≥60% · 2 named case studies · AE #1 hired on ratios</td><td><span class="chip">GATED</span></td></tr>
+      <tr><td><b>P2 Compound</b><br><span class="stamp">Q4 2027 →</span></td><td>NRR ≥120% cohort evidence · partner-sourced ≥15% pipeline · Series A metrics (~$1M ARR exit)</td><td><span class="chip">GATED</span></td></tr>
+    </table>
+    <div class="note"><b>Standing rule:</b> no next-phase spend while current-phase gates are open. Breadth-before-proof is the #1 risk (SWOT W5) — this table is its control.</div>
+  </section>
+
+  <section id="okrs">
+    <h2><span class="n">03</span> Q3 2026 OKRs <span class="stamp">score at quarter end · target 0.7</span></h2>
+    <div class="obj">O1 — Make the moment real: a CSM's day is measurably lighter</div>
+    <div class="kr"><span>KR1 · HubSpot → workbench end-to-end live for every design-partner seat</span><span class="chip o">OPEN</span></div>
+    <div class="kr"><span>KR2 · 8 design partners onboarded, ≥60% seat activation by day 30</span><span class="chip o">OPEN</span></div>
+    <div class="kr"><span>KR3 · 10+ documented catches with customer-confirmed evidence</span><span class="chip o">OPEN</span></div>
+    <div class="obj">O2 — Prove the commercial motion end-to-end</div>
+    <div class="kr"><span>KR1 · 2 design partners converted to paying</span><span class="chip o">OPEN</span></div>
+    <div class="kr"><span>KR2 · S1→S3 ≥40% across ≥15 discoveries (instrumentation live)</span><span class="chip o">OPEN</span></div>
+    <div class="kr"><span>KR3 · Baselines + success plans = 100% of active accounts</span><span class="chip o">OPEN</span></div>
+    <div class="obj">O3 — Build the demand engine's foundation</div>
+    <div class="kr"><span>KR1 · 12 essays shipped · newsletter ≥500 subs at ≥45% open</span><span class="chip o">OPEN</span></div>
+    <div class="kr"><span>KR2 · 2+ content-sourced discovery calls/week by quarter end</span><span class="chip o">OPEN</span></div>
+    <div class="kr"><span>KR3 · Pre-launch site live · POV page converting ≥3%</span><span class="chip o">OPEN</span></div>
+  </section>
+
+  <section id="metrics">
+    <h2><span class="n">04</span> Metrics That Matter</h2>
+    <div class="metric">
+      <div><b>ATA/seat/wk</b><span>NORTH STAR — Approved Twin Actions. 5 = activation floor · 8 = mature</span></div>
+      <div><b>≥ 70%</b><span>seats activated by day 30 (≥5 actions + ≥4 workbench-first mornings/wk)</span></div>
+      <div><b>≥ 20%</b><span>S1 → Won end-to-end · POV win ≥60% · cycle ≤90 days</span></div>
+      <div><b>≥ 3x</b><span>pipeline coverage vs next-quarter target</span></div>
+      <div><b>92 / 120</b><span>GRR ≥92% · NRR ≥120% at scale</span></div>
+      <div><b>~14x</b><span>conservative ROI (H=3.0 × 22 × $65 × A=0.4 × N vs Command)</span></div>
+    </div>
+  </section>
+
+  <section id="launch">
+    <h2><span class="n">05</span> Launch Checklist <span class="stamp">Q4 2026 window · no date until all gates pass</span></h2>
+    <div class="check"><input type="checkbox" data-k="g1"><div class="t"><b>GATE · 4+ paying customers, activation ≥70%</b><span>Sales</span></div></div>
+    <div class="check"><input type="checkbox" data-k="g2"><div class="t"><b>GATE · 2+ design partners with quotable numbered outcomes</b><span>Marketing — attribute as "design partner" until named</span></div></div>
+    <div class="check"><input type="checkbox" data-k="g3"><div class="t"><b>GATE · Self-serve Starter/Growth flow solid end-to-end</b><span>Product — launch traffic must land on a working product</span></div></div>
+    <div class="check"><input type="checkbox" data-k="g4"><div class="t"><b>GATE · Demo environment + backup film current</b><span>Sales — §39 asset register</span></div></div>
+    <div class="check"><input type="checkbox" data-k="g5"><div class="t"><b>GATE · Security packet public-ready</b><span>Product — §42 → /security</span></div></div>
+    <div class="check"><input type="checkbox" data-k="g6"><div class="t"><b>GATE · Website live + HubSpot marketplace listing</b><span>Marketing — §53 copy · §49 listing</span></div></div>
+    <div class="check"><input type="checkbox" data-k="l1"><div class="t"><b>D−7 · Manifesto published</b><span>Layer 1 — category essay primes the vocabulary</span></div></div>
+    <div class="check"><input type="checkbox" data-k="l2"><div class="t"><b>D-day · Launch post + Day film + Product Hunt + HN</b><span>Founder answers every comment, 30-min triage cycles</span></div></div>
+    <div class="check"><input type="checkbox" data-k="l3"><div class="t"><b>D+7 · First proof piece</b><span>Layer 3 — case study + "8 design partners" honest learnings</span></div></div>
+  </section>
+
+  <section id="rhythm">
+    <h2><span class="n">06</span> The Weekly Rhythm <span class="stamp">founder GTM ≈ 25 hrs: selling 15 · content 4 · CS 4 · ops 2</span></h2>
+    <table>
+      <tr><th>When</th><th>Ritual</th></tr>
+      <tr><td><b>Mon</b> 30m</td><td>Pipeline review — coverage vs 3x · stage-aging exceptions · MEDDICC gaps on S3+ · single-thread flags · 3 named deal actions</td></tr>
+      <tr><td><b>Mon</b> 2h</td><td>Write the week's essay (one theme, one target query) → Tue publish: site → newsletter → LinkedIn</td></tr>
+      <tr><td><b>Daily</b> 45m</td><td>LinkedIn excerpt + engagement window (3:1 comment ratio) · DM protocol ≤24h on ICP replies</td></tr>
+      <tr><td><b>Fri</b> 30m</td><td>Metrics ritual — ATA/seat/wk trend · activation of live onboardings · win/loss notes → battle cards + objections</td></tr>
+      <tr><td><b>Monthly</b></td><td>Win/loss readout · message calibration · Customer-Zero hour (whole team inside our own product)</td></tr>
+      <tr><td><b>Quarterly</b></td><td>OKR score + SWOT refresh + phase-gate check · terminology & claims audit</td></tr>
+    </table>
+  </section>
+
+  <section id="pricing">
+    <h2><span class="n">07</span> Price Book <span class="stamp">§30 wins every number conflict</span></h2>
+    <table>
+      <tr><th>Tier</th><th>Seat/mo (annual)</th><th>Headline</th></tr>
+      <tr><td><b>Starter</b></td><td>$19</td><td>See your truth — 1 workbench, 3 connectors, signals only</td></tr>
+      <tr><td><b>Growth</b></td><td>$59</td><td>Work with your Twin — observes · prepares · suggests</td></tr>
+      <tr><td><b>Command</b></td><td>$119</td><td>Govern the work — propose + governed execution + TruthLayer</td></tr>
+      <tr><td><b>Enterprise</b></td><td>Custom · 15-seat min</td><td>Continuity at scale — SSO/SCIM · policy · SLA 99.9%</td></tr>
+    </table>
+    <p style="margin-top:10px;font-size:13px;color:var(--ink2)">Seat = human + Twin (never separate). Monthly +20%. Regional (gated): India ₹499/1,499/2,999 · UAE $12/39/79. <b>Deal math:</b> land 15×Growth ≈ $10.6K · core 20×Command ≈ $28.6K · blended ≈ $22K · Enterprise $150K+. Discounts: 50+ seats −10% · 100+ −15% · design partners −50% yr1 → −20% yr2 · floor 50% of list.</p>
+  </section>
+
+  <section id="decisions">
+    <h2><span class="n">08</span> Decision Log <span class="stamp">newest dated decision wins narrative</span></h2>
+    <table>
+      <tr><th>Date</th><th>Decision</th><th>Supersedes</th></tr>
+      <tr><td class="stamp">2026-07-21</td><td><b>Category = Workspace for Human and AI Collaborative Work.</b> Continuity survives as the moat narrative. DECISION 23 (never "OS"/"platform") remains in force.</td><td>"Operational Continuity Infrastructure" (frozen 07-12)</td></tr>
+      <tr><td class="stamp">2026-07-21</td><td><b>Per-seat pricing: $19 / $59 / $119.</b> Seat = human + Twin. Regional lists preserved, activation-gated.</td><td>Per-workspace ₹999–$1,500 grid</td></tr>
+      <tr><td class="stamp">2026-07-21</td><td><b>Lead motion = Enterprise CS wedge,</b> HubSpot first, founder-led + content-fed + POV-gated. India/UAE parked behind 3 gates.</td><td>Three-markets-day-one</td></tr>
+      <tr><td class="stamp">2026-07-21</td><td><b>Repo <code>docs/commercial/</code> is canonical.</b> Coda + this control center are mirrors with sync stamps. Dual canonical sources forbidden.</td><td>—</td></tr>
+    </table>
+  </section>
+
+  <section id="map">
+    <h2><span class="n">09</span> The Map — every surface</h2>
+    <div class="cols">
+      <ul class="links">
+        <li><b>Workspace docs (Coda/Superhuman)</b></li>
+        <li><a href="https://docs.superhuman.com/d/IntegrateWise-Commercial-Bible_dVzYuy1Bp00">Commercial Bible — Hub</a><div class="d">canon synced · Map section pending (see Sync)</div></li>
+        <li><a href="https://docs.superhuman.com/d/Sales-team-hub_dBb9Kxuu5Ck">Sales team hub</a><div class="d">enablement destination · §§36–43, 09, 71</div></li>
+        <li><a href="https://docs.superhuman.com/d/Launch-checklist_dLvrrpFHACF">Launch checklist</a><div class="d">§51 gate rows pending</div></li>
+        <li><a href="https://docs.superhuman.com/d/Decision-log_d8AC7TD-TFV">Decision log</a><div class="d">4 rows pending</div></li>
+        <li><a href="https://docs.superhuman.com/d/Content-library_dmIVRxc_RXs">Content library</a> · <a href="https://docs.superhuman.com/d/Product-roadmap_dlboYpDdtZu">Product roadmap</a></li>
+        <li><a href="https://docs.superhuman.com/d/Copy-of-Company-Wiki_dwtrtrfr9D8">Company Wiki</a> · <a href="https://docs.superhuman.com/d/CRM_dq0C3EimSmW">CRM</a></li>
+        <li><a href="https://docs.superhuman.com/d/Technical-Architecture_dPTrLuDA25W">Technical Architecture</a><div class="d">⚠ pre-July pages use prior-era "OS" framing — superseded</div></li>
+      </ul>
+      <ul class="links">
+        <li><b>Repo truth</b></li>
+        <li><code>docs/commercial/</code><div class="d">the 79-section Commercial OS — canonical</div></li>
+        <li><code>docs/doctrine/</code><div class="d">product · platform · continuity · distribution doctrine</div></li>
+        <li><code>docs/spec/INTEGRATEWISE_CANONICAL_SPEC_v1.0.md</code><div class="d">platform truth</div></li>
+        <li><code>docs/STRATEGIC_BUILD_PLAN.md</code><div class="d">180-day execution spine</div></li>
+        <li><code>docs/product/FINANCIAL_MODEL.md</code><div class="d">financial truth (per-seat re-basing noted §30/§77)</div></li>
+        <li><code>docs/sales/</code><div class="d">call-level drill guides (extended by §§36–41)</div></li>
+        <li><code>docs/commercial/coda-sync/</code><div class="d">sync manifests — the repo→mirror queue</div></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="repo">
+    <h2><span class="n">10</span> Repo Index — 79 sections <span class="stamp">docs/commercial/</span></h2>
+    <table>
+      <tr><th>Pillar</th><th>Sections</th></tr>
+      <tr><td><b>01 Foundation</b></td><td>01 Exec Summary · 02 Vision · 03 Mission · 04 Long-term Narrative · 13 Brand · 14 Founder · 15 Pitch</td></tr>
+      <tr><td><b>02 Category & Market</b></td><td>05 Category · 06 Market · 07 Industry · 08 Competitive · <b>09 Battle Cards</b> · 10 SWOT</td></tr>
+      <tr><td><b>03 Positioning</b></td><td>11 Positioning · 12 Messaging · 16 Value Prop · 17 Differentiation · <b>18 Terminology (wins language)</b></td></tr>
+      <tr><td><b>04 Product Mktg</b></td><td>19 Narrative · 20 PMM Guide · 21–27 Component Stories (Platform/Spine/Workspace/Workbench/Twin/Capability/Governance)</td></tr>
+      <tr><td><b>05 Value & Pricing</b></td><td>28 Outcomes · 29 ROI · <b>30 Pricing (wins numbers)</b> · 31 Packaging · 32 Licensing</td></tr>
+      <tr><td><b>06 Customers</b></td><td>33 ICP · 34 Personas · 35 Journey</td></tr>
+      <tr><td><b>07 Sales</b></td><td>36 Methodology · 37 Playbook · 38 Discovery · 39 Demo Guide · <b>40 Demo Script</b> · 41 Objections · 42 Security FAQ · 43 Procurement FAQ</td></tr>
+      <tr><td><b>08 CS</b></td><td>44 CS Playbook · <b>45 Onboarding</b> · 46 Expansion · 47 Renewal</td></tr>
+      <tr><td><b>09 GTM</b></td><td>48 Partners · 49 Marketplace · <b>50 GTM Strategy</b> · 51 Launch</td></tr>
+      <tr><td><b>10 Website</b></td><td>52 Strategy · <b>53 Copy (production-ready)</b> · 54 Landing Pages · 55 SEO</td></tr>
+      <tr><td><b>11 Marketing</b></td><td>56 Content · 57 Founder-led · 58 Social · 59 LinkedIn · 60 Newsletter · 61 Webinar · 62 Community · 63 Events</td></tr>
+      <tr><td><b>12 Corporate</b></td><td>64 Case Studies · 65 Press Kit · 66 Analyst Relations · <b>67 Investor Narrative</b> · 68 Fundraising · 69 Roadmap Story · 70 Company FAQ</td></tr>
+      <tr><td><b>13 Operations</b></td><td>71 Enablement · <b>72 Revenue Metrics (wins definitions)</b> · 73 Marketing · 74 Sales · 75 CS Metrics · 76 OKRs · <b>77 Annual Plan</b> · 78 International</td></tr>
+      <tr><td><b>14 Appendix</b></td><td>79 Claims Register + canonical numbers + governance rules</td></tr>
+    </table>
+  </section>
+
+  <section id="sync">
+    <h2><span class="n">11</span> Coda Sync Status <span class="chip r">6 PENDING</span></h2>
+    <p style="font-size:13.5px;color:var(--ink2)">Coda MCP weekly cap (30 req) reached on both connectors 2026-07-21. Pending items with exact paste-ready blocks: <code>docs/commercial/coda-sync/PENDING-SYNC-2026-07-21.md</code></p>
+    <div class="check"><input type="checkbox" data-k="s1"><div class="t"><b>Bible hub — "The Map" section</b><span>append to hub page</span></div></div>
+    <div class="check"><input type="checkbox" data-k="s2"><div class="t"><b>Decision log — 4 rows</b><span>category · pricing · motion · source-of-truth</span></div></div>
+    <div class="check"><input type="checkbox" data-k="s3"><div class="t"><b>Launch checklist — 9 rows</b><span>6 gates + 3 run-of-show</span></div></div>
+    <div class="check"><input type="checkbox" data-k="s4"><div class="t"><b>Company Wiki — Mission page + Q3 OKRs</b><span>replace template placeholders</span></div></div>
+    <div class="check"><input type="checkbox" data-k="s5"><div class="t"><b>Sales hub — Enablement block</b><span>the sales system summary</span></div></div>
+    <div class="check"><input type="checkbox" data-k="s6"><div class="t"><b>Content library + Roadmap — strategy headers</b><span>essay engine + roadmap grammar</span></div></div>
+    <div class="note">Options: paste manually from the manifest (~10 min) · upgrade Coda MCP · or tell Claude <b>"finish the Coda sync"</b> after the weekly reset.</div>
+  </section>
+
+  <footer>IntegrateWise Commercial Control Center · mirror of <code>docs/commercial/</code> (canonical) · Truth you own. AI you rent. Approval in between.</footer>
+</main>
+</div>
+<script>
+  // checkbox persistence (local browser storage — this is a local file, not a claude.ai artifact)
+  document.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+    const k='iwcc-'+cb.dataset.k;
+    try{ cb.checked = localStorage.getItem(k)==='1'; }catch(e){}
+    cb.addEventListener('change',()=>{ try{ localStorage.setItem(k, cb.checked?'1':'0'); }catch(e){} });
+  });
+</script>
+</body>
+</html>

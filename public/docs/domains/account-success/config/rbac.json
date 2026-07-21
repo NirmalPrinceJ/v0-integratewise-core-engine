@@ -1,0 +1,588 @@
+{
+  "domain": "account_success",
+  "version": "1.0.0",
+  "generated_at": "2026-07-05T20:04:53.276037Z",
+  "source": "SPINE_DOMAIN.md + SPINE_INTELLIGENCE_AGENT.md",
+  "roles": {
+    "admin": {
+      "description": "Full domain administrator with unrestricted access to all projections, spine entities, and memory types.",
+      "allowed_projections": [
+        "projection-account-success",
+        "projection-technical-account-success",
+        "projection-executive",
+        "projection-implementation",
+        "projection-support"
+      ],
+      "allowed_spine_entities": {
+        "read": [
+          "account",
+          "person",
+          "organization",
+          "contract",
+          "subscription",
+          "product",
+          "deployment",
+          "integration",
+          "environment",
+          "meeting",
+          "task",
+          "objective",
+          "initiative",
+          "spine_relationships"
+        ],
+        "write": [
+          "account",
+          "person",
+          "organization",
+          "contract",
+          "subscription",
+          "product",
+          "deployment",
+          "integration",
+          "environment",
+          "meeting",
+          "task",
+          "objective",
+          "initiative",
+          "spine_relationships"
+        ]
+      },
+      "allowed_memory_types": {
+        "read": [
+          "health",
+          "risk",
+          "sentiment",
+          "signals",
+          "usage",
+          "architecture_assessment",
+          "technical_debt",
+          "business_context",
+          "engagement",
+          "stakeholder_intelligence",
+          "recommendations",
+          "insights",
+          "evidence",
+          "timeline",
+          "forecast",
+          "cases",
+          "errors",
+          "incidents",
+          "sla",
+          "milestones",
+          "revenue"
+        ],
+        "write": [
+          "health",
+          "risk",
+          "sentiment",
+          "signals",
+          "usage",
+          "architecture_assessment",
+          "technical_debt",
+          "business_context",
+          "engagement",
+          "stakeholder_intelligence",
+          "recommendations",
+          "insights",
+          "evidence",
+          "timeline",
+          "forecast",
+          "cases",
+          "errors",
+          "incidents",
+          "sla",
+          "milestones",
+          "revenue"
+        ],
+        "generate": [
+          "health",
+          "risk",
+          "sentiment",
+          "signals",
+          "usage",
+          "architecture_assessment",
+          "technical_debt",
+          "business_context",
+          "engagement",
+          "stakeholder_intelligence",
+          "recommendations",
+          "insights",
+          "evidence",
+          "timeline",
+          "forecast",
+          "cases",
+          "errors",
+          "incidents",
+          "sla",
+          "milestones",
+          "revenue"
+        ]
+      },
+      "governance_gates": ["can_view", "can_act", "can_approve", "can_admin"]
+    },
+    "cs_lead": {
+      "description": "Customer Success lead overseeing CS operations with cross-projection visibility and approval authority.",
+      "allowed_projections": [
+        "projection-account-success",
+        "projection-technical-account-success",
+        "projection-executive"
+      ],
+      "allowed_spine_entities": {
+        "read": [
+          "account",
+          "person",
+          "organization",
+          "contract",
+          "subscription",
+          "product",
+          "deployment",
+          "integration",
+          "environment",
+          "meeting",
+          "task",
+          "objective",
+          "initiative",
+          "spine_relationships"
+        ],
+        "write": [
+          "account",
+          "person",
+          "organization",
+          "contract",
+          "subscription",
+          "meeting",
+          "task",
+          "objective",
+          "initiative"
+        ]
+      },
+      "allowed_memory_types": {
+        "read": [
+          "health",
+          "risk",
+          "sentiment",
+          "signals",
+          "usage",
+          "architecture_assessment",
+          "technical_debt",
+          "business_context",
+          "engagement",
+          "stakeholder_intelligence",
+          "recommendations",
+          "insights",
+          "evidence",
+          "timeline",
+          "forecast",
+          "revenue"
+        ],
+        "write": [
+          "health",
+          "risk",
+          "sentiment",
+          "signals",
+          "usage",
+          "business_context",
+          "engagement",
+          "stakeholder_intelligence",
+          "recommendations",
+          "insights",
+          "evidence",
+          "timeline",
+          "forecast"
+        ],
+        "generate": [
+          "health",
+          "risk",
+          "sentiment",
+          "signals",
+          "usage",
+          "business_context",
+          "engagement",
+          "stakeholder_intelligence",
+          "recommendations",
+          "insights",
+          "timeline",
+          "forecast"
+        ]
+      },
+      "governance_gates": ["can_view", "can_act", "can_approve"]
+    },
+    "csm": {
+      "description": "Customer Success Manager managing account health, engagement, and renewal outcomes.",
+      "allowed_projections": ["projection-account-success"],
+      "allowed_spine_entities": {
+        "read": [
+          "account",
+          "person",
+          "organization",
+          "contract",
+          "subscription",
+          "meeting",
+          "task",
+          "spine_relationships"
+        ],
+        "write": ["account", "person", "meeting", "task"]
+      },
+      "allowed_memory_types": {
+        "read": [
+          "health",
+          "risk",
+          "sentiment",
+          "signals",
+          "usage",
+          "business_context",
+          "engagement",
+          "stakeholder_intelligence",
+          "recommendations",
+          "insights",
+          "evidence",
+          "timeline",
+          "forecast"
+        ],
+        "write": ["health", "risk", "engagement", "recommendations", "insights", "timeline"],
+        "generate": ["health", "risk", "engagement", "recommendations", "insights", "timeline"]
+      },
+      "governance_gates": ["can_view", "can_act"]
+    },
+    "account_manager": {
+      "description": "Account Manager focused on commercial relationships, renewals, and expansion.",
+      "allowed_projections": ["projection-account-success", "projection-executive"],
+      "allowed_spine_entities": {
+        "read": [
+          "account",
+          "person",
+          "organization",
+          "contract",
+          "subscription",
+          "meeting",
+          "task",
+          "spine_relationships"
+        ],
+        "write": ["account", "contract", "subscription", "meeting", "task"]
+      },
+      "allowed_memory_types": {
+        "read": [
+          "health",
+          "risk",
+          "sentiment",
+          "signals",
+          "usage",
+          "business_context",
+          "engagement",
+          "stakeholder_intelligence",
+          "recommendations",
+          "insights",
+          "evidence",
+          "timeline",
+          "forecast",
+          "revenue"
+        ],
+        "write": [
+          "health",
+          "risk",
+          "engagement",
+          "recommendations",
+          "insights",
+          "timeline",
+          "forecast"
+        ],
+        "generate": [
+          "health",
+          "risk",
+          "engagement",
+          "recommendations",
+          "insights",
+          "timeline",
+          "forecast"
+        ]
+      },
+      "governance_gates": ["can_view", "can_act"]
+    },
+    "tam": {
+      "description": "Technical Account Manager managing deployment health, integrations, and technical architecture.",
+      "allowed_projections": ["projection-technical-account-success"],
+      "allowed_spine_entities": {
+        "read": [
+          "account",
+          "person",
+          "deployment",
+          "integration",
+          "environment",
+          "product",
+          "spine_relationships"
+        ],
+        "write": ["account", "deployment", "integration", "environment"]
+      },
+      "allowed_memory_types": {
+        "read": [
+          "architecture_assessment",
+          "usage",
+          "technical_debt",
+          "signals",
+          "health",
+          "risk",
+          "engagement",
+          "business_context",
+          "evidence"
+        ],
+        "write": [
+          "architecture_assessment",
+          "usage",
+          "technical_debt",
+          "signals",
+          "health",
+          "risk"
+        ],
+        "generate": [
+          "architecture_assessment",
+          "usage",
+          "technical_debt",
+          "signals",
+          "health",
+          "risk"
+        ]
+      },
+      "governance_gates": ["can_view", "can_act"]
+    },
+    "solution_engineer": {
+      "description": "Solution Engineer assisting with technical architecture, integrations, and product deployment.",
+      "allowed_projections": ["projection-technical-account-success"],
+      "allowed_spine_entities": {
+        "read": [
+          "account",
+          "person",
+          "deployment",
+          "integration",
+          "environment",
+          "product",
+          "spine_relationships"
+        ],
+        "write": ["account", "deployment", "integration", "environment"]
+      },
+      "allowed_memory_types": {
+        "read": [
+          "architecture_assessment",
+          "usage",
+          "technical_debt",
+          "signals",
+          "health",
+          "risk",
+          "engagement",
+          "business_context",
+          "evidence"
+        ],
+        "write": [
+          "architecture_assessment",
+          "usage",
+          "technical_debt",
+          "signals",
+          "health",
+          "risk"
+        ],
+        "generate": [
+          "architecture_assessment",
+          "usage",
+          "technical_debt",
+          "signals",
+          "health",
+          "risk"
+        ]
+      },
+      "governance_gates": ["can_view", "can_act"]
+    },
+    "onboarding_manager": {
+      "description": "Onboarding Manager guiding customers through implementation and go-live milestones.",
+      "allowed_projections": ["projection-implementation"],
+      "allowed_spine_entities": {
+        "read": ["account", "person", "task", "objective", "spine_relationships"],
+        "write": ["account", "person", "task", "objective"]
+      },
+      "allowed_memory_types": {
+        "read": [
+          "milestones",
+          "timeline",
+          "signals",
+          "business_context",
+          "engagement",
+          "health",
+          "risk",
+          "usage",
+          "evidence"
+        ],
+        "write": ["milestones", "timeline", "signals", "business_context"],
+        "generate": ["milestones", "timeline", "signals", "business_context"]
+      },
+      "governance_gates": ["can_view", "can_act"]
+    },
+    "support_engineer": {
+      "description": "Support Engineer handling technical cases, incidents, and troubleshooting.",
+      "allowed_projections": ["projection-support"],
+      "allowed_spine_entities": {
+        "read": ["account", "person", "product", "deployment", "spine_relationships"],
+        "write": ["account", "person", "product", "deployment"]
+      },
+      "allowed_memory_types": {
+        "read": [
+          "cases",
+          "errors",
+          "incidents",
+          "sla",
+          "usage",
+          "signals",
+          "health",
+          "risk",
+          "evidence"
+        ],
+        "write": ["cases", "errors", "incidents", "sla"],
+        "generate": ["cases", "errors", "incidents", "sla", "usage"]
+      },
+      "governance_gates": ["can_view", "can_act"]
+    },
+    "support_manager": {
+      "description": "Support Manager overseeing support operations, SLA compliance, and team performance.",
+      "allowed_projections": ["projection-support"],
+      "allowed_spine_entities": {
+        "read": ["account", "person", "product", "deployment", "spine_relationships"],
+        "write": ["account", "person", "product", "deployment"]
+      },
+      "allowed_memory_types": {
+        "read": [
+          "cases",
+          "errors",
+          "incidents",
+          "sla",
+          "usage",
+          "signals",
+          "health",
+          "risk",
+          "engagement",
+          "evidence"
+        ],
+        "write": ["cases", "errors", "incidents", "sla", "usage"],
+        "generate": ["cases", "errors", "incidents", "sla", "usage"]
+      },
+      "governance_gates": ["can_view", "can_act", "can_approve"]
+    },
+    "executive": {
+      "description": "Executive role (VP CS, CRO, CFO) with read-only access to high-level domain data and approval authority.",
+      "allowed_projections": ["projection-executive"],
+      "allowed_spine_entities": {
+        "read": ["account", "organization", "contract", "subscription", "spine_relationships"],
+        "write": []
+      },
+      "allowed_memory_types": {
+        "read": [
+          "health",
+          "risk",
+          "forecast",
+          "revenue",
+          "business_context",
+          "engagement",
+          "timeline",
+          "usage",
+          "evidence"
+        ],
+        "write": [],
+        "generate": []
+      },
+      "governance_gates": ["can_view", "can_approve"]
+    },
+    "viewer": {
+      "description": "Read-only observer with access to all projections for reporting and auditing.",
+      "allowed_projections": [
+        "projection-account-success",
+        "projection-technical-account-success",
+        "projection-executive",
+        "projection-implementation",
+        "projection-support"
+      ],
+      "allowed_spine_entities": {
+        "read": [
+          "account",
+          "person",
+          "organization",
+          "contract",
+          "subscription",
+          "product",
+          "deployment",
+          "integration",
+          "environment",
+          "meeting",
+          "task",
+          "objective",
+          "initiative",
+          "spine_relationships"
+        ],
+        "write": []
+      },
+      "allowed_memory_types": {
+        "read": [
+          "health",
+          "risk",
+          "sentiment",
+          "signals",
+          "usage",
+          "architecture_assessment",
+          "technical_debt",
+          "business_context",
+          "engagement",
+          "stakeholder_intelligence",
+          "recommendations",
+          "insights",
+          "evidence",
+          "timeline",
+          "forecast",
+          "cases",
+          "errors",
+          "incidents",
+          "sla",
+          "milestones",
+          "revenue"
+        ],
+        "write": [],
+        "generate": []
+      },
+      "governance_gates": ["can_view"]
+    }
+  },
+  "governance_gates": {
+    "can_view": {
+      "description": "Can read and view domain data across assigned projections and entities",
+      "applies_to": [
+        "admin",
+        "cs_lead",
+        "csm",
+        "account_manager",
+        "tam",
+        "solution_engineer",
+        "onboarding_manager",
+        "support_engineer",
+        "support_manager",
+        "executive",
+        "viewer"
+      ]
+    },
+    "can_act": {
+      "description": "Can perform actions including creating, updating, and generating entities and memories",
+      "applies_to": [
+        "admin",
+        "cs_lead",
+        "csm",
+        "account_manager",
+        "tam",
+        "solution_engineer",
+        "onboarding_manager",
+        "support_engineer",
+        "support_manager"
+      ]
+    },
+    "can_approve": {
+      "description": "Can approve actions, escalations, and governance decisions proposed by other roles",
+      "applies_to": ["admin", "cs_lead", "support_manager", "executive"]
+    },
+    "can_admin": {
+      "description": "Can administer domain settings, roles, governance rules, and cross-tenant configurations",
+      "applies_to": ["admin"]
+    }
+  }
+}

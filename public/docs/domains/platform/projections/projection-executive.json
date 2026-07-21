@@ -1,0 +1,475 @@
+{
+  "projection_name": "projection-executive",
+  "description": "Cross-domain strategic executive view for IntegrateWise platform leadership. Provides a unified real-time picture of organizational health, strategic objectives, team/project status, key decisions, risks, and outcomes. This projection enables the Executive team to see what is happening across the entire platform without needing to query individual domains. It assembles Spine entities (organizations, teams, objectives, outcomes, projects, decisions) and Dynamic Memory (health, risk, forecast, signals, knowledge) into a single coherent view at query time. Targeted at C-suite, VPs, and Directors who need strategic situational awareness, not operational drill-down.",
+  "target_team": "Executive",
+  "target_roles": ["executive", "ceo", "coo", "cto", "cfo", "vp", "director", "admin"],
+  "spine_entities": [
+    {
+      "entity_type": "spine_organizations",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "name",
+        "legal_name",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "industry",
+        "region",
+        "size_band",
+        "founded_date",
+        "parent_organization_id",
+        "strategic_priority"
+      ],
+      "default_filters": {
+        "status": "active",
+        "tenant_id": "$tenant_id"
+      }
+    },
+    {
+      "entity_type": "spine_teams",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "organization_id",
+        "name",
+        "team_type",
+        "status",
+        "created_at"
+      ],
+      "optional_columns": [
+        "parent_team_id",
+        "lead_person_id",
+        "mission",
+        "headcount",
+        "budget_usd"
+      ],
+      "default_filters": {
+        "status": "active",
+        "tenant_id": "$tenant_id"
+      }
+    },
+    {
+      "entity_type": "spine_persons",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "primary_organization_id",
+        "display_name",
+        "email",
+        "role",
+        "status"
+      ],
+      "optional_columns": [
+        "title",
+        "department",
+        "reports_to_id",
+        "start_date",
+        "timezone",
+        "location"
+      ],
+      "default_filters": {
+        "status": "active",
+        "tenant_id": "$tenant_id"
+      }
+    },
+    {
+      "entity_type": "spine_objectives",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "organization_id",
+        "title",
+        "objective_type",
+        "status",
+        "priority",
+        "target_date"
+      ],
+      "optional_columns": [
+        "parent_objective_id",
+        "owner_team_id",
+        "owner_person_id",
+        "progress_pct",
+        "key_results",
+        "strategic_theme"
+      ],
+      "default_filters": {
+        "status": "in [active, at_risk, on_track, completed]",
+        "tenant_id": "$tenant_id"
+      }
+    },
+    {
+      "entity_type": "spine_outcomes",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "objective_id",
+        "title",
+        "outcome_type",
+        "status",
+        "achieved_date",
+        "value"
+      ],
+      "optional_columns": [
+        "measurement_unit",
+        "evidence_url",
+        "contributing_team_id",
+        "contributing_person_id",
+        "impact_score"
+      ],
+      "default_filters": {
+        "tenant_id": "$tenant_id"
+      }
+    },
+    {
+      "entity_type": "spine_projects",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "organization_id",
+        "title",
+        "project_type",
+        "status",
+        "start_date",
+        "target_end_date"
+      ],
+      "optional_columns": [
+        "owner_team_id",
+        "owner_person_id",
+        "budget_usd",
+        "progress_pct",
+        "priority",
+        "health_status"
+      ],
+      "default_filters": {
+        "status": "in [planning, active, at_risk, on_hold, completed]",
+        "tenant_id": "$tenant_id"
+      }
+    },
+    {
+      "entity_type": "spine_decisions",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "title",
+        "decision_type",
+        "status",
+        "decision_date",
+        "decision_maker_id"
+      ],
+      "optional_columns": [
+        "context",
+        "alternatives_considered",
+        "expected_outcome",
+        "review_date",
+        "stakeholder_ids"
+      ],
+      "default_filters": {
+        "status": "in [pending, approved, rejected, deferred, implemented]",
+        "tenant_id": "$tenant_id"
+      }
+    },
+    {
+      "entity_type": "spine_assets",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "organization_id",
+        "asset_type",
+        "name",
+        "status",
+        "value_usd"
+      ],
+      "optional_columns": [
+        "owner_team_id",
+        "acquisition_date",
+        "depreciation_schedule",
+        "location",
+        "criticality"
+      ],
+      "default_filters": {
+        "status": "active",
+        "tenant_id": "$tenant_id"
+      }
+    },
+    {
+      "entity_type": "spine_capabilities",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "organization_id",
+        "name",
+        "capability_type",
+        "status",
+        "maturity_level"
+      ],
+      "optional_columns": [
+        "owner_team_id",
+        "dependencies",
+        "related_objective_id",
+        "investment_usd",
+        "roi_score"
+      ],
+      "default_filters": {
+        "status": "active",
+        "tenant_id": "$tenant_id"
+      }
+    }
+  ],
+  "memory_types": [
+    {
+      "memory_table": "memory_health",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_type",
+        "entity_id",
+        "score",
+        "score_label",
+        "recorded_at",
+        "source"
+      ],
+      "optional_columns": [
+        "reasoning",
+        "contributing_factors",
+        "trend_direction",
+        "previous_score",
+        "alert_threshold"
+      ],
+      "default_filters": {
+        "entity_type": "in [organization, team, project, objective]",
+        "tenant_id": "$tenant_id"
+      },
+      "confidence_threshold": 0.75
+    },
+    {
+      "memory_table": "memory_risk",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_type",
+        "entity_id",
+        "risk_level",
+        "risk_category",
+        "probability",
+        "impact",
+        "recorded_at"
+      ],
+      "optional_columns": [
+        "description",
+        "mitigation_plan",
+        "owner_id",
+        "review_date",
+        "status",
+        "related_objective_id"
+      ],
+      "default_filters": {
+        "entity_type": "in [organization, team, project, objective, decision]",
+        "status": "in [open, monitoring, mitigated, escalated]",
+        "tenant_id": "$tenant_id"
+      },
+      "confidence_threshold": 0.7
+    },
+    {
+      "memory_table": "memory_forecast",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_type",
+        "entity_id",
+        "metric_name",
+        "forecasted_value",
+        "forecast_date",
+        "recorded_at"
+      ],
+      "optional_columns": [
+        "confidence_interval_lower",
+        "confidence_interval_upper",
+        "scenario",
+        "methodology",
+        "historical_actual"
+      ],
+      "default_filters": {
+        "entity_type": "in [organization, team, project, objective]",
+        "tenant_id": "$tenant_id"
+      },
+      "confidence_threshold": 0.65
+    },
+    {
+      "memory_table": "memory_signals",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "signal_type",
+        "severity",
+        "source_entity_type",
+        "source_entity_id",
+        "message",
+        "recorded_at"
+      ],
+      "optional_columns": [
+        "context",
+        "recommended_action",
+        "acknowledged_at",
+        "acknowledged_by_id",
+        "related_objective_id"
+      ],
+      "default_filters": {
+        "severity": "in [high, critical]",
+        "tenant_id": "$tenant_id"
+      },
+      "confidence_threshold": 0.8
+    },
+    {
+      "memory_table": "memory_knowledge",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "knowledge_type",
+        "topic",
+        "entity_type",
+        "entity_id",
+        "content",
+        "recorded_at"
+      ],
+      "optional_columns": [
+        "source",
+        "confidence",
+        "author_id",
+        "tags",
+        "related_decision_id",
+        "access_level"
+      ],
+      "default_filters": {
+        "access_level": "in [executive, all]",
+        "tenant_id": "$tenant_id"
+      },
+      "confidence_threshold": 0.7
+    }
+  ],
+  "relationships": [
+    {
+      "relation_type": "belongs_to",
+      "from_entity_type": "spine_teams",
+      "to_entity_type": "spine_organizations",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "reports_to",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_persons",
+      "depth": 2,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "member_of",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_teams",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "owns",
+      "from_entity_type": "spine_teams",
+      "to_entity_type": "spine_objectives",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "contributes_to",
+      "from_entity_type": "spine_projects",
+      "to_entity_type": "spine_objectives",
+      "depth": 2,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "achieves",
+      "from_entity_type": "spine_outcomes",
+      "to_entity_type": "spine_objectives",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "informs",
+      "from_entity_type": "spine_decisions",
+      "to_entity_type": "spine_objectives",
+      "depth": 2,
+      "direction": "both"
+    },
+    {
+      "relation_type": "supports",
+      "from_entity_type": "spine_capabilities",
+      "to_entity_type": "spine_objectives",
+      "depth": 2,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_health",
+      "from_entity_type": "spine_organizations",
+      "to_entity_type": "memory_health",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_risk",
+      "from_entity_type": "spine_objectives",
+      "to_entity_type": "memory_risk",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_forecast",
+      "from_entity_type": "spine_teams",
+      "to_entity_type": "memory_forecast",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_signal",
+      "from_entity_type": "spine_organizations",
+      "to_entity_type": "memory_signals",
+      "depth": 1,
+      "direction": "outgoing"
+    }
+  ],
+  "filters": {
+    "tenant_isolation": {
+      "field": "tenant_id",
+      "operator": "equals",
+      "value": "$tenant_id"
+    },
+    "active_entities_only": {
+      "field": "status",
+      "operator": "in",
+      "value": ["active", "on_track", "in_progress", "planning", "at_risk", "monitoring"]
+    },
+    "executive_access_level": {
+      "field": "access_level",
+      "operator": "in",
+      "value": ["executive", "all"]
+    },
+    "time_window": {
+      "field": "updated_at",
+      "operator": "greater_than",
+      "value": "-90 days"
+    }
+  },
+  "sort_order": [
+    {
+      "field": "priority",
+      "direction": "desc"
+    },
+    {
+      "field": "health_status",
+      "direction": "asc"
+    },
+    {
+      "field": "updated_at",
+      "direction": "desc"
+    }
+  ],
+  "ttl_seconds": 300
+}
