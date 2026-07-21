@@ -31,6 +31,9 @@ export * from "./connectors";
 // Operational Templates
 export * from "./templates";
 
+// Lifecycle & Recurring Events
+export * from "./lifecycle";
+
 // Re-export for convenience
 export { CapabilityEngine } from "./capability-engine/engine";
 export { ContextBuilder } from "./capability-context/context-builder";
@@ -42,3 +45,6 @@ export { WorkbenchManager } from "./workbenches";
 export { ConnectorManager } from "./connectors";
 export { TemplateManager, templateManager } from "./templates/manager";
 export { getTemplateRegistry } from "./templates/definitions";
+export { lifecycleEngine } from "./lifecycle/engine";
+export { recurringScheduler, RECURRING_DOMAINS } from "./lifecycle/recurring-scheduler";
+export { LIFECYCLE_CATEGORIES } from "./lifecycle/types";
