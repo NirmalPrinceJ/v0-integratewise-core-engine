@@ -5,3 +5,4 @@
 
 export * from "./types";
 export { ConnectorManager } from "./manager";
+export * from "../../connectors/coda-connector";
