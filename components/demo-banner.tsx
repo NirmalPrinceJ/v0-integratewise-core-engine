@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
-import { AlertTriangle, X, Eye, Ban } from "lucide-react"
+import { X, Eye, Ban } from "lucide-react"
 
 export function DemoBanner() {
   const [isDemoUser, setIsDemoUser] = useState(false)
@@ -39,19 +39,20 @@ export function DemoBanner() {
         </div>
       )}
 
-      {/* Persistent demo banner */}
-      <div className="bg-amber-500/10 border-b border-amber-500/20 px-4 py-2">
+      {/* Customer Zero access notice — shown to guest/demo sessions */}
+      <div className="bg-primary/5 border-b border-primary/15 px-4 py-2">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <AlertTriangle className="h-4 w-4 text-amber-600" />
-            <span className="text-sm text-amber-700">
-              <strong>Demo Mode:</strong> You have limited access. Some features are view-only{" "}
-              <Eye className="h-3.5 w-3.5 inline" /> and others are restricted <Ban className="h-3.5 w-3.5 inline" />.
+            <Eye className="h-4 w-4 text-primary" />
+            <span className="text-sm text-primary/90">
+              <strong>Customer Zero — Guest View:</strong> You are watching IntegrateWise run its own business live.
+              Some actions are view-only <Eye className="h-3.5 w-3.5 inline" /> and internal areas are restricted{" "}
+              <Ban className="h-3.5 w-3.5 inline" />.
             </span>
           </div>
           <button
             onClick={() => setDismissed(true)}
-            className="text-amber-600 hover:text-amber-700 text-sm font-medium"
+            className="text-primary hover:text-primary/80 text-sm font-medium"
           >
             Dismiss
           </button>

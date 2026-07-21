@@ -14,8 +14,9 @@ const _sourceSerif_4 = V0_Font_Source_Serif_4({ subsets: ['latin'], weight: ["20
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
 export const metadata: Metadata = {
-  title: "IntegrateWise OS",
-  description: "Your Business Command Center - Single Source of Truth",
+  title: "Customer Zero – IntegrateWise Internal Operations",
+  description:
+    "The internal operating workspace that runs IntegrateWise on its own Platform API — Customer Zero, the reference implementation.",
   generator: "v0.app",
   icons: {
     icon: "/favicon.jpg",
@@ -23,8 +24,9 @@ export const metadata: Metadata = {
     apple: "/apple-icon.png",
   },
   openGraph: {
-    title: "IntegrateWise OS",
-    description: "Your Business Command Center - Single Source of Truth",
+    title: "Customer Zero – IntegrateWise Internal Operations",
+    description:
+      "The internal operating workspace that runs IntegrateWise on its own Platform API — Customer Zero, the reference implementation.",
     type: "website",
   },
 }
