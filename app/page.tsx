@@ -20,8 +20,12 @@ export default function Home() {
               <Link href="#" className="text-muted-foreground hover:text-foreground transition">Pricing</Link>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="ghost" size="sm">Sign in</Button>
-              <Button size="sm" className="bg-primary hover:bg-primary/90">Start Free</Button>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/sign-in">Sign in</Link>
+              </Button>
+              <Button size="sm" className="bg-primary hover:bg-primary/90" asChild>
+                <Link href="/sign-up">Start Free</Link>
+              </Button>
             </div>
           </div>
         </div>
