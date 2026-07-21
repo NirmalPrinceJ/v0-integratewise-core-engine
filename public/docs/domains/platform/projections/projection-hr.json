@@ -1,0 +1,408 @@
+{
+  "projection_name": "projection-hr",
+  "description": "Unified human-resources view assembling people, teams, organizational structure, performance, and capability data from the Spine and Dynamic Memory. Designed for the HR team to support workforce planning, talent management, org design, and people analytics. Serves hr_partner, hr_bp, people_ops, and talent_lead roles.",
+  "target_team": "human_resources",
+  "target_roles": ["hr_partner", "hr_bp", "people_ops", "talent_lead", "hr_admin"],
+  "spine_entities": [
+    {
+      "entity_type": "spine_persons",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "name",
+        "email",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "phone",
+        "title",
+        "department",
+        "seniority",
+        "start_date",
+        "end_date",
+        "timezone",
+        "locale",
+        "avatar_url"
+      ],
+      "default_filters": {
+        "status": "active",
+        "tenant_id": "${tenant_id}"
+      }
+    },
+    {
+      "entity_type": "spine_teams",
+      "required_columns": ["id", "tenant_id", "name", "status", "created_at", "updated_at"],
+      "optional_columns": [
+        "description",
+        "team_type",
+        "parent_team_id",
+        "cost_center",
+        "location",
+        "timezone"
+      ],
+      "default_filters": {
+        "status": "active",
+        "tenant_id": "${tenant_id}"
+      }
+    },
+    {
+      "entity_type": "spine_organizations",
+      "required_columns": ["id", "tenant_id", "name", "status", "created_at", "updated_at"],
+      "optional_columns": [
+        "industry",
+        "region",
+        "size",
+        "type",
+        "parent_organization_id",
+        "legal_name",
+        "tax_id"
+      ],
+      "default_filters": {
+        "status": "active",
+        "tenant_id": "${tenant_id}"
+      }
+    },
+    {
+      "entity_type": "spine_workspaces",
+      "required_columns": ["id", "tenant_id", "name", "status", "created_at", "updated_at"],
+      "optional_columns": ["description", "workspace_type", "owner_id", "parent_workspace_id"],
+      "default_filters": {
+        "status": "active",
+        "tenant_id": "${tenant_id}"
+      }
+    },
+    {
+      "entity_type": "spine_projects",
+      "required_columns": ["id", "tenant_id", "name", "status", "created_at", "updated_at"],
+      "optional_columns": [
+        "description",
+        "start_date",
+        "target_end_date",
+        "actual_end_date",
+        "priority",
+        "owner_id",
+        "team_id"
+      ],
+      "default_filters": {
+        "status": ["active", "planning", "on_hold"],
+        "tenant_id": "${tenant_id}"
+      }
+    },
+    {
+      "entity_type": "spine_objectives",
+      "required_columns": ["id", "tenant_id", "name", "status", "created_at", "updated_at"],
+      "optional_columns": [
+        "description",
+        "objective_type",
+        "start_date",
+        "target_date",
+        "completion_date",
+        "progress_pct",
+        "owner_id"
+      ],
+      "default_filters": {
+        "status": ["active", "draft", "completed"],
+        "tenant_id": "${tenant_id}"
+      }
+    },
+    {
+      "entity_type": "spine_capabilities",
+      "required_columns": ["id", "tenant_id", "name", "status", "created_at", "updated_at"],
+      "optional_columns": [
+        "description",
+        "capability_type",
+        "proficiency_level",
+        "category",
+        "parent_capability_id"
+      ],
+      "default_filters": {
+        "status": "active",
+        "tenant_id": "${tenant_id}"
+      }
+    }
+  ],
+  "memory_types": [
+    {
+      "memory_table": "memory_performance",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_type",
+        "entity_id",
+        "score",
+        "period",
+        "generated_at",
+        "created_at"
+      ],
+      "optional_columns": [
+        "score_label",
+        "reasoning",
+        "contributing_factors",
+        "reviewer_id",
+        "review_cycle",
+        "valid_from",
+        "valid_until"
+      ],
+      "default_filters": {
+        "entity_type": "spine_persons",
+        "tenant_id": "${tenant_id}",
+        "period": "${current_period}"
+      },
+      "confidence_threshold": 0.7
+    },
+    {
+      "memory_table": "memory_skills",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_type",
+        "entity_id",
+        "skill_name",
+        "proficiency",
+        "generated_at",
+        "created_at"
+      ],
+      "optional_columns": ["skill_category", "verified_by", "source", "valid_from", "valid_until"],
+      "default_filters": {
+        "entity_type": "spine_persons",
+        "tenant_id": "${tenant_id}"
+      },
+      "confidence_threshold": 0.6
+    },
+    {
+      "memory_table": "memory_goals",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_type",
+        "entity_id",
+        "goal_title",
+        "status",
+        "generated_at",
+        "created_at"
+      ],
+      "optional_columns": [
+        "goal_description",
+        "progress_pct",
+        "due_date",
+        "goal_type",
+        "valid_from",
+        "valid_until"
+      ],
+      "default_filters": {
+        "entity_type": "spine_persons",
+        "tenant_id": "${tenant_id}",
+        "status": ["active", "pending", "completed"]
+      },
+      "confidence_threshold": 0.75
+    },
+    {
+      "memory_table": "memory_reviews",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_type",
+        "entity_id",
+        "review_type",
+        "status",
+        "generated_at",
+        "created_at"
+      ],
+      "optional_columns": [
+        "reviewer_id",
+        "review_period",
+        "summary",
+        "strengths",
+        "development_areas",
+        "valid_from",
+        "valid_until"
+      ],
+      "default_filters": {
+        "entity_type": "spine_persons",
+        "tenant_id": "${tenant_id}",
+        "status": ["completed", "in_progress"]
+      },
+      "confidence_threshold": 0.8
+    },
+    {
+      "memory_table": "memory_health",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_type",
+        "entity_id",
+        "score",
+        "generated_at",
+        "created_at"
+      ],
+      "optional_columns": [
+        "score_label",
+        "reasoning",
+        "contributing_factors",
+        "valid_from",
+        "valid_until"
+      ],
+      "default_filters": {
+        "entity_type": "spine_persons",
+        "tenant_id": "${tenant_id}"
+      },
+      "confidence_threshold": 0.65
+    },
+    {
+      "memory_table": "memory_risk",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_type",
+        "entity_id",
+        "score",
+        "severity",
+        "generated_at",
+        "created_at"
+      ],
+      "optional_columns": [
+        "score_label",
+        "reasoning",
+        "contributing_factors",
+        "risk_category",
+        "valid_from",
+        "valid_until"
+      ],
+      "default_filters": {
+        "entity_type": "spine_persons",
+        "tenant_id": "${tenant_id}"
+      },
+      "confidence_threshold": 0.7
+    }
+  ],
+  "relationships": [
+    {
+      "relation_type": "belongs_to",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_teams",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "manages",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_teams",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "reports_to",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_persons",
+      "depth": 2,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_role",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_teams",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_membership",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_teams",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_capability",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_capabilities",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_objective",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_objectives",
+      "depth": 2,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "works_in",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_workspaces",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "parent_of",
+      "from_entity_type": "spine_teams",
+      "to_entity_type": "spine_teams",
+      "depth": 2,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "assigned_to",
+      "from_entity_type": "spine_projects",
+      "to_entity_type": "spine_persons",
+      "depth": 1,
+      "direction": "both"
+    },
+    {
+      "relation_type": "sponsors",
+      "from_entity_type": "spine_projects",
+      "to_entity_type": "spine_persons",
+      "depth": 1,
+      "direction": "both"
+    },
+    {
+      "relation_type": "has_participant",
+      "from_entity_type": "spine_teams",
+      "to_entity_type": "spine_persons",
+      "depth": 1,
+      "direction": "incoming"
+    }
+  ],
+  "filters": {
+    "tenant_isolation": {
+      "field": "tenant_id",
+      "operator": "equals",
+      "value": "${tenant_id}"
+    },
+    "person_status": {
+      "field": "spine_persons.status",
+      "operator": "in",
+      "value": ["active", "on_leave", "pending"]
+    },
+    "team_status": {
+      "field": "spine_teams.status",
+      "operator": "in",
+      "value": ["active", "reorganizing"]
+    },
+    "project_status": {
+      "field": "spine_projects.status",
+      "operator": "in",
+      "value": ["active", "planning", "on_hold"]
+    },
+    "memory_confidence": {
+      "field": "memory.confidence",
+      "operator": "greater_than_or_equal",
+      "value": 0.6
+    }
+  },
+  "sort_order": [
+    {
+      "field": "spine_persons.name",
+      "direction": "asc"
+    },
+    {
+      "field": "spine_teams.name",
+      "direction": "asc"
+    },
+    {
+      "field": "memory_performance.score",
+      "direction": "desc"
+    }
+  ],
+  "ttl_seconds": 300
+}

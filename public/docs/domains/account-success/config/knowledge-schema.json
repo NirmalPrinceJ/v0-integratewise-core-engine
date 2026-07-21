@@ -1,0 +1,1161 @@
+{
+  "schema_version": "1.0.0",
+  "domain": "account_success",
+  "description": "Knowledge graph schema for the Account Success Spine Domain. Defines all canonical Spine entities, Dynamic Memory types, and their typed relationships as a graph schema consumed by the Projection Engine, Knowledge Service, and Vector Search index.",
+  "generated_at": "2026-07-06T00:00:00Z",
+  "source_docs": [
+    "docs/architecture/SPINE_DOMAIN.md",
+    "docs/architecture/SPINE_INTELLIGENCE_AGENT.md"
+  ],
+  "nodes": [
+    {
+      "id": "node_account",
+      "type": "canonical_spine",
+      "name": "Account",
+      "description": "A paying customer relationship. Not a CRM account — a real-world commercial relationship with recurring value.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "version", "type": "integer", "required": true },
+        { "name": "name", "type": "text", "required": true },
+        { "name": "industry", "type": "text", "required": false },
+        { "name": "region", "type": "text", "required": false },
+        { "name": "tier", "type": "text", "required": false },
+        { "name": "arr_usd", "type": "real", "required": false },
+        { "name": "contract_start", "type": "text", "required": false },
+        { "name": "contract_end", "type": "text", "required": false },
+        { "name": "provenance", "type": "json", "required": true },
+        { "name": "created_at", "type": "integer", "required": false },
+        { "name": "updated_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["name", "industry", "region", "tier"],
+      "summary_template": "{{name}} is a {{tier}} account in the {{industry}} industry, region {{region}}, with ${{arr_usd}} ARR. Contract runs {{contract_start}} to {{contract_end}}."
+    },
+    {
+      "id": "node_person",
+      "type": "canonical_spine",
+      "name": "Person",
+      "description": "A human being involved in the customer relationship. Not a CRM contact — a real person with roles, influence, and engagement history.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "version", "type": "integer", "required": true },
+        { "name": "name", "type": "text", "required": true },
+        { "name": "email", "type": "text", "required": false },
+        { "name": "role", "type": "text", "required": false },
+        { "name": "department", "type": "text", "required": false },
+        { "name": "seniority", "type": "text", "required": false },
+        { "name": "provenance", "type": "json", "required": true },
+        { "name": "created_at", "type": "integer", "required": false },
+        { "name": "updated_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["name", "email", "role", "department", "seniority"],
+      "summary_template": "{{name}} ({{email}}) is a {{seniority}} {{role}} in {{department}}."
+    },
+    {
+      "id": "node_organization",
+      "type": "canonical_spine",
+      "name": "Organization",
+      "description": "A legal entity that may own one or more Accounts. The parent company, subsidiary, or holding structure.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "version", "type": "integer", "required": true },
+        { "name": "name", "type": "text", "required": true },
+        { "name": "industry", "type": "text", "required": false },
+        { "name": "region", "type": "text", "required": false },
+        { "name": "type", "type": "text", "required": false },
+        { "name": "size", "type": "text", "required": false },
+        { "name": "provenance", "type": "json", "required": true },
+        { "name": "created_at", "type": "integer", "required": false },
+        { "name": "updated_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["name", "industry", "region", "type", "size"],
+      "summary_template": "{{name}} is a {{size}} {{type}} organization in the {{industry}} industry, based in {{region}}."
+    },
+    {
+      "id": "node_contract",
+      "type": "canonical_spine",
+      "name": "Contract",
+      "description": "A legally binding agreement between the vendor and the customer. Defines terms, value, and duration.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "version", "type": "integer", "required": true },
+        { "name": "name", "type": "text", "required": true },
+        { "name": "type", "type": "text", "required": false },
+        { "name": "start_date", "type": "text", "required": false },
+        { "name": "end_date", "type": "text", "required": false },
+        { "name": "value_usd", "type": "real", "required": false },
+        { "name": "status", "type": "text", "required": false },
+        { "name": "terms", "type": "text", "required": false },
+        { "name": "provenance", "type": "json", "required": true },
+        { "name": "created_at", "type": "integer", "required": false },
+        { "name": "updated_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["name", "type", "status", "terms"],
+      "summary_template": "Contract {{name}} ({{type}}) valued at ${{value_usd}}, status {{status}}, valid {{start_date}} to {{end_date}}."
+    },
+    {
+      "id": "node_subscription",
+      "type": "canonical_spine",
+      "name": "Subscription",
+      "description": "A recurring billing commitment. Represents the ongoing commercial relationship with a specific product and terms.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "version", "type": "integer", "required": true },
+        { "name": "product_id", "type": "text", "required": false },
+        { "name": "start_date", "type": "text", "required": false },
+        { "name": "end_date", "type": "text", "required": false },
+        { "name": "mrr_usd", "type": "real", "required": false },
+        { "name": "status", "type": "text", "required": false },
+        { "name": "billing_period", "type": "text", "required": false },
+        { "name": "quantity", "type": "integer", "required": false },
+        { "name": "provenance", "type": "json", "required": true },
+        { "name": "created_at", "type": "integer", "required": false },
+        { "name": "updated_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["status", "billing_period"],
+      "summary_template": "Subscription for product {{product_id}} with ${{mrr_usd}} MRR, status {{status}}, billing {{billing_period}}, quantity {{quantity}}."
+    },
+    {
+      "id": "node_product",
+      "type": "canonical_spine",
+      "name": "Product",
+      "description": "A thing the company sells. A SKU, service offering, or platform capability that customers subscribe to or deploy.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "version", "type": "integer", "required": true },
+        { "name": "name", "type": "text", "required": true },
+        { "name": "category", "type": "text", "required": false },
+        { "name": "description", "type": "text", "required": false },
+        { "name": "sku", "type": "text", "required": false },
+        { "name": "version", "type": "text", "required": false },
+        { "name": "provenance", "type": "json", "required": true },
+        { "name": "created_at", "type": "integer", "required": false },
+        { "name": "updated_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["name", "category", "description", "sku"],
+      "summary_template": "Product {{name}} ({{sku}}) in category {{category}}: {{description}}"
+    },
+    {
+      "id": "node_deployment",
+      "type": "canonical_spine",
+      "name": "Deployment",
+      "description": "An installed instance of a product. A running system that consumes resources and produces telemetry.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "version", "type": "integer", "required": true },
+        { "name": "account_id", "type": "text", "required": false },
+        { "name": "environment_id", "type": "text", "required": false },
+        { "name": "product_id", "type": "text", "required": false },
+        { "name": "version_deployed", "type": "text", "required": false },
+        { "name": "status", "type": "text", "required": false },
+        { "name": "region", "type": "text", "required": false },
+        { "name": "url", "type": "text", "required": false },
+        { "name": "provenance", "type": "json", "required": true },
+        { "name": "created_at", "type": "integer", "required": false },
+        { "name": "updated_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["status", "region", "url", "version_deployed"],
+      "summary_template": "Deployment of product {{product_id}} in environment {{environment_id}}, version {{version_deployed}}, status {{status}}, region {{region}}."
+    },
+    {
+      "id": "node_integration",
+      "type": "canonical_spine",
+      "name": "Integration",
+      "description": "A connection between systems. An API integration, data sync, or external system link that the customer has configured.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "version", "type": "integer", "required": true },
+        { "name": "name", "type": "text", "required": true },
+        { "name": "type", "type": "text", "required": false },
+        { "name": "status", "type": "text", "required": false },
+        { "name": "from_system", "type": "text", "required": false },
+        { "name": "to_system", "type": "text", "required": false },
+        { "name": "protocol", "type": "text", "required": false },
+        { "name": "endpoint_url", "type": "text", "required": false },
+        { "name": "provenance", "type": "json", "required": true },
+        { "name": "created_at", "type": "integer", "required": false },
+        { "name": "updated_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["name", "type", "status", "from_system", "to_system", "protocol"],
+      "summary_template": "Integration {{name}} ({{type}}) connects {{from_system}} to {{to_system}} via {{protocol}}, status {{status}}."
+    },
+    {
+      "id": "node_environment",
+      "type": "canonical_spine",
+      "name": "Environment",
+      "description": "A runtime boundary such as production, staging, or development. Where deployments run.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "version", "type": "integer", "required": true },
+        { "name": "name", "type": "text", "required": true },
+        { "name": "type", "type": "text", "required": false },
+        { "name": "region", "type": "text", "required": false },
+        { "name": "status", "type": "text", "required": false },
+        { "name": "provider", "type": "text", "required": false },
+        { "name": "provenance", "type": "json", "required": true },
+        { "name": "created_at", "type": "integer", "required": false },
+        { "name": "updated_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["name", "type", "region", "provider"],
+      "summary_template": "Environment {{name}} ({{type}}) in region {{region}}, provided by {{provider}}, status {{status}}."
+    },
+    {
+      "id": "node_meeting",
+      "type": "canonical_spine",
+      "name": "Meeting",
+      "description": "A synchronous interaction between people. A scheduled call, QBR, workshop, or ad-hoc conversation.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "version", "type": "integer", "required": true },
+        { "name": "title", "type": "text", "required": true },
+        { "name": "start_time", "type": "integer", "required": false },
+        { "name": "end_time", "type": "integer", "required": false },
+        { "name": "type", "type": "text", "required": false },
+        { "name": "status", "type": "text", "required": false },
+        { "name": "location", "type": "text", "required": false },
+        { "name": "description", "type": "text", "required": false },
+        { "name": "provenance", "type": "json", "required": true },
+        { "name": "created_at", "type": "integer", "required": false },
+        { "name": "updated_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["title", "type", "location", "description"],
+      "summary_template": "Meeting '{{title}}' ({{type}}) scheduled {{start_time}} to {{end_time}}, status {{status}}, location {{location}}."
+    },
+    {
+      "id": "node_task",
+      "type": "canonical_spine",
+      "name": "Task",
+      "description": "A unit of work assigned to a person. A todo, action item, or project task with status and deadline.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "version", "type": "integer", "required": true },
+        { "name": "title", "type": "text", "required": true },
+        { "name": "description", "type": "text", "required": false },
+        { "name": "status", "type": "text", "required": false },
+        { "name": "priority", "type": "text", "required": false },
+        { "name": "due_date", "type": "text", "required": false },
+        { "name": "assignee_id", "type": "text", "required": false },
+        { "name": "provenance", "type": "json", "required": true },
+        { "name": "created_at", "type": "integer", "required": false },
+        { "name": "updated_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["title", "description", "status", "priority"],
+      "summary_template": "Task '{{title}}' with priority {{priority}}, status {{status}}, due {{due_date}}. Description: {{description}}"
+    },
+    {
+      "id": "node_objective",
+      "type": "canonical_spine",
+      "name": "Objective",
+      "description": "A stated goal such as an OKR or MBO. What the customer wants to achieve with the platform.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "version", "type": "integer", "required": true },
+        { "name": "title", "type": "text", "required": true },
+        { "name": "description", "type": "text", "required": false },
+        { "name": "type", "type": "text", "required": false },
+        { "name": "status", "type": "text", "required": false },
+        { "name": "target_date", "type": "text", "required": false },
+        { "name": "progress_percent", "type": "real", "required": false },
+        { "name": "provenance", "type": "json", "required": true },
+        { "name": "created_at", "type": "integer", "required": false },
+        { "name": "updated_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["title", "description", "type", "status"],
+      "summary_template": "Objective '{{title}}' ({{type}}), status {{status}}, target {{target_date}}, progress {{progress_percent}}%. {{description}}"
+    },
+    {
+      "id": "node_initiative",
+      "type": "canonical_spine",
+      "name": "Initiative",
+      "description": "A program of work to achieve an objective. A project, rollout, or implementation plan with timeline and resources.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "version", "type": "integer", "required": true },
+        { "name": "title", "type": "text", "required": true },
+        { "name": "description", "type": "text", "required": false },
+        { "name": "status", "type": "text", "required": false },
+        { "name": "start_date", "type": "text", "required": false },
+        { "name": "end_date", "type": "text", "required": false },
+        { "name": "owner_id", "type": "text", "required": false },
+        { "name": "progress_percent", "type": "real", "required": false },
+        { "name": "provenance", "type": "json", "required": true },
+        { "name": "created_at", "type": "integer", "required": false },
+        { "name": "updated_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["title", "description", "status"],
+      "summary_template": "Initiative '{{title}}', status {{status}}, running {{start_date}} to {{end_date}}, owner {{owner_id}}, progress {{progress_percent}}%. {{description}}"
+    },
+    {
+      "id": "node_health",
+      "type": "dynamic_memory",
+      "name": "Health",
+      "description": "Account health score and reasoning. Derived from usage, support, engagement, and NPS signals. Ephemeral; TTL 7 days.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "entity_type", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "score", "type": "real", "required": true },
+        { "name": "score_label", "type": "text", "required": false },
+        { "name": "reasoning", "type": "text", "required": false },
+        { "name": "contributing_factors", "type": "json", "required": true },
+        { "name": "confidence", "type": "real", "required": true },
+        { "name": "generated_by", "type": "text", "required": true },
+        { "name": "episode_id", "type": "text", "required": false },
+        { "name": "ttl_days", "type": "integer", "required": true },
+        { "name": "valid_from", "type": "integer", "required": false },
+        { "name": "valid_until", "type": "integer", "required": false },
+        { "name": "created_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["score_label", "reasoning", "contributing_factors"],
+      "summary_template": "Health for {{entity_type}} {{canonical_id}}: {{score}} ({{score_label}}). {{reasoning}}"
+    },
+    {
+      "id": "node_risk",
+      "type": "dynamic_memory",
+      "name": "Risk",
+      "description": "Risk score and reasoning for an account or entity. Derived from contract, usage trends, stakeholder changes, and market signals. Ephemeral; TTL 14 days.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "entity_type", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "score", "type": "real", "required": true },
+        { "name": "score_label", "type": "text", "required": false },
+        { "name": "reasoning", "type": "text", "required": false },
+        { "name": "contributing_factors", "type": "json", "required": true },
+        { "name": "confidence", "type": "real", "required": true },
+        { "name": "generated_by", "type": "text", "required": true },
+        { "name": "episode_id", "type": "text", "required": false },
+        { "name": "ttl_days", "type": "integer", "required": true },
+        { "name": "valid_from", "type": "integer", "required": false },
+        { "name": "valid_until", "type": "integer", "required": false },
+        { "name": "created_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["score_label", "reasoning", "contributing_factors"],
+      "summary_template": "Risk for {{entity_type}} {{canonical_id}}: {{score}} ({{score_label}}). {{reasoning}}"
+    },
+    {
+      "id": "node_sentiment",
+      "type": "dynamic_memory",
+      "name": "Sentiment",
+      "description": "Emotional tone of the relationship. Derived from engagement transcripts, emails, and support interactions. Ephemeral; TTL 7 days.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "entity_type", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "score", "type": "real", "required": true },
+        { "name": "score_label", "type": "text", "required": false },
+        { "name": "reasoning", "type": "text", "required": false },
+        { "name": "contributing_factors", "type": "json", "required": true },
+        { "name": "confidence", "type": "real", "required": true },
+        { "name": "generated_by", "type": "text", "required": true },
+        { "name": "episode_id", "type": "text", "required": false },
+        { "name": "ttl_days", "type": "integer", "required": true },
+        { "name": "valid_from", "type": "integer", "required": false },
+        { "name": "valid_until", "type": "integer", "required": false },
+        { "name": "created_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["score_label", "reasoning", "contributing_factors"],
+      "summary_template": "Sentiment for {{entity_type}} {{canonical_id}}: {{score}} ({{score_label}}). {{reasoning}}"
+    },
+    {
+      "id": "node_signals",
+      "type": "dynamic_memory",
+      "name": "Signals",
+      "description": "Detected changes or anomalies. Derived from telemetry, webhooks, and delta detection. Ephemeral; TTL 1 day.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "entity_type", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "signal_type", "type": "text", "required": true },
+        { "name": "severity", "type": "text", "required": false },
+        { "name": "description", "type": "text", "required": false },
+        { "name": "source", "type": "text", "required": false },
+        { "name": "detected_at", "type": "integer", "required": false },
+        { "name": "confidence", "type": "real", "required": true },
+        { "name": "generated_by", "type": "text", "required": true },
+        { "name": "episode_id", "type": "text", "required": false },
+        { "name": "ttl_days", "type": "integer", "required": true },
+        { "name": "valid_from", "type": "integer", "required": false },
+        { "name": "valid_until", "type": "integer", "required": false },
+        { "name": "created_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["signal_type", "severity", "description", "source"],
+      "summary_template": "Signal detected for {{entity_type}} {{canonical_id}}: {{signal_type}} (severity {{severity}}) from {{source}}. {{description}}"
+    },
+    {
+      "id": "node_usage",
+      "type": "dynamic_memory",
+      "name": "Usage",
+      "description": "Aggregated consumption patterns. Derived from telemetry, API logs, and product analytics. Ephemeral; TTL 30 days.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "entity_type", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "metric_name", "type": "text", "required": true },
+        { "name": "current_value", "type": "real", "required": false },
+        { "name": "target_value", "type": "real", "required": false },
+        { "name": "trend", "type": "text", "required": false },
+        { "name": "period_start", "type": "integer", "required": false },
+        { "name": "period_end", "type": "integer", "required": false },
+        { "name": "confidence", "type": "real", "required": true },
+        { "name": "generated_by", "type": "text", "required": true },
+        { "name": "episode_id", "type": "text", "required": false },
+        { "name": "ttl_days", "type": "integer", "required": true },
+        { "name": "valid_from", "type": "integer", "required": false },
+        { "name": "valid_until", "type": "integer", "required": false },
+        { "name": "created_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["metric_name", "trend", "period_start", "period_end"],
+      "summary_template": "Usage for {{entity_type}} {{canonical_id}}: {{metric_name}} = {{current_value}} (target {{target_value}}), trend {{trend}} over period {{period_start}} to {{period_end}}."
+    },
+    {
+      "id": "node_architecture_assessment",
+      "type": "dynamic_memory",
+      "name": "Architecture Assessment",
+      "description": "Evaluated architecture posture. Derived from API inventory, deployment topology, and integration map. Ephemeral; TTL 90 days.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "entity_type", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "overall_score", "type": "real", "required": false },
+        { "name": "dimensions", "type": "json", "required": true },
+        { "name": "findings", "type": "text", "required": false },
+        { "name": "recommendations", "type": "text", "required": false },
+        { "name": "confidence", "type": "real", "required": true },
+        { "name": "generated_by", "type": "text", "required": true },
+        { "name": "episode_id", "type": "text", "required": false },
+        { "name": "ttl_days", "type": "integer", "required": true },
+        { "name": "valid_from", "type": "integer", "required": false },
+        { "name": "valid_until", "type": "integer", "required": false },
+        { "name": "created_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["findings", "recommendations", "dimensions"],
+      "summary_template": "Architecture Assessment for {{entity_type}} {{canonical_id}}: overall score {{overall_score}}. Findings: {{findings}} Recommendations: {{recommendations}}"
+    },
+    {
+      "id": "node_technical_debt",
+      "type": "dynamic_memory",
+      "name": "Technical Debt",
+      "description": "Known technical liabilities. Derived from support tickets, incident post-mortems, and architecture reviews. Ephemeral; TTL 30 days.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "entity_type", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "items", "type": "json", "required": true },
+        { "name": "severity", "type": "text", "required": false },
+        { "name": "impact", "type": "text", "required": false },
+        { "name": "remediation_plan", "type": "text", "required": false },
+        { "name": "estimated_effort", "type": "text", "required": false },
+        { "name": "confidence", "type": "real", "required": true },
+        { "name": "generated_by", "type": "text", "required": true },
+        { "name": "episode_id", "type": "text", "required": false },
+        { "name": "ttl_days", "type": "integer", "required": true },
+        { "name": "valid_from", "type": "integer", "required": false },
+        { "name": "valid_until", "type": "integer", "required": false },
+        { "name": "created_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["severity", "impact", "remediation_plan", "estimated_effort", "items"],
+      "summary_template": "Technical Debt for {{entity_type}} {{canonical_id}}: severity {{severity}}, impact {{impact}}. Remediation: {{remediation_plan}} (effort {{estimated_effort}})."
+    },
+    {
+      "id": "node_business_context",
+      "type": "dynamic_memory",
+      "name": "Business Context",
+      "description": "Synthesized understanding of the customer's business. Derived from public data, earnings calls, news, and CRM notes. Ephemeral; TTL 30 days.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "entity_type", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "summary", "type": "text", "required": false },
+        { "name": "key_drivers", "type": "json", "required": true },
+        { "name": "market_position", "type": "text", "required": false },
+        { "name": "competitive_landscape", "type": "text", "required": false },
+        { "name": "recent_changes", "type": "text", "required": false },
+        { "name": "confidence", "type": "real", "required": true },
+        { "name": "generated_by", "type": "text", "required": true },
+        { "name": "episode_id", "type": "text", "required": false },
+        { "name": "ttl_days", "type": "integer", "required": true },
+        { "name": "valid_from", "type": "integer", "required": false },
+        { "name": "valid_until", "type": "integer", "required": false },
+        { "name": "created_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": [
+        "summary",
+        "market_position",
+        "competitive_landscape",
+        "recent_changes",
+        "key_drivers"
+      ],
+      "summary_template": "Business Context for {{entity_type}} {{canonical_id}}: {{summary}} Market position: {{market_position}}. Recent changes: {{recent_changes}}."
+    },
+    {
+      "id": "node_engagement",
+      "type": "dynamic_memory",
+      "name": "Engagement",
+      "description": "Relationship interaction history. Derived from meetings, emails, calls, and support tickets. Ephemeral; TTL 30 days.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "entity_type", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "frequency", "type": "text", "required": false },
+        { "name": "recency", "type": "text", "required": false },
+        { "name": "depth", "type": "text", "required": false },
+        { "name": "channels", "type": "json", "required": true },
+        { "name": "interaction_count", "type": "integer", "required": false },
+        { "name": "last_interaction_date", "type": "integer", "required": false },
+        { "name": "confidence", "type": "real", "required": true },
+        { "name": "generated_by", "type": "text", "required": true },
+        { "name": "episode_id", "type": "text", "required": false },
+        { "name": "ttl_days", "type": "integer", "required": true },
+        { "name": "valid_from", "type": "integer", "required": false },
+        { "name": "valid_until", "type": "integer", "required": false },
+        { "name": "created_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["frequency", "recency", "depth", "channels"],
+      "summary_template": "Engagement for {{entity_type}} {{canonical_id}}: frequency {{frequency}}, recency {{recency}}, depth {{depth}}. Channels: {{channels}}."
+    },
+    {
+      "id": "node_stakeholder_intelligence",
+      "type": "dynamic_memory",
+      "name": "Stakeholder Intelligence",
+      "description": "Who matters and why. Derived from org chart, engagement frequency, and decision influence. Ephemeral; TTL 14 days.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "entity_type", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "influence_map", "type": "json", "required": true },
+        { "name": "key_stakeholders", "type": "json", "required": true },
+        { "name": "engagement_patterns", "type": "json", "required": true },
+        { "name": "decision_makers", "type": "json", "required": true },
+        { "name": "confidence", "type": "real", "required": true },
+        { "name": "generated_by", "type": "text", "required": true },
+        { "name": "episode_id", "type": "text", "required": false },
+        { "name": "ttl_days", "type": "integer", "required": true },
+        { "name": "valid_from", "type": "integer", "required": false },
+        { "name": "valid_until", "type": "integer", "required": false },
+        { "name": "created_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": [
+        "influence_map",
+        "key_stakeholders",
+        "engagement_patterns",
+        "decision_makers"
+      ],
+      "summary_template": "Stakeholder Intelligence for {{entity_type}} {{canonical_id}}: key stakeholders {{key_stakeholders}}, decision makers {{decision_makers}}."
+    },
+    {
+      "id": "node_recommendations",
+      "type": "dynamic_memory",
+      "name": "Recommendations",
+      "description": "Suggested actions for the account team. Derived from Health, Risk, Engagement, and Objectives. Ephemeral; TTL 7 days.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "entity_type", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "action", "type": "text", "required": true },
+        { "name": "priority", "type": "text", "required": false },
+        { "name": "expected_impact", "type": "text", "required": false },
+        { "name": "rationale", "type": "text", "required": false },
+        { "name": "due_date", "type": "text", "required": false },
+        { "name": "status", "type": "text", "required": false },
+        { "name": "confidence", "type": "real", "required": true },
+        { "name": "generated_by", "type": "text", "required": true },
+        { "name": "episode_id", "type": "text", "required": false },
+        { "name": "ttl_days", "type": "integer", "required": true },
+        { "name": "valid_from", "type": "integer", "required": false },
+        { "name": "valid_until", "type": "integer", "required": false },
+        { "name": "created_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["action", "priority", "expected_impact", "rationale", "status"],
+      "summary_template": "Recommendation for {{entity_type}} {{canonical_id}}: {{action}} (priority {{priority}}). Expected impact: {{expected_impact}}. Rationale: {{rationale}}"
+    },
+    {
+      "id": "node_insights",
+      "type": "dynamic_memory",
+      "name": "Insights",
+      "description": "Generated findings from cross-signal synthesis and pattern detection. Ephemeral; TTL 7 days.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "entity_type", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "insight_type", "type": "text", "required": true },
+        { "name": "description", "type": "text", "required": false },
+        { "name": "confidence", "type": "real", "required": true },
+        { "name": "evidence", "type": "json", "required": true },
+        { "name": "related_entities", "type": "json", "required": true },
+        { "name": "generated_by", "type": "text", "required": true },
+        { "name": "episode_id", "type": "text", "required": false },
+        { "name": "ttl_days", "type": "integer", "required": true },
+        { "name": "valid_from", "type": "integer", "required": false },
+        { "name": "valid_until", "type": "integer", "required": false },
+        { "name": "created_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["insight_type", "description", "evidence", "related_entities"],
+      "summary_template": "Insight for {{entity_type}} {{canonical_id}}: {{insight_type}} — {{description}}. Confidence: {{confidence}}."
+    },
+    {
+      "id": "node_evidence",
+      "type": "dynamic_memory",
+      "name": "Evidence",
+      "description": "Supporting data for claims. Links, metrics, quotes, and snapshots that back up memories. Persistent while linked to a claim.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "entity_type", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "claim", "type": "text", "required": true },
+        { "name": "supporting_data", "type": "json", "required": true },
+        { "name": "source", "type": "text", "required": false },
+        { "name": "timestamp", "type": "integer", "required": false },
+        { "name": "credibility", "type": "real", "required": false },
+        { "name": "confidence", "type": "real", "required": true },
+        { "name": "generated_by", "type": "text", "required": true },
+        { "name": "episode_id", "type": "text", "required": false },
+        { "name": "ttl_days", "type": "integer", "required": true },
+        { "name": "valid_from", "type": "integer", "required": false },
+        { "name": "valid_until", "type": "integer", "required": false },
+        { "name": "created_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["claim", "supporting_data", "source"],
+      "summary_template": "Evidence for {{entity_type}} {{canonical_id}}: claim '{{claim}}' supported by {{supporting_data}} from {{source}}."
+    },
+    {
+      "id": "node_timeline",
+      "type": "dynamic_memory",
+      "name": "Timeline",
+      "description": "Projected events and milestones. Derived from contracts, renewals, initiatives, and go-lives. Ephemeral; TTL 90 days.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "entity_type", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "events", "type": "json", "required": true },
+        { "name": "milestones", "type": "json", "required": true },
+        { "name": "projected_dates", "type": "json", "required": true },
+        { "name": "dependencies", "type": "json", "required": true },
+        { "name": "confidence", "type": "real", "required": true },
+        { "name": "generated_by", "type": "text", "required": true },
+        { "name": "episode_id", "type": "text", "required": false },
+        { "name": "ttl_days", "type": "integer", "required": true },
+        { "name": "valid_from", "type": "integer", "required": false },
+        { "name": "valid_until", "type": "integer", "required": false },
+        { "name": "created_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["events", "milestones", "projected_dates", "dependencies"],
+      "summary_template": "Timeline for {{entity_type}} {{canonical_id}}: events {{events}}, milestones {{milestones}}, projected dates {{projected_dates}}."
+    },
+    {
+      "id": "node_forecast",
+      "type": "dynamic_memory",
+      "name": "Forecast",
+      "description": "Predicted revenue, churn, or expansion. Derived from ML model and historical patterns. Ephemeral; TTL 30 days.",
+      "attributes": [
+        { "name": "id", "type": "text", "required": true },
+        { "name": "tenant_id", "type": "text", "required": true },
+        { "name": "entity_type", "type": "text", "required": true },
+        { "name": "canonical_id", "type": "text", "required": true },
+        { "name": "metric", "type": "text", "required": true },
+        { "name": "value", "type": "real", "required": true },
+        { "name": "confidence_interval", "type": "json", "required": true },
+        { "name": "horizon", "type": "text", "required": false },
+        { "name": "model_version", "type": "text", "required": false },
+        { "name": "confidence", "type": "real", "required": true },
+        { "name": "generated_by", "type": "text", "required": true },
+        { "name": "episode_id", "type": "text", "required": false },
+        { "name": "ttl_days", "type": "integer", "required": true },
+        { "name": "valid_from", "type": "integer", "required": false },
+        { "name": "valid_until", "type": "integer", "required": false },
+        { "name": "created_at", "type": "integer", "required": false }
+      ],
+      "embedding_fields": ["metric", "horizon", "model_version"],
+      "summary_template": "Forecast for {{entity_type}} {{canonical_id}}: {{metric}} = {{value}} over horizon {{horizon}} (model {{model_version}})."
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_account_owns_contract",
+      "from": "node_account",
+      "to": "node_contract",
+      "relation_type": "owns",
+      "description": "An Account owns one or more Contracts."
+    },
+    {
+      "id": "edge_account_has_subscription",
+      "from": "node_account",
+      "to": "node_subscription",
+      "relation_type": "has",
+      "description": "An Account has one or more Subscriptions."
+    },
+    {
+      "id": "edge_account_has_person",
+      "from": "node_account",
+      "to": "node_person",
+      "relation_type": "has_contact",
+      "description": "An Account has contacts (Persons)."
+    },
+    {
+      "id": "edge_account_deploys",
+      "from": "node_account",
+      "to": "node_deployment",
+      "relation_type": "deploys",
+      "description": "An Account deploys products into environments."
+    },
+    {
+      "id": "edge_account_uses_integration",
+      "from": "node_account",
+      "to": "node_integration",
+      "relation_type": "uses",
+      "description": "An Account uses Integrations."
+    },
+    {
+      "id": "edge_account_belongs_to",
+      "from": "node_account",
+      "to": "node_organization",
+      "relation_type": "belongs_to",
+      "description": "An Account belongs to an Organization."
+    },
+    {
+      "id": "edge_person_works_for",
+      "from": "node_person",
+      "to": "node_organization",
+      "relation_type": "works_for",
+      "description": "A Person works for an Organization."
+    },
+    {
+      "id": "edge_person_assigned_to",
+      "from": "node_person",
+      "to": "node_task",
+      "relation_type": "assigned_to",
+      "description": "A Person is assigned to a Task."
+    },
+    {
+      "id": "edge_person_attends",
+      "from": "node_person",
+      "to": "node_meeting",
+      "relation_type": "attends",
+      "description": "A Person attends a Meeting."
+    },
+    {
+      "id": "edge_person_associated_with",
+      "from": "node_person",
+      "to": "node_account",
+      "relation_type": "associated_with",
+      "description": "A Person is associated with an Account."
+    },
+    {
+      "id": "edge_organization_has",
+      "from": "node_organization",
+      "to": "node_account",
+      "relation_type": "has",
+      "description": "An Organization has one or more Accounts."
+    },
+    {
+      "id": "edge_contract_covers",
+      "from": "node_contract",
+      "to": "node_product",
+      "relation_type": "covers",
+      "description": "A Contract covers one or more Products."
+    },
+    {
+      "id": "edge_contract_renews",
+      "from": "node_contract",
+      "to": "node_subscription",
+      "relation_type": "renews",
+      "description": "A Contract renews into a Subscription."
+    },
+    {
+      "id": "edge_subscription_for",
+      "from": "node_subscription",
+      "to": "node_product",
+      "relation_type": "for",
+      "description": "A Subscription is for a Product."
+    },
+    {
+      "id": "edge_product_deployed_as",
+      "from": "node_product",
+      "to": "node_deployment",
+      "relation_type": "deployed_as",
+      "description": "A Product is deployed as a Deployment."
+    },
+    {
+      "id": "edge_deployment_runs_in",
+      "from": "node_deployment",
+      "to": "node_environment",
+      "relation_type": "runs_in",
+      "description": "A Deployment runs in an Environment."
+    },
+    {
+      "id": "edge_deployment_uses",
+      "from": "node_deployment",
+      "to": "node_integration",
+      "relation_type": "uses",
+      "description": "A Deployment uses Integrations."
+    },
+    {
+      "id": "edge_integration_connects",
+      "from": "node_integration",
+      "to": "node_product",
+      "relation_type": "connects",
+      "description": "An Integration connects to a Product."
+    },
+    {
+      "id": "edge_task_supports",
+      "from": "node_task",
+      "to": "node_objective",
+      "relation_type": "supports",
+      "description": "A Task supports an Objective."
+    },
+    {
+      "id": "edge_objective_part_of",
+      "from": "node_objective",
+      "to": "node_initiative",
+      "relation_type": "part_of",
+      "description": "An Objective is part of an Initiative."
+    },
+    {
+      "id": "edge_initiative_drives",
+      "from": "node_initiative",
+      "to": "node_account",
+      "relation_type": "drives",
+      "description": "An Initiative drives value for an Account."
+    },
+    {
+      "id": "edge_meeting_about",
+      "from": "node_meeting",
+      "to": "node_account",
+      "relation_type": "about",
+      "description": "A Meeting is about an Account."
+    },
+    {
+      "id": "edge_meeting_includes",
+      "from": "node_meeting",
+      "to": "node_person",
+      "relation_type": "includes",
+      "description": "A Meeting includes Persons."
+    },
+    {
+      "id": "edge_task_for",
+      "from": "node_task",
+      "to": "node_account",
+      "relation_type": "for",
+      "description": "A Task is for an Account."
+    },
+    {
+      "id": "edge_account_has_health",
+      "from": "node_account",
+      "to": "node_health",
+      "relation_type": "has_state",
+      "description": "An Account has a Health memory (computed state)."
+    },
+    {
+      "id": "edge_account_has_risk",
+      "from": "node_account",
+      "to": "node_risk",
+      "relation_type": "has_state",
+      "description": "An Account has a Risk memory (computed state)."
+    },
+    {
+      "id": "edge_account_has_sentiment",
+      "from": "node_account",
+      "to": "node_sentiment",
+      "relation_type": "has_state",
+      "description": "An Account has a Sentiment memory (computed state)."
+    },
+    {
+      "id": "edge_account_generates",
+      "from": "node_account",
+      "to": "node_signals",
+      "relation_type": "generates",
+      "description": "An Account generates Signals."
+    },
+    {
+      "id": "edge_account_has_usage",
+      "from": "node_account",
+      "to": "node_usage",
+      "relation_type": "has",
+      "description": "An Account has Usage memory."
+    },
+    {
+      "id": "edge_account_has_architecture",
+      "from": "node_account",
+      "to": "node_architecture_assessment",
+      "relation_type": "has_assessment",
+      "description": "An Account has an Architecture Assessment."
+    },
+    {
+      "id": "edge_account_has_technical_debt",
+      "from": "node_account",
+      "to": "node_technical_debt",
+      "relation_type": "has",
+      "description": "An Account has Technical Debt memory."
+    },
+    {
+      "id": "edge_account_has_context",
+      "from": "node_account",
+      "to": "node_business_context",
+      "relation_type": "has",
+      "description": "An Account has Business Context memory."
+    },
+    {
+      "id": "edge_account_has_engagement",
+      "from": "node_account",
+      "to": "node_engagement",
+      "relation_type": "has",
+      "description": "An Account has Engagement memory."
+    },
+    {
+      "id": "edge_account_has_stakeholders",
+      "from": "node_account",
+      "to": "node_stakeholder_intelligence",
+      "relation_type": "has",
+      "description": "An Account has Stakeholder Intelligence."
+    },
+    {
+      "id": "edge_account_has_recommendations",
+      "from": "node_account",
+      "to": "node_recommendations",
+      "relation_type": "has",
+      "description": "An Account has Recommendations."
+    },
+    {
+      "id": "edge_account_has_insights",
+      "from": "node_account",
+      "to": "node_insights",
+      "relation_type": "has",
+      "description": "An Account has Insights."
+    },
+    {
+      "id": "edge_account_has_evidence",
+      "from": "node_account",
+      "to": "node_evidence",
+      "relation_type": "has",
+      "description": "An Account has Evidence supporting claims."
+    },
+    {
+      "id": "edge_account_has_timeline",
+      "from": "node_account",
+      "to": "node_timeline",
+      "relation_type": "has",
+      "description": "An Account has a Timeline memory."
+    },
+    {
+      "id": "edge_account_has_forecast",
+      "from": "node_account",
+      "to": "node_forecast",
+      "relation_type": "has",
+      "description": "An Account has Forecast memory."
+    },
+    {
+      "id": "edge_health_based_on",
+      "from": "node_health",
+      "to": "node_evidence",
+      "relation_type": "based_on",
+      "description": "Health is based on Evidence."
+    },
+    {
+      "id": "edge_risk_based_on",
+      "from": "node_risk",
+      "to": "node_evidence",
+      "relation_type": "based_on",
+      "description": "Risk is based on Evidence."
+    },
+    {
+      "id": "edge_insights_based_on",
+      "from": "node_insights",
+      "to": "node_evidence",
+      "relation_type": "based_on",
+      "description": "Insights are based on Evidence."
+    },
+    {
+      "id": "edge_recommendations_based_on_insights",
+      "from": "node_recommendations",
+      "to": "node_insights",
+      "relation_type": "based_on",
+      "description": "Recommendations are based on Insights."
+    },
+    {
+      "id": "edge_recommendations_based_on_health",
+      "from": "node_recommendations",
+      "to": "node_health",
+      "relation_type": "based_on",
+      "description": "Recommendations are based on Health."
+    },
+    {
+      "id": "edge_recommendations_based_on_risk",
+      "from": "node_recommendations",
+      "to": "node_risk",
+      "relation_type": "based_on",
+      "description": "Recommendations are based on Risk."
+    },
+    {
+      "id": "edge_forecast_based_on_usage",
+      "from": "node_forecast",
+      "to": "node_usage",
+      "relation_type": "based_on",
+      "description": "Forecast is based on Usage."
+    },
+    {
+      "id": "edge_engagement_about",
+      "from": "node_engagement",
+      "to": "node_person",
+      "relation_type": "about",
+      "description": "Engagement is about a Person."
+    },
+    {
+      "id": "edge_stakeholder_intelligence_about",
+      "from": "node_stakeholder_intelligence",
+      "to": "node_person",
+      "relation_type": "about",
+      "description": "Stakeholder Intelligence is about a Person."
+    },
+    {
+      "id": "edge_technical_debt_in",
+      "from": "node_technical_debt",
+      "to": "node_deployment",
+      "relation_type": "in",
+      "description": "Technical Debt is in a Deployment."
+    },
+    {
+      "id": "edge_architecture_assessment_of",
+      "from": "node_architecture_assessment",
+      "to": "node_deployment",
+      "relation_type": "of",
+      "description": "Architecture Assessment is of a Deployment."
+    },
+    {
+      "id": "edge_usage_of_product",
+      "from": "node_usage",
+      "to": "node_product",
+      "relation_type": "of",
+      "description": "Usage is of a Product."
+    },
+    {
+      "id": "edge_usage_of_integration",
+      "from": "node_usage",
+      "to": "node_integration",
+      "relation_type": "of",
+      "description": "Usage is of an Integration."
+    },
+    {
+      "id": "edge_signals_from_deployment",
+      "from": "node_signals",
+      "to": "node_deployment",
+      "relation_type": "from",
+      "description": "Signals originate from a Deployment."
+    },
+    {
+      "id": "edge_signals_from_integration",
+      "from": "node_signals",
+      "to": "node_integration",
+      "relation_type": "from",
+      "description": "Signals originate from an Integration."
+    },
+    {
+      "id": "edge_signals_affects",
+      "from": "node_signals",
+      "to": "node_health",
+      "relation_type": "affects",
+      "description": "Signals affect Health."
+    },
+    {
+      "id": "edge_signals_triggers",
+      "from": "node_signals",
+      "to": "node_recommendations",
+      "relation_type": "triggers",
+      "description": "Signals trigger Recommendations."
+    },
+    {
+      "id": "edge_health_affects",
+      "from": "node_health",
+      "to": "node_risk",
+      "relation_type": "affects",
+      "description": "Health affects Risk."
+    },
+    {
+      "id": "edge_risk_affects",
+      "from": "node_risk",
+      "to": "node_forecast",
+      "relation_type": "affects",
+      "description": "Risk affects Forecast."
+    },
+    {
+      "id": "edge_usage_affects",
+      "from": "node_usage",
+      "to": "node_health",
+      "relation_type": "affects",
+      "description": "Usage affects Health."
+    },
+    {
+      "id": "edge_usage_affects_engagement",
+      "from": "node_usage",
+      "to": "node_engagement",
+      "relation_type": "affects",
+      "description": "Usage affects Engagement."
+    },
+    {
+      "id": "edge_engagement_affects",
+      "from": "node_engagement",
+      "to": "node_health",
+      "relation_type": "affects",
+      "description": "Engagement affects Health."
+    },
+    {
+      "id": "edge_engagement_affects_sentiment",
+      "from": "node_engagement",
+      "to": "node_sentiment",
+      "relation_type": "affects",
+      "description": "Engagement affects Sentiment."
+    },
+    {
+      "id": "edge_business_context_affects",
+      "from": "node_business_context",
+      "to": "node_risk",
+      "relation_type": "affects",
+      "description": "Business Context affects Risk."
+    },
+    {
+      "id": "edge_business_context_affects_forecast",
+      "from": "node_business_context",
+      "to": "node_forecast",
+      "relation_type": "affects",
+      "description": "Business Context affects Forecast."
+    }
+  ]
+}

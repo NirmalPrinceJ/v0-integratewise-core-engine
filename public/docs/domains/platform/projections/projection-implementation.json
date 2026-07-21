@@ -1,0 +1,454 @@
+{
+  "projection_name": "projection-implementation",
+  "description": "A unified operational view for the Implementation team (Engineering, Delivery, and Project Operations) showing active projects, assigned teams and personnel, running processes, tracked outcomes, supporting assets, live signals, and operational memory. Assembled dynamically from the Spine and Dynamic Memory at query time. No domain-specific tables are used.",
+  "target_team": "Implementation",
+  "target_roles": [
+    "project_lead",
+    "engineer",
+    "team_lead",
+    "delivery_manager",
+    "implementation_specialist",
+    "operations_analyst"
+  ],
+  "spine_entities": [
+    {
+      "entity_type": "spine_projects",
+      "required_columns": [
+        "entity_id",
+        "tenant_id",
+        "entity_type",
+        "name",
+        "status",
+        "created_at",
+        "updated_at",
+        "owner_id",
+        "workspace_id"
+      ],
+      "optional_columns": [
+        "description",
+        "start_date",
+        "target_date",
+        "priority",
+        "completion_percentage",
+        "metadata"
+      ],
+      "default_filters": {
+        "status": "in('active','planning','in_progress')",
+        "deleted_at": "is_null"
+      }
+    },
+    {
+      "entity_type": "spine_workspaces",
+      "required_columns": [
+        "entity_id",
+        "tenant_id",
+        "entity_type",
+        "name",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": ["description", "settings", "owner_id", "metadata"],
+      "default_filters": {
+        "deleted_at": "is_null"
+      }
+    },
+    {
+      "entity_type": "spine_teams",
+      "required_columns": [
+        "entity_id",
+        "tenant_id",
+        "entity_type",
+        "name",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": ["description", "team_type", "lead_id", "workspace_id", "metadata"],
+      "default_filters": {
+        "deleted_at": "is_null"
+      }
+    },
+    {
+      "entity_type": "spine_persons",
+      "required_columns": [
+        "entity_id",
+        "tenant_id",
+        "entity_type",
+        "display_name",
+        "email",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": ["job_title", "role", "department", "status", "avatar_url", "metadata"],
+      "default_filters": {
+        "status": "='active'",
+        "deleted_at": "is_null"
+      }
+    },
+    {
+      "entity_type": "spine_processes",
+      "required_columns": [
+        "entity_id",
+        "tenant_id",
+        "entity_type",
+        "name",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "description",
+        "process_type",
+        "workflow_definition",
+        "owner_id",
+        "metadata"
+      ],
+      "default_filters": {
+        "status": "in('active','running','paused')",
+        "deleted_at": "is_null"
+      }
+    },
+    {
+      "entity_type": "spine_outcomes",
+      "required_columns": [
+        "entity_id",
+        "tenant_id",
+        "entity_type",
+        "name",
+        "status",
+        "created_at",
+        "updated_at",
+        "project_id"
+      ],
+      "optional_columns": [
+        "description",
+        "outcome_type",
+        "target_date",
+        "completion_date",
+        "value",
+        "metadata"
+      ],
+      "default_filters": {
+        "status": "in('pending','in_progress','achieved','at_risk')",
+        "deleted_at": "is_null"
+      }
+    },
+    {
+      "entity_type": "spine_assets",
+      "required_columns": [
+        "entity_id",
+        "tenant_id",
+        "entity_type",
+        "name",
+        "asset_type",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": ["description", "location", "owner_id", "project_id", "metadata"],
+      "default_filters": {
+        "status": "in('active','available','in_use')",
+        "deleted_at": "is_null"
+      }
+    },
+    {
+      "entity_type": "spine_objectives",
+      "required_columns": [
+        "entity_id",
+        "tenant_id",
+        "entity_type",
+        "name",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "description",
+        "objective_type",
+        "target_date",
+        "progress",
+        "owner_id",
+        "parent_id",
+        "metadata"
+      ],
+      "default_filters": {
+        "status": "in('active','in_progress','review')",
+        "deleted_at": "is_null"
+      }
+    },
+    {
+      "entity_type": "spine_decisions",
+      "required_columns": [
+        "entity_id",
+        "tenant_id",
+        "entity_type",
+        "title",
+        "status",
+        "created_at",
+        "updated_at",
+        "decision_maker_id"
+      ],
+      "optional_columns": [
+        "description",
+        "context",
+        "impact_level",
+        "related_entity_type",
+        "related_entity_id",
+        "metadata"
+      ],
+      "default_filters": {
+        "status": "in('draft','proposed','approved','rejected')",
+        "deleted_at": "is_null"
+      }
+    },
+    {
+      "entity_type": "spine_signals",
+      "required_columns": [
+        "entity_id",
+        "tenant_id",
+        "entity_type",
+        "signal_type",
+        "severity",
+        "source_entity_type",
+        "source_entity_id",
+        "created_at"
+      ],
+      "optional_columns": [
+        "message",
+        "acknowledged_at",
+        "acknowledged_by",
+        "resolved_at",
+        "metadata"
+      ],
+      "default_filters": {
+        "severity": "in('info','warning','critical')",
+        "resolved_at": "is_null",
+        "deleted_at": "is_null"
+      }
+    }
+  ],
+  "memory_types": [
+    {
+      "memory_table": "memory_progress",
+      "required_columns": [
+        "memory_id",
+        "tenant_id",
+        "source_entity_type",
+        "source_entity_id",
+        "metric_name",
+        "metric_value",
+        "recorded_at",
+        "recorded_by"
+      ],
+      "optional_columns": ["unit", "baseline_value", "target_value", "change_reason", "metadata"],
+      "default_filters": {
+        "recorded_at": ">= now() - interval '30 days'",
+        "deleted_at": "is_null"
+      },
+      "confidence_threshold": 0.75
+    },
+    {
+      "memory_table": "memory_risk",
+      "required_columns": [
+        "memory_id",
+        "tenant_id",
+        "source_entity_type",
+        "source_entity_id",
+        "risk_category",
+        "risk_level",
+        "identified_at",
+        "identified_by"
+      ],
+      "optional_columns": [
+        "description",
+        "mitigation_plan",
+        "mitigation_status",
+        "owner_id",
+        "target_resolution_date",
+        "metadata"
+      ],
+      "default_filters": {
+        "mitigation_status": "in('open','in_progress','mitigated')",
+        "identified_at": ">= now() - interval '90 days'",
+        "deleted_at": "is_null"
+      },
+      "confidence_threshold": 0.8
+    },
+    {
+      "memory_table": "memory_health",
+      "required_columns": [
+        "memory_id",
+        "tenant_id",
+        "source_entity_type",
+        "source_entity_id",
+        "health_indicator",
+        "health_score",
+        "assessed_at"
+      ],
+      "optional_columns": [
+        "health_details",
+        "trend",
+        "assessed_by",
+        "next_assessment_date",
+        "metadata"
+      ],
+      "default_filters": {
+        "assessed_at": ">= now() - interval '30 days'",
+        "deleted_at": "is_null"
+      },
+      "confidence_threshold": 0.7
+    },
+    {
+      "memory_table": "memory_activity",
+      "required_columns": [
+        "memory_id",
+        "tenant_id",
+        "activity_type",
+        "actor_entity_type",
+        "actor_entity_id",
+        "target_entity_type",
+        "target_entity_id",
+        "performed_at"
+      ],
+      "optional_columns": ["action", "details", "outcome", "context_snapshot", "metadata"],
+      "default_filters": {
+        "performed_at": ">= now() - interval '14 days'",
+        "deleted_at": "is_null"
+      },
+      "confidence_threshold": 0.85
+    }
+  ],
+  "relationships": [
+    {
+      "relation_type": "belongs_to",
+      "from_entity_type": "spine_projects",
+      "to_entity_type": "spine_workspaces",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "assigned_to",
+      "from_entity_type": "spine_projects",
+      "to_entity_type": "spine_teams",
+      "depth": 2,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "member_of",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_teams",
+      "depth": 2,
+      "direction": "both"
+    },
+    {
+      "relation_type": "owns",
+      "from_entity_type": "spine_teams",
+      "to_entity_type": "spine_projects",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "follows",
+      "from_entity_type": "spine_projects",
+      "to_entity_type": "spine_processes",
+      "depth": 2,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "produces",
+      "from_entity_type": "spine_projects",
+      "to_entity_type": "spine_outcomes",
+      "depth": 2,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "requires",
+      "from_entity_type": "spine_projects",
+      "to_entity_type": "spine_assets",
+      "depth": 2,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "drives",
+      "from_entity_type": "spine_objectives",
+      "to_entity_type": "spine_projects",
+      "depth": 2,
+      "direction": "both"
+    },
+    {
+      "relation_type": "decides_on",
+      "from_entity_type": "spine_decisions",
+      "to_entity_type": "spine_projects",
+      "depth": 2,
+      "direction": "both"
+    },
+    {
+      "relation_type": "signals_for",
+      "from_entity_type": "spine_signals",
+      "to_entity_type": "spine_projects",
+      "depth": 2,
+      "direction": "both"
+    },
+    {
+      "relation_type": "contributes_to",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_projects",
+      "depth": 2,
+      "direction": "both"
+    },
+    {
+      "relation_type": "reports_to",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_persons",
+      "depth": 1,
+      "direction": "outgoing"
+    }
+  ],
+  "filters": {
+    "global": {
+      "tenant_isolation": "tenant_id = :tenant_id",
+      "exclude_soft_deleted": "deleted_at IS NULL"
+    },
+    "project": {
+      "status": "in('active','planning','in_progress')",
+      "not_archived": "archived_at IS NULL"
+    },
+    "team": {
+      "active_members_only": "status = 'active'"
+    },
+    "signal": {
+      "unresolved": "resolved_at IS NULL",
+      "severity_threshold": "severity IN ('warning','critical')"
+    },
+    "memory": {
+      "recent_only": "recorded_at >= NOW() - INTERVAL '30 days'"
+    }
+  },
+  "sort_order": [
+    {
+      "entity": "spine_projects",
+      "field": "priority",
+      "direction": "asc"
+    },
+    {
+      "entity": "spine_projects",
+      "field": "updated_at",
+      "direction": "desc"
+    },
+    {
+      "entity": "spine_signals",
+      "field": "severity",
+      "direction": "desc"
+    },
+    {
+      "entity": "spine_signals",
+      "field": "created_at",
+      "direction": "desc"
+    },
+    {
+      "entity": "spine_outcomes",
+      "field": "target_date",
+      "direction": "asc"
+    }
+  ],
+  "ttl_seconds": 300
+}

@@ -1,0 +1,433 @@
+{
+  "projection_name": "projection-finance",
+  "description": "A Finance team projection that assembles a consolidated financial view by combining organizational entities, financial assets, budgetary projects, revenue outcomes, and risk decisions from the Spine with revenue recognition, forecast, budget, and risk memory. Enables CFOs, FP&A analysts, and finance operations staff to monitor financial health, track budget vs. actual, assess revenue forecasts, and surface financial risks without accessing domain-specific tables. The projection traverses relationships from persons through teams to assets and outcomes, dynamically assembling the view at query time.",
+  "target_team": "finance",
+  "target_roles": ["cfo", "fpanda_analyst", "finance_ops", "finance_manager", "controller"],
+  "spine_entities": [
+    {
+      "entity_type": "spine_organizations",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "name",
+        "legal_name",
+        "industry",
+        "region",
+        "size",
+        "fiscal_year_end",
+        "currency_code",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "parent_organization_id",
+        "tax_id",
+        "billing_address",
+        "headquarters_location",
+        "annual_revenue",
+        "employee_count"
+      ],
+      "default_filters": { "status": "active", "tenant_id": "{{tenant_id}}" }
+    },
+    {
+      "entity_type": "spine_persons",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "name",
+        "email",
+        "role",
+        "department",
+        "seniority",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "phone",
+        "employee_id",
+        "manager_id",
+        "cost_center",
+        "hire_date",
+        "termination_date"
+      ],
+      "default_filters": {
+        "department": "finance",
+        "status": "active",
+        "tenant_id": "{{tenant_id}}"
+      }
+    },
+    {
+      "entity_type": "spine_teams",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "name",
+        "team_type",
+        "cost_center",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "parent_team_id",
+        "lead_person_id",
+        "budget_owner_id",
+        "annual_budget_usd"
+      ],
+      "default_filters": { "status": "active", "tenant_id": "{{tenant_id}}" }
+    },
+    {
+      "entity_type": "spine_assets",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "name",
+        "asset_type",
+        "asset_category",
+        "book_value",
+        "currency_code",
+        "status",
+        "acquisition_date",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "depreciation_method",
+        "useful_life_months",
+        "salvage_value",
+        "location",
+        "owner_team_id",
+        "vendor_id"
+      ],
+      "default_filters": {
+        "asset_category": "financial",
+        "status": "active",
+        "tenant_id": "{{tenant_id}}"
+      }
+    },
+    {
+      "entity_type": "spine_projects",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "name",
+        "project_type",
+        "budget_allocated",
+        "budget_spent",
+        "currency_code",
+        "status",
+        "start_date",
+        "target_end_date",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "sponsor_person_id",
+        "owning_team_id",
+        "priority",
+        "risk_level",
+        "roi_target_percent"
+      ],
+      "default_filters": {
+        "project_type": "budget",
+        "status": "active",
+        "tenant_id": "{{tenant_id}}"
+      }
+    },
+    {
+      "entity_type": "spine_outcomes",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "name",
+        "outcome_type",
+        "measured_value",
+        "target_value",
+        "unit",
+        "currency_code",
+        "status",
+        "measurement_date",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "associated_project_id",
+        "associated_asset_id",
+        "contributing_team_id",
+        "variance_percent"
+      ],
+      "default_filters": {
+        "outcome_type": "financial",
+        "status": "approved",
+        "tenant_id": "{{tenant_id}}"
+      }
+    },
+    {
+      "entity_type": "spine_decisions",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "title",
+        "decision_type",
+        "decision_category",
+        "status",
+        "approved_by",
+        "approved_at",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "requested_amount",
+        "approved_amount",
+        "currency_code",
+        "associated_project_id",
+        "associated_asset_id",
+        "rationale"
+      ],
+      "default_filters": {
+        "decision_category": "financial",
+        "status": "approved",
+        "tenant_id": "{{tenant_id}}"
+      }
+    },
+    {
+      "entity_type": "spine_policies",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "name",
+        "policy_type",
+        "policy_scope",
+        "effective_date",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": ["expiry_date", "owner_team_id", "approval_authority", "spend_limit_usd"],
+      "default_filters": {
+        "policy_type": "financial",
+        "status": "active",
+        "tenant_id": "{{tenant_id}}"
+      }
+    }
+  ],
+  "memory_types": [
+    {
+      "memory_table": "memory_revenue",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_id",
+        "entity_type",
+        "recognized_revenue",
+        "deferred_revenue",
+        "billing_period_start",
+        "billing_period_end",
+        "currency_code",
+        "confidence",
+        "generated_at",
+        "valid_from"
+      ],
+      "optional_columns": [
+        "forecasted_revenue",
+        "revenue_type",
+        "contract_id",
+        "source_system",
+        "evidence_urls"
+      ],
+      "default_filters": { "tenant_id": "{{tenant_id}}", "confidence": ">= 0.70" },
+      "confidence_threshold": 0.7
+    },
+    {
+      "memory_table": "memory_forecast",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_id",
+        "entity_type",
+        "forecasted_value",
+        "forecast_period",
+        "forecast_type",
+        "currency_code",
+        "confidence",
+        "generated_at",
+        "valid_from"
+      ],
+      "optional_columns": [
+        "scenario",
+        "variance_percent",
+        "previous_forecast_value",
+        "source_model",
+        "reasoning"
+      ],
+      "default_filters": { "tenant_id": "{{tenant_id}}", "confidence": ">= 0.75" },
+      "confidence_threshold": 0.75
+    },
+    {
+      "memory_table": "memory_budget",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_id",
+        "entity_type",
+        "budget_allocated",
+        "budget_spent",
+        "budget_remaining",
+        "budget_period",
+        "currency_code",
+        "confidence",
+        "generated_at",
+        "valid_from"
+      ],
+      "optional_columns": [
+        "variance_percent",
+        "overspend_risk",
+        "cost_center",
+        "owner_team_id",
+        "reasoning"
+      ],
+      "default_filters": { "tenant_id": "{{tenant_id}}", "confidence": ">= 0.70" },
+      "confidence_threshold": 0.7
+    },
+    {
+      "memory_table": "memory_risk",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_id",
+        "entity_type",
+        "risk_score",
+        "risk_label",
+        "severity",
+        "reasoning",
+        "confidence",
+        "generated_at",
+        "valid_from"
+      ],
+      "optional_columns": [
+        "mitigation_plan",
+        "risk_owner_id",
+        "risk_category",
+        "probability",
+        "impact_usd",
+        "resolution_target_date"
+      ],
+      "default_filters": { "tenant_id": "{{tenant_id}}", "confidence": ">= 0.70" },
+      "confidence_threshold": 0.7
+    },
+    {
+      "memory_table": "memory_business_context",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_id",
+        "entity_type",
+        "summary",
+        "context_type",
+        "confidence",
+        "generated_at",
+        "valid_from"
+      ],
+      "optional_columns": [
+        "key_initiatives",
+        "market_position",
+        "competitive_landscape",
+        "regulatory_notes",
+        "fiscal_notes"
+      ],
+      "default_filters": { "tenant_id": "{{tenant_id}}", "confidence": ">= 0.80" },
+      "confidence_threshold": 0.8
+    }
+  ],
+  "relationships": [
+    {
+      "relation_type": "works_for",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_organizations",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "belongs_to",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_teams",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "owns",
+      "from_entity_type": "spine_teams",
+      "to_entity_type": "spine_projects",
+      "depth": 2,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "manages",
+      "from_entity_type": "spine_teams",
+      "to_entity_type": "spine_assets",
+      "depth": 2,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "drives",
+      "from_entity_type": "spine_projects",
+      "to_entity_type": "spine_outcomes",
+      "depth": 2,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "approves",
+      "from_entity_type": "spine_decisions",
+      "to_entity_type": "spine_projects",
+      "depth": 1,
+      "direction": "both"
+    },
+    {
+      "relation_type": "approves",
+      "from_entity_type": "spine_decisions",
+      "to_entity_type": "spine_assets",
+      "depth": 1,
+      "direction": "both"
+    },
+    {
+      "relation_type": "governs",
+      "from_entity_type": "spine_policies",
+      "to_entity_type": "spine_teams",
+      "depth": 2,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "derives_from",
+      "from_entity_type": "spine_outcomes",
+      "to_entity_type": "spine_assets",
+      "depth": 2,
+      "direction": "incoming"
+    }
+  ],
+  "filters": {
+    "tenant_isolation": { "field": "tenant_id", "operator": "eq", "value": "{{tenant_id}}" },
+    "finance_department": {
+      "field": "spine_persons.department",
+      "operator": "in",
+      "value": ["finance", "fpanda", "accounting", "treasury"]
+    },
+    "active_entities": { "field": "status", "operator": "eq", "value": "active" },
+    "financial_categories": {
+      "field": "asset_category",
+      "operator": "in",
+      "value": ["financial", "budget", "revenue", "expense"]
+    },
+    "approved_decisions": { "field": "decision_status", "operator": "eq", "value": "approved" },
+    "fiscal_period": { "field": "fiscal_year_end", "operator": "is_not_null", "value": null }
+  },
+  "sort_order": [
+    { "field": "spine_outcomes.measurement_date", "direction": "desc" },
+    { "field": "spine_projects.budget_allocated", "direction": "desc" },
+    { "field": "memory_revenue.recognized_revenue", "direction": "desc" },
+    { "field": "spine_decisions.approved_at", "direction": "desc" },
+    { "field": "memory_risk.risk_score", "direction": "desc" }
+  ],
+  "ttl_seconds": 300
+}

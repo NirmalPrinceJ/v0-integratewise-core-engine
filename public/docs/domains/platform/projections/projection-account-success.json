@@ -1,0 +1,419 @@
+{
+  "projection_name": "projection-account-success",
+  "description": "A unified view of customer account health, stakeholder relationships, active initiatives, and historical outcomes for the Customer Success team. Assembles organization profiles, contact persons, assigned teams, active projects, success objectives, achieved outcomes, key decisions, engagement signals, and enriched memory (health scores, risk flags, engagement levels, and account notes) to enable proactive account management, renewal forecasting, and outcome tracking. Targets Account Managers, Success Managers, and CS leadership who need real-time situational awareness across their book of business.",
+  "target_team": "Customer Success",
+  "target_roles": ["Account Manager", "Success Manager", "CS Manager", "CS Director"],
+  "spine_entities": [
+    {
+      "entity_type": "spine_organizations",
+      "required_columns": ["id", "tenant_id", "name", "status", "created_at", "updated_at"],
+      "optional_columns": [
+        "industry",
+        "size",
+        "region",
+        "tier",
+        "contract_value",
+        "renewal_date",
+        "mrr",
+        "arr",
+        "nrr"
+      ],
+      "default_filters": {
+        "status": "active",
+        "tenant_id": "{{tenant_id}}"
+      }
+    },
+    {
+      "entity_type": "spine_persons",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "organization_id",
+        "email",
+        "name",
+        "role",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "title",
+        "phone",
+        "timezone",
+        "is_champion",
+        "is_decision_maker",
+        "is_billing_contact",
+        "last_contact_date",
+        "engagement_score"
+      ],
+      "default_filters": {
+        "tenant_id": "{{tenant_id}}"
+      }
+    },
+    {
+      "entity_type": "spine_teams",
+      "required_columns": ["id", "tenant_id", "name", "team_type", "created_at", "updated_at"],
+      "optional_columns": ["description", "lead_id", "scope", "is_internal"],
+      "default_filters": {
+        "tenant_id": "{{tenant_id}}"
+      }
+    },
+    {
+      "entity_type": "spine_projects",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "organization_id",
+        "name",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "description",
+        "start_date",
+        "target_date",
+        "completion_date",
+        "project_type",
+        "priority",
+        "health_status"
+      ],
+      "default_filters": {
+        "tenant_id": "{{tenant_id}}"
+      }
+    },
+    {
+      "entity_type": "spine_objectives",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "organization_id",
+        "name",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "description",
+        "target_date",
+        "completion_date",
+        "objective_type",
+        "priority",
+        "measurement_criteria"
+      ],
+      "default_filters": {
+        "tenant_id": "{{tenant_id}}"
+      }
+    },
+    {
+      "entity_type": "spine_outcomes",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "organization_id",
+        "name",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "description",
+        "achievement_date",
+        "value_delivered",
+        "outcome_type",
+        "verified",
+        "evidence_id"
+      ],
+      "default_filters": {
+        "tenant_id": "{{tenant_id}}"
+      }
+    },
+    {
+      "entity_type": "spine_decisions",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "organization_id",
+        "title",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "description",
+        "decision_date",
+        "decision_maker_id",
+        "impact_level",
+        "category",
+        "rationale"
+      ],
+      "default_filters": {
+        "tenant_id": "{{tenant_id}}"
+      }
+    },
+    {
+      "entity_type": "spine_conversations",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "organization_id",
+        "title",
+        "conversation_type",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "summary",
+        "participants",
+        "conversation_date",
+        "channel",
+        "sentiment",
+        "next_steps",
+        "follow_up_date"
+      ],
+      "default_filters": {
+        "tenant_id": "{{tenant_id}}"
+      }
+    },
+    {
+      "entity_type": "spine_signals",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "organization_id",
+        "signal_type",
+        "severity",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "description",
+        "source",
+        "metric_value",
+        "threshold_value",
+        "is_resolved",
+        "resolved_at",
+        "triggered_at"
+      ],
+      "default_filters": {
+        "is_resolved": false,
+        "tenant_id": "{{tenant_id}}"
+      }
+    }
+  ],
+  "memory_types": [
+    {
+      "memory_table": "memory_health",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_type",
+        "entity_id",
+        "health_score",
+        "recorded_at"
+      ],
+      "optional_columns": [
+        "health_category",
+        "trend_direction",
+        "score_breakdown",
+        "recommendation",
+        "recorded_by"
+      ],
+      "default_filters": {
+        "entity_type": "organization",
+        "tenant_id": "{{tenant_id}}"
+      },
+      "confidence_threshold": 0.7
+    },
+    {
+      "memory_table": "memory_risk",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_type",
+        "entity_id",
+        "risk_type",
+        "risk_level",
+        "recorded_at"
+      ],
+      "optional_columns": [
+        "description",
+        "probability",
+        "impact",
+        "mitigation_plan",
+        "owner_id",
+        "review_date",
+        "is_mitigated"
+      ],
+      "default_filters": {
+        "entity_type": "organization",
+        "is_mitigated": false,
+        "tenant_id": "{{tenant_id}}"
+      },
+      "confidence_threshold": 0.6
+    },
+    {
+      "memory_table": "memory_engagement",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_type",
+        "entity_id",
+        "engagement_score",
+        "recorded_at"
+      ],
+      "optional_columns": [
+        "activity_count",
+        "last_activity_date",
+        "feature_usage",
+        "adoption_stage",
+        "nps_score",
+        "csat_score"
+      ],
+      "default_filters": {
+        "entity_type": "organization",
+        "tenant_id": "{{tenant_id}}"
+      },
+      "confidence_threshold": 0.65
+    },
+    {
+      "memory_table": "memory_notes",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_type",
+        "entity_id",
+        "note_text",
+        "recorded_at"
+      ],
+      "optional_columns": [
+        "note_type",
+        "author_id",
+        "is_private",
+        "tags",
+        "related_entity_type",
+        "related_entity_id"
+      ],
+      "default_filters": {
+        "entity_type": "organization",
+        "is_private": false,
+        "tenant_id": "{{tenant_id}}"
+      },
+      "confidence_threshold": 0.5
+    }
+  ],
+  "relationships": [
+    {
+      "relation_type": "has_contact",
+      "from_entity_type": "spine_organizations",
+      "to_entity_type": "spine_persons",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "assigned_team",
+      "from_entity_type": "spine_organizations",
+      "to_entity_type": "spine_teams",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_project",
+      "from_entity_type": "spine_organizations",
+      "to_entity_type": "spine_projects",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_objective",
+      "from_entity_type": "spine_organizations",
+      "to_entity_type": "spine_objectives",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_outcome",
+      "from_entity_type": "spine_organizations",
+      "to_entity_type": "spine_outcomes",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_decision",
+      "from_entity_type": "spine_organizations",
+      "to_entity_type": "spine_decisions",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_conversation",
+      "from_entity_type": "spine_organizations",
+      "to_entity_type": "spine_conversations",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_signal",
+      "from_entity_type": "spine_organizations",
+      "to_entity_type": "spine_signals",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "team_member",
+      "from_entity_type": "spine_teams",
+      "to_entity_type": "spine_persons",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "project_objective",
+      "from_entity_type": "spine_projects",
+      "to_entity_type": "spine_objectives",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "project_outcome",
+      "from_entity_type": "spine_projects",
+      "to_entity_type": "spine_outcomes",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "objective_outcome",
+      "from_entity_type": "spine_objectives",
+      "to_entity_type": "spine_outcomes",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "participant",
+      "from_entity_type": "spine_conversations",
+      "to_entity_type": "spine_persons",
+      "depth": 1,
+      "direction": "outgoing"
+    }
+  ],
+  "filters": {
+    "organization_status": "active",
+    "exclude_test_accounts": true,
+    "conversation_lookback_days": 90,
+    "signal_lookback_days": 30,
+    "memory_lookback_days": 30
+  },
+  "sort_order": [
+    {
+      "field": "spine_organizations.renewal_date",
+      "direction": "asc"
+    },
+    {
+      "field": "memory_health.health_score",
+      "direction": "asc"
+    },
+    {
+      "field": "spine_organizations.arr",
+      "direction": "desc"
+    }
+  ],
+  "ttl_seconds": 300
+}

@@ -1,0 +1,503 @@
+{
+  "projection_name": "projection-marketing",
+  "description": "A unified marketing intelligence view that assembles campaign context, customer engagement, asset utilization, market signals, and team activity. Designed for the Marketing team and Campaign Managers, this projection traverses the Spine to surface leads, accounts, campaign projects, content assets, conversation records, and market signals alongside dynamic memory of past campaign performance and customer interactions. It enables the marketing team to query a complete picture of the marketing funnel without touching any domain-specific schema.",
+  "target_team": "Marketing",
+  "target_roles": [
+    "Campaign Manager",
+    "Marketing Analyst",
+    "Content Strategist",
+    "Growth Lead",
+    "CMO"
+  ],
+  "spine_entities": [
+    {
+      "entity_type": "spine_organizations",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "name",
+        "domain",
+        "industry",
+        "size_range",
+        "lifecycle_stage",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "description",
+        "headquarters_location",
+        "website_url",
+        "linkedin_url",
+        "annual_revenue_estimate",
+        "icp_fit_score",
+        "parent_organization_id"
+      ],
+      "default_filters": {
+        "lifecycle_stage": "prospect,customer,partner",
+        "is_active": true
+      }
+    },
+    {
+      "entity_type": "spine_persons",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "organization_id",
+        "email",
+        "full_name",
+        "job_title",
+        "role_category",
+        "engagement_score",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "phone",
+        "linkedin_url",
+        "timezone",
+        "preferred_channel",
+        "lead_source",
+        "mql_date",
+        "sql_date",
+        "is_primary_contact"
+      ],
+      "default_filters": {
+        "role_category": "lead,prospect,contact,influencer,decision_maker",
+        "is_active": true
+      }
+    },
+    {
+      "entity_type": "spine_teams",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "name",
+        "team_type",
+        "function_domain",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": ["description", "team_lead_person_id", "size", "cost_center"],
+      "default_filters": {
+        "function_domain": "marketing",
+        "is_active": true
+      }
+    },
+    {
+      "entity_type": "spine_projects",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "name",
+        "project_type",
+        "status",
+        "start_date",
+        "target_end_date",
+        "owner_team_id",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "description",
+        "budget_allocated",
+        "budget_spent",
+        "priority",
+        "target_audience_segment",
+        "channel_mix",
+        "roi_target",
+        "actual_roi"
+      ],
+      "default_filters": {
+        "project_type": "campaign,program,content_initiative,event,product_launch",
+        "status": "planned,active,paused,completed"
+      }
+    },
+    {
+      "entity_type": "spine_outcomes",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "name",
+        "outcome_type",
+        "value",
+        "unit",
+        "attributed_project_id",
+        "attributed_entity_type",
+        "attributed_entity_id",
+        "recorded_at",
+        "created_at"
+      ],
+      "optional_columns": ["description", "confidence_level", "source_system", "dimension_tags"],
+      "default_filters": {
+        "outcome_type": "conversion,engagement,reach,lead_generated,opportunity_created,revenue_attributed,mql_generated,sql_generated"
+      }
+    },
+    {
+      "entity_type": "spine_assets",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "name",
+        "asset_type",
+        "status",
+        "owner_team_id",
+        "url",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "description",
+        "format",
+        "file_size",
+        "version",
+        "usage_rights",
+        "campaign_tags",
+        "performance_metrics"
+      ],
+      "default_filters": {
+        "asset_type": "ad_creative,landing_page,email_template,whitepaper,video,social_post,blog_post,case_study,webinar_recording,brand_kit",
+        "status": "draft,approved,published,archived"
+      }
+    },
+    {
+      "entity_type": "spine_conversations",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "conversation_type",
+        "channel",
+        "status",
+        "started_at",
+        "ended_at",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "subject",
+        "summary",
+        "sentiment_score",
+        "engagement_level",
+        "source_platform",
+        "recording_url"
+      ],
+      "default_filters": {
+        "conversation_type": "sales_call,marketing_email,support_interaction,webinar_chat,social_engagement,meeting",
+        "status": "open,closed,scheduled"
+      }
+    },
+    {
+      "entity_type": "spine_signals",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "signal_type",
+        "source",
+        "intensity",
+        "recorded_at",
+        "created_at"
+      ],
+      "optional_columns": [
+        "description",
+        "attributed_entity_type",
+        "attributed_entity_id",
+        "metadata_json",
+        "confidence_score"
+      ],
+      "default_filters": {
+        "signal_type": "intent_surge,competitor_move,market_shift,brand_mention,pricing_signal,product_feedback,content_engagement"
+      }
+    },
+    {
+      "entity_type": "spine_knowledge",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "knowledge_type",
+        "title",
+        "scope",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "content",
+        "source_url",
+        "author_person_id",
+        "verified_status",
+        "topic_tags",
+        "relevance_score"
+      ],
+      "default_filters": {
+        "knowledge_type": "market_research,competitive_intelligence,ideal_customer_profile,case_study,brand_guideline,audience_segmentation",
+        "scope": "tenant"
+      }
+    }
+  ],
+  "memory_types": [
+    {
+      "memory_table": "memory_marketing",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_type",
+        "entity_id",
+        "memory_type",
+        "content",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": ["source", "author_id", "sentiment", "impact_score", "expiration_at"],
+      "default_filters": {
+        "memory_type": "campaign_insight,audience_observation,message_resonance,channel_performance,competitive_note,creative_feedback"
+      },
+      "confidence_threshold": 0.7
+    },
+    {
+      "memory_table": "memory_customer",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_type",
+        "entity_id",
+        "memory_type",
+        "content",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "source",
+        "author_id",
+        "sentiment",
+        "buying_stage",
+        "pain_points",
+        "preferences"
+      ],
+      "default_filters": {
+        "memory_type": "interaction_summary,feedback,preference,complaint,escalation,win_story,engagement_pattern"
+      },
+      "confidence_threshold": 0.65
+    },
+    {
+      "memory_table": "memory_campaign",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_type",
+        "entity_id",
+        "memory_type",
+        "content",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "source",
+        "campaign_id",
+        "metric_delta",
+        "recommendation",
+        "budget_impact"
+      ],
+      "default_filters": {
+        "memory_type": "performance_insight,optimization_suggestion,ab_test_result,audience_learning,creative_insight"
+      },
+      "confidence_threshold": 0.75
+    }
+  ],
+  "relationships": [
+    {
+      "relation_type": "belongs_to",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_organizations",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "owns",
+      "from_entity_type": "spine_teams",
+      "to_entity_type": "spine_projects",
+      "depth": 2,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "owns",
+      "from_entity_type": "spine_teams",
+      "to_entity_type": "spine_assets",
+      "depth": 2,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "produces",
+      "from_entity_type": "spine_projects",
+      "to_entity_type": "spine_outcomes",
+      "depth": 2,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "consumes",
+      "from_entity_type": "spine_projects",
+      "to_entity_type": "spine_assets",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "participates_in",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_conversations",
+      "depth": 2,
+      "direction": "both"
+    },
+    {
+      "relation_type": "triggers",
+      "from_entity_type": "spine_signals",
+      "to_entity_type": "spine_projects",
+      "depth": 2,
+      "direction": "both"
+    },
+    {
+      "relation_type": "targets",
+      "from_entity_type": "spine_projects",
+      "to_entity_type": "spine_organizations",
+      "depth": 2,
+      "direction": "both"
+    },
+    {
+      "relation_type": "informs",
+      "from_entity_type": "spine_knowledge",
+      "to_entity_type": "spine_projects",
+      "depth": 2,
+      "direction": "both"
+    },
+    {
+      "relation_type": "has_memory",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "memory_customer",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_memory",
+      "from_entity_type": "spine_organizations",
+      "to_entity_type": "memory_customer",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_memory",
+      "from_entity_type": "spine_projects",
+      "to_entity_type": "memory_marketing",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_memory",
+      "from_entity_type": "spine_projects",
+      "to_entity_type": "memory_campaign",
+      "depth": 1,
+      "direction": "outgoing"
+    }
+  ],
+  "filters": {
+    "tenant_isolation": {
+      "enabled": true,
+      "column": "tenant_id"
+    },
+    "time_range": {
+      "enabled": true,
+      "default_window": "90d",
+      "column": "created_at"
+    },
+    "role_visibility": {
+      "enabled": true,
+      "rules": [
+        {
+          "role": "Campaign Manager",
+          "can_view": [
+            "spine_projects",
+            "spine_outcomes",
+            "spine_assets",
+            "spine_conversations",
+            "spine_signals",
+            "memory_marketing",
+            "memory_campaign"
+          ]
+        },
+        {
+          "role": "Marketing Analyst",
+          "can_view": [
+            "spine_organizations",
+            "spine_persons",
+            "spine_projects",
+            "spine_outcomes",
+            "spine_assets",
+            "spine_signals",
+            "spine_knowledge",
+            "memory_marketing",
+            "memory_customer",
+            "memory_campaign"
+          ]
+        },
+        {
+          "role": "Content Strategist",
+          "can_view": [
+            "spine_assets",
+            "spine_knowledge",
+            "spine_projects",
+            "spine_conversations",
+            "memory_marketing"
+          ]
+        },
+        {
+          "role": "Growth Lead",
+          "can_view": [
+            "spine_organizations",
+            "spine_persons",
+            "spine_projects",
+            "spine_outcomes",
+            "spine_signals",
+            "memory_marketing",
+            "memory_customer",
+            "memory_campaign"
+          ]
+        },
+        {
+          "role": "CMO",
+          "can_view": [
+            "spine_organizations",
+            "spine_persons",
+            "spine_teams",
+            "spine_projects",
+            "spine_outcomes",
+            "spine_assets",
+            "spine_conversations",
+            "spine_signals",
+            "spine_knowledge",
+            "memory_marketing",
+            "memory_customer",
+            "memory_campaign"
+          ]
+        }
+      ]
+    }
+  },
+  "sort_order": [
+    {
+      "entity_type": "spine_projects",
+      "column": "updated_at",
+      "direction": "desc"
+    },
+    {
+      "entity_type": "spine_outcomes",
+      "column": "recorded_at",
+      "direction": "desc"
+    },
+    {
+      "entity_type": "spine_signals",
+      "column": "recorded_at",
+      "direction": "desc"
+    },
+    {
+      "entity_type": "spine_conversations",
+      "column": "started_at",
+      "direction": "desc"
+    }
+  ],
+  "ttl_seconds": 300
+}

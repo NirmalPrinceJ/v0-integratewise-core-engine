@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IntegrateWise — L1 Workbench</title>
+    <style>
+      :root {
+        --bg: #f6f7fb;
+        --panel: #ffffff;
+        --border: #e6e8f0;
+        --text: #141820;
+        --muted: #5a6178;
+        --accent: #2563eb;
+        --accent-weak: #dbeafe;
+        --violet: #7c3aed;
+        --violet-weak: #ede9fe;
+        --success: #16a34a;
+        --amber: #d97706;
+        --danger: #dc2626;
+        --shadow: 0 8px 24px rgba(15, 17, 24, 0.08);
+        --radius: 14px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .shell {
+        width: 100%;
+        max-width: 1380px;
+        height: min(94vh, 980px);
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        box-shadow: var(--shadow);
+        display: grid;
+        grid-template-columns: 220px 1fr 310px;
+        grid-template-rows: 62px 1fr;
+        overflow: hidden;
+      }
+
+      .topbar {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 0 18px;
+        border-bottom: 1px solid var(--border);
+        background: #fafbfc;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+      }
+      .brand-mark {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-size: 14px;
+      }
+      .context-pill {
+        margin-left: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--text);
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .search {
+        flex: 1;
+        max-width: 420px;
+        margin: 0 8px;
+        padding: 9px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--text);
+        outline: none;
+      }
+      .search::placeholder {
+        color: #9aa0b4;
+      }
+      .topbar-actions {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #fff;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .chip .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #16a34a;
+      }
+      .icon-btn {
+        position: relative;
+        width: 36px;
+        height: 36px;
+        display: grid;
+        place-items: center;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--text);
+        cursor: pointer;
+      }
+      .badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        min-width: 16px;
+        height: 16px;
+        padding: 0 4px;
+        display: grid;
+        place-items: center;
+        border-radius: 999px;
+        background: #dc2626;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+      }
+      .avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        font-size: 12px;
+      }
+
+      .sidebar {
+        border-right: 1px solid var(--border);
+        background: #fafbfc;
+        padding: 14px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        overflow: auto;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 10px;
+        border-radius: 10px;
+        color: #374151;
+        font-weight: 500;
+        font-size: 13px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        background: transparent;
+        width: 100%;
+        text-align: left;
+      }
+      .nav-item:hover {
+        background: #fff;
+        border-color: var(--border);
+      }
+      .nav-item.active {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border-color: #bfdbfe;
+        font-weight: 600;
+      }
+      .section-label {
+        margin: 14px 2px 6px;
+        font-size: 10.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #7b8094;
+        font-weight: 700;
+      }
+      .connection {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #fff;
+        margin-bottom: 6px;
+      }
+      .connection .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #16a34a;
+      }
+
+      .main {
+        padding: 18px;
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .ooda {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+      .card {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: #fff;
+        padding: 16px;
+        cursor: pointer;
+        transition:
+          transform 80ms ease,
+          box-shadow 80ms ease;
+      }
+      .card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 22px rgba(10, 12, 20, 0.08);
+      }
+      .card h3 {
+        margin: 10px 0 6px;
+        font-size: 14px;
+      }
+      .card p {
+        margin: 0;
+        font-size: 12.5px;
+        color: var(--muted);
+        line-height: 1.45;
+      }
+      .card .icon {
+        width: 34px;
+        height: 34px;
+        display: grid;
+        place-items: center;
+        border-radius: 10px;
+        background: #f3f4ff;
+        color: var(--violet);
+        font-size: 16px;
+      }
+
+      .hero {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px;
+        border-radius: var(--radius);
+        background:
+          radial-gradient(1200px 300px at 10% -10%, rgba(37, 99, 235, 0.08), transparent),
+          radial-gradient(900px 220px at 110% 0%, rgba(124, 58, 237, 0.07), transparent), #fff;
+        border: 1px solid var(--border);
+      }
+      .hero-left h1 {
+        margin: 0 0 6px;
+        font-size: 22px;
+        letter-spacing: -0.3px;
+      }
+      .hero-left p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13.5px;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+      }
+      .metric {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #fff;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .metric .value {
+        font-size: 20px;
+        font-weight: 700;
+      }
+      .metric .label {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .panel-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr 1fr;
+        gap: 14px;
+      }
+      .panel {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: #fff;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-weight: 600;
+        font-size: 13.5px;
+      }
+      .work-item,
+      .twin-item,
+      .activity-item {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #fafbfc;
+      }
+      .work-item .meta,
+      .twin-item .meta,
+      .activity-item .meta {
+        font-size: 11.5px;
+        color: var(--muted);
+      }
+      .btn {
+        padding: 7px 10px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: #fff;
+        font-weight: 600;
+        font-size: 12px;
+        cursor: pointer;
+        color: var(--text);
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: #fff;
+        border-color: transparent;
+      }
+
+      .twin-panel {
+        border-left: 1px solid var(--border);
+        background: #fafbfc;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .twin-header {
+        padding: 14px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fff;
+      }
+      .twin-body {
+        flex: 1;
+        overflow: auto;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .notice {
+        display: flex;
+        gap: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #fff;
+      }
+      .notice .dot {
+        margin-top: 2px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .notice.red {
+        border-left: 3px solid #dc2626;
+      }
+      .notice.blue {
+        border-left: 3px solid #2563eb;
+      }
+      .suggestion {
+        padding: 10px;
+        border-radius: 10px;
+        background: #f5f3ff;
+        border: 1px solid #e5e0f7;
+        color: #3b2d6e;
+      }
+      .quick-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .quick-action {
+        padding: 9px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #fff;
+        text-align: center;
+        font-weight: 600;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .twin-input {
+        margin-top: auto;
+        padding: 12px;
+        border-top: 1px solid var(--border);
+        background: #fff;
+        display: flex;
+        gap: 8px;
+      }
+      .twin-input input {
+        flex: 1;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        outline: none;
+      }
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        background: #111827;
+        color: #fff;
+        font-weight: 600;
+        font-size: 13px;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: 120ms ease;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="topbar">
+        <div class="brand">
+          <div class="brand-mark">IW</div>
+          <span>IntegrateWise</span>
+        </div>
+        <div class="context-pill">Customer Success Hub ▾</div>
+        <input class="search" placeholder="Search anything..." />
+        <div class="topbar-actions">
+          <div class="chip">
+            <span class="dot"></span>
+            <span>Twin Active</span>
+          </div>
+          <div class="icon-btn" aria-label="Notifications">
+            <span>🔔</span>
+            <span class="badge">3</span>
+          </div>
+          <div class="icon-btn" aria-label="Messages">
+            <span>💬</span>
+            <span class="badge">2</span>
+          </div>
+          <div class="avatar" title="Nirmal K. · CSM">NK</div>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <button class="nav-item active">🏠 Home</button>
+        <button class="nav-item">📋 My Work</button>
+        <button class="nav-item">🗂️ Contexts</button>
+        <button class="nav-item">🧭 Context360</button>
+        <button class="nav-item">📅 Meetings</button>
+        <button class="nav-item">📚 Knowledge</button>
+        <button class="nav-item">
+          ✅ Approvals <span class="badge" style="position: static">2</span>
+        </button>
+        <button class="nav-item">⏳ Timeline</button>
+        <button class="nav-item">📊 Reports</button>
+
+        <div class="section-label">Pinned Contexts</div>
+        <button class="nav-item active">🏢 Acme Corp</button>
+        <button class="nav-item">🌌 Northstar Ltd.</button>
+        <button class="nav-item">🔷 Contoso Inc.</button>
+        <button class="nav-item">🟩 Globex Corp.</button>
+
+        <div class="section-label">Connected Systems</div>
+        <div class="connection"><span class="dot"></span><span>Salesforce</span></div>
+        <div class="connection"><span class="dot"></span><span>Zendesk</span></div>
+        <div class="connection"><span class="dot"></span><span>Gainsight</span></div>
+        <div class="connection"><span class="dot"></span><span>Stripe</span></div>
+        <div class="connection"><span class="dot"></span><span>Outlook</span></div>
+      </div>
+
+      <div class="main">
+        <div class="ooda">
+          <div class="card" data-action="observe">
+            <div class="icon">📥</div>
+            <h3>Store in Spine</h3>
+            <p>Capture & remember. Add notes, outcomes, and context into continuity.</p>
+          </div>
+          <div class="card" data-action="orient">
+            <div class="icon">🔎</div>
+            <h3>Ask Your Twin</h3>
+            <p>Get clarity using active context, Spine state, and evidence-backed history.</p>
+          </div>
+          <div class="card" data-action="decide">
+            <div class="icon">🧩</div>
+            <h3>Assign Your Twin</h3>
+            <p>Delegate & prepare. Drafts, briefs, and plans for your review.</p>
+          </div>
+          <div class="card" data-action="act">
+            <div class="icon">✅</div>
+            <h3>Approve Twin's Action</h3>
+            <p>You decide. Review impact, then authorize governed execution.</p>
+          </div>
+        </div>
+
+        <div class="hero">
+          <div class="hero-left">
+            <h1>Good morning, Nirmal 👋</h1>
+            <p>Let's focus on what moves the needle today.</p>
+          </div>
+        </div>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="value" style="color: #dc2626">3</div>
+            <div class="label">High priority</div>
+          </div>
+          <div class="metric">
+            <div class="value" style="color: #d97706">2</div>
+            <div class="label">Approvals</div>
+          </div>
+          <div class="metric">
+            <div class="value" style="color: #2563eb">4</div>
+            <div class="label">Meetings</div>
+          </div>
+          <div class="metric">
+            <div class="value" style="color: #16a34a">2</div>
+            <div class="label">Prepared by Twin</div>
+          </div>
+          <div class="metric">
+            <div class="value" style="color: #7c3aed">7</div>
+            <div class="label">Updates</div>
+          </div>
+        </div>
+
+        <div class="panel-grid">
+          <div class="panel">
+            <div class="panel-header">Focus Now</div>
+            <div class="work-item">
+              <div>
+                <div style="font-weight: 600; font-size: 13px">Acme Corp usage dropped 18%</div>
+                <div class="meta">High priority · 3 unresolved issues</div>
+              </div>
+              <button class="btn" onclick="toast('Opened Acme Corp context')">View</button>
+            </div>
+            <div class="work-item">
+              <div>
+                <div style="font-weight: 600; font-size: 13px">Northstar Ltd. champion left</div>
+                <div class="meta">High priority · Customer health at risk</div>
+              </div>
+              <button class="btn" onclick="toast('Opened Northstar context')">View</button>
+            </div>
+            <div class="work-item">
+              <div>
+                <div style="font-weight: 600; font-size: 13px">
+                  Contoso Inc. renewal approaching
+                </div>
+                <div class="meta">Medium priority · Contract value $120K</div>
+              </div>
+              <button class="btn" onclick="toast('Opened Contoso context')">View</button>
+            </div>
+            <div class="work-item">
+              <div>
+                <div style="font-weight: 600; font-size: 13px">
+                  Globex Corp. expansion opportunity
+                </div>
+                <div class="meta">Low priority · Ready to review</div>
+              </div>
+              <button class="btn" onclick="toast('Opened Globex context')">View</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">Prepared by Your Twin</div>
+            <div class="twin-item">
+              <div>
+                <div style="font-weight: 600; font-size: 13px">Renewal Risk Brief</div>
+                <div class="meta">Acme Corp · Created 6 min ago</div>
+              </div>
+              <button class="btn" onclick="toast('Opening renewal risk brief')">Review</button>
+            </div>
+            <div class="twin-item">
+              <div>
+                <div style="font-weight: 600; font-size: 13px">QBR Presentation Draft</div>
+                <div class="meta">Contoso Inc. · Created 23 min ago</div>
+              </div>
+              <button class="btn" onclick="toast('Opening QBR draft')">Review</button>
+            </div>
+            <div class="twin-item">
+              <div>
+                <div style="font-weight: 600; font-size: 13px">Draft Follow-up Email</div>
+                <div class="meta">Northstar Ltd. · Created 1 hr ago</div>
+              </div>
+              <button class="btn" onclick="toast('Opening follow-up email')">Review</button>
+            </div>
+            <div class="twin-item">
+              <div>
+                <div style="font-weight: 600; font-size: 13px">Success Plan</div>
+                <div class="meta">Global · Created 2 hrs ago</div>
+              </div>
+              <button class="btn" onclick="toast('Opening success plan')">Review</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">Recent Activity</div>
+            <div class="activity-item">
+              <div>
+                <div style="font-weight: 600; font-size: 13px">Usage report updated</div>
+                <div class="meta">Acme Corp · 10 min ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div>
+                <div style="font-weight: 600; font-size: 13px">Support ticket escalated</div>
+                <div class="meta">Northstar Ltd. · 32 min ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div>
+                <div style="font-weight: 600; font-size: 13px">Contract negotiation updated</div>
+                <div class="meta">Contoso Inc. · 1 hr ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div>
+                <div style="font-weight: 600; font-size: 13px">Renewal date changed</div>
+                <div class="meta">Globex Corp. · 2 hrs ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div>
+                <div style="font-weight: 600; font-size: 13px">Twin prepared approval brief</div>
+                <div class="meta">Customer Zero · 3 hrs ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="twin-panel">
+        <div class="twin-header">
+          <div style="font-weight: 700; font-size: 14px">Your Twin</div>
+          <div class="chip"><span class="dot"></span><span>Quiet</span></div>
+        </div>
+        <div class="twin-body">
+          <div>
+            <div style="font-weight: 700; font-size: 12px; color: var(--muted); margin-bottom: 6px">
+              What I noticed
+            </div>
+            <div class="notice red">
+              <span class="dot" style="background: #dc2626"></span>
+              <div>
+                <div style="font-weight: 600; font-size: 13px">Acme Corp usage dropped 18%</div>
+                <div class="meta">3 unresolved support issues · 10 min ago</div>
+              </div>
+            </div>
+            <div class="notice blue" style="margin-top: 8px">
+              <span class="dot" style="background: #2563eb"></span>
+              <div>
+                <div style="font-weight: 600; font-size: 13px">Renewal date is approaching</div>
+                <div class="meta">Contoso Inc. · 22 days remaining</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="suggestion">
+            <div style="font-weight: 700; font-size: 12px; margin-bottom: 4px">
+              Suggested next step
+            </div>
+            <div style="font-size: 12.5px">
+              Schedule a call with the new champion at Acme Corp to review adoption blockers and
+              restart momentum.
+            </div>
+            <div style="margin-top: 8px; display: flex; gap: 8px">
+              <button class="btn btn-primary" onclick="toast('Added to My Work')">
+                Add to My Work
+              </button>
+              <button class="btn" onclick="toast('Saved silently')">Save</button>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-weight: 700; font-size: 12px; color: var(--muted); margin-bottom: 6px">
+              Quick actions
+            </div>
+            <div class="quick-actions">
+              <div class="quick-action" onclick="toast('Update CRM queued')">Update CRM</div>
+              <div class="quick-action" onclick="toast('Follow-up task created')">
+                Create Follow-up Task
+              </div>
+              <div class="quick-action" onclick="toast('Opening email draft')">Send Email</div>
+              <div class="quick-action" onclick="toast('Note logged')">Log a Note</div>
+            </div>
+          </div>
+        </div>
+        <div class="twin-input">
+          <input placeholder="Ask your Twin anything..." />
+          <button
+            class="btn btn-primary"
+            onclick="toast('Twin is silent by default. Open a holder to ask.')"
+          >
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+      const toastEl = document.getElementById("toast");
+      let timer;
+      function toast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add("show");
+        clearTimeout(timer);
+        timer = setTimeout(() => toastEl.classList.remove("show"), 1600);
+      }
+      document.querySelectorAll(".card[data-action]").forEach((card) => {
+        card.addEventListener("click", () => {
+          const actions = {
+            observe: "Store in Spine opened",
+            orient: "Asking your Twin",
+            decide: "Assigning your Twin",
+            act: "Review approval before acting",
+          };
+          toast(actions[card.dataset.action] || "Opened");
+        });
+      });
+      document.querySelectorAll(".nav-item").forEach((item) => {
+        item.addEventListener("click", () => {
+          document.querySelectorAll(".nav-item").forEach((n) => n.classList.remove("active"));
+          item.classList.add("active");
+          toast("Navigated: " + item.textContent.trim());
+        });
+      });
+    </script>
+  </body>
+</html>

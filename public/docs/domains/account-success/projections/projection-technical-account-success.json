@@ -1,0 +1,131 @@
+{
+  "projection_id": "projection-technical-account-success",
+  "domain": "account_success",
+  "version": "1.0.0",
+  "target_roles": ["tam", "solution_engineer", "cs_lead", "admin"],
+  "spine_entities": {
+    "include": ["account", "deployment", "integration", "environment", "product"],
+    "exclude": [
+      "person",
+      "organization",
+      "contract",
+      "subscription",
+      "meeting",
+      "task",
+      "objective",
+      "initiative"
+    ]
+  },
+  "memory_types": {
+    "include": ["architecture_assessment", "usage", "technical_debt", "signals"],
+    "exclude": [
+      "health",
+      "risk",
+      "sentiment",
+      "engagement",
+      "stakeholder_intelligence",
+      "recommendations",
+      "insights",
+      "evidence",
+      "timeline",
+      "forecast",
+      "business_context",
+      "milestones"
+    ]
+  },
+  "relationship_depth": {
+    "direct": 1,
+    "indirect": 2
+  },
+  "field_policy": {
+    "account": ["name", "industry", "region", "tier", "arr_usd", "contract_start", "contract_end"],
+    "deployment": [
+      "name",
+      "status",
+      "version",
+      "region",
+      "environment_type",
+      "account_id",
+      "deployment_date",
+      "last_synced_at"
+    ],
+    "integration": [
+      "name",
+      "type",
+      "status",
+      "api_version",
+      "health_status",
+      "last_used_at",
+      "error_rate"
+    ],
+    "environment": ["name", "type", "region", "status", "cloud_provider", "cluster_id"],
+    "product": ["name", "version", "category", "status", "release_date", "eol_date"],
+    "architecture_assessment": [
+      "score",
+      "score_label",
+      "reasoning",
+      "confidence",
+      "contributing_factors",
+      "assessment_date",
+      "findings"
+    ],
+    "usage": [
+      "metric_name",
+      "current_value",
+      "previous_value",
+      "trend",
+      "period",
+      "adoption_rate",
+      "confidence"
+    ],
+    "technical_debt": [
+      "severity",
+      "severity_label",
+      "category",
+      "description",
+      "impact",
+      "remediation_plan",
+      "estimated_effort",
+      "confidence"
+    ],
+    "signals": [
+      "signal_type",
+      "severity",
+      "severity_label",
+      "description",
+      "detected_at",
+      "source",
+      "confidence"
+    ]
+  },
+  "governance_gates": {
+    "can_act": ["tam", "solution_engineer"],
+    "can_approve": ["cs_lead", "admin"],
+    "can_admin": ["admin"]
+  },
+  "navigation": {
+    "primary": ["accounts", "deployments", "integrations", "architecture", "usage"],
+    "secondary": ["signals", "technical-debt", "environments"]
+  },
+  "entity_360": {
+    "account": {
+      "tabs": [
+        "overview",
+        "deployments",
+        "integrations",
+        "architecture",
+        "usage",
+        "technical-debt",
+        "signals"
+      ],
+      "metrics": [
+        "deployment_count",
+        "integration_count",
+        "architecture_score",
+        "usage_trend",
+        "technical_debt_count",
+        "signal_count"
+      ]
+    }
+  }
+}

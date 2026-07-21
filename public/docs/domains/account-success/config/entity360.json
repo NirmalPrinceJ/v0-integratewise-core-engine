@@ -1,0 +1,301 @@
+{
+  "entity360_id": "entity360-account-success",
+  "domain": "account_success",
+  "version": "1.0.0",
+  "primary_entity": "account",
+  "description": "Entity 360 view for the Account Success domain. Assembles Spine entities, Dynamic Memory, and typed relationships into a unified customer-facing view for CSMs, Account Managers, TAMs, and executives.",
+  "tabs": {
+    "overview": {
+      "label": "Overview",
+      "order": 1,
+      "description": "High-level summary of the account including identity, health, revenue, and key relationships.",
+      "spine_entities": ["account", "organization", "person"],
+      "memory_types": ["health", "engagement"],
+      "relationships": [
+        "account->works_for->organization",
+        "account->has_contact->person",
+        "organization->has_contact->person"
+      ],
+      "metrics": [
+        "health_score",
+        "arr_usd",
+        "days_to_renewal",
+        "total_contacts",
+        "engagement_frequency"
+      ]
+    },
+    "health": {
+      "label": "Health",
+      "order": 2,
+      "description": "Account health score, contributing factors, and trend over time.",
+      "spine_entities": ["account"],
+      "memory_types": ["health", "risk", "engagement"],
+      "relationships": ["account->has_state->health", "account->has_state->risk"],
+      "metrics": [
+        "health_score",
+        "health_label",
+        "risk_score",
+        "risk_label",
+        "engagement_trend",
+        "last_activity_days"
+      ]
+    },
+    "contacts": {
+      "label": "Contacts",
+      "order": 3,
+      "description": "People associated with the account, their roles, influence, and engagement history.",
+      "spine_entities": ["account", "person", "organization"],
+      "memory_types": ["stakeholder_intelligence", "engagement"],
+      "relationships": [
+        "account->has_contact->person",
+        "organization->has_contact->person",
+        "person->works_for->organization",
+        "person->assigned_to->task",
+        "person->attends->meeting"
+      ],
+      "metrics": [
+        "total_contacts",
+        "key_contacts",
+        "decision_makers",
+        "champions",
+        "last_contact_date",
+        "avg_engagement_score"
+      ]
+    },
+    "contracts": {
+      "label": "Contracts",
+      "order": 4,
+      "description": "Active and historical contracts, subscriptions, renewal dates, and revenue terms.",
+      "spine_entities": ["account", "contract", "subscription"],
+      "memory_types": ["timeline", "forecast"],
+      "relationships": [
+        "account->owns->contract",
+        "contract->renews->subscription",
+        "account->owns->subscription"
+      ],
+      "metrics": [
+        "arr_usd",
+        "contract_value",
+        "total_contract_value",
+        "subscription_count",
+        "days_to_renewal",
+        "renewal_confidence",
+        "expansion_opportunity"
+      ]
+    },
+    "deployments": {
+      "label": "Deployments",
+      "order": 5,
+      "description": "Product deployments, environments, usage patterns, and technical health.",
+      "spine_entities": ["account", "deployment", "environment", "product"],
+      "memory_types": ["usage", "signals", "architecture_assessment", "technical_debt"],
+      "relationships": [
+        "account->has->deployment",
+        "deployment->runs_in->environment",
+        "deployment->produces->product",
+        "product->affected_by->technical_debt"
+      ],
+      "metrics": [
+        "deployment_count",
+        "environment_count",
+        "product_count",
+        "usage_trend",
+        "usage_volume",
+        "adoption_rate",
+        "technical_debt_score"
+      ]
+    },
+    "integrations": {
+      "label": "Integrations",
+      "order": 6,
+      "description": "Connected systems, API usage, integration health, and architecture coverage.",
+      "spine_entities": ["account", "integration", "product", "deployment"],
+      "memory_types": ["architecture_assessment", "usage", "signals"],
+      "relationships": [
+        "account->uses->integration",
+        "deployment->uses->integration",
+        "integration->connects_to->product",
+        "integration->runs_in->environment"
+      ],
+      "metrics": [
+        "integration_count",
+        "active_integrations",
+        "api_usage",
+        "api_error_rate",
+        "integration_health",
+        "architecture_coverage"
+      ]
+    },
+    "engagement": {
+      "label": "Engagement",
+      "order": 7,
+      "description": "Interaction history across meetings, tasks, emails, calls, and support touchpoints.",
+      "spine_entities": ["account", "person", "meeting", "task"],
+      "memory_types": ["engagement", "sentiment", "insights"],
+      "relationships": [
+        "account->has->meeting",
+        "account->has->task",
+        "person->attends->meeting",
+        "person->assigned_to->task",
+        "meeting->includes->person"
+      ],
+      "metrics": [
+        "meetings_last_30_days",
+        "tasks_open",
+        "tasks_completed_last_30_days",
+        "emails_sent",
+        "calls_made",
+        "engagement_score",
+        "sentiment_trend",
+        "last_meeting_date"
+      ]
+    },
+    "timeline": {
+      "label": "Timeline",
+      "order": 8,
+      "description": "Projected events, milestones, renewals, objectives, and initiative progress.",
+      "spine_entities": ["account", "contract", "subscription", "objective", "initiative", "task"],
+      "memory_types": ["timeline", "milestones", "signals", "forecast"],
+      "relationships": [
+        "account->has->objective",
+        "account->has->initiative",
+        "objective->triggers->initiative",
+        "initiative->produces->task",
+        "contract->renews->subscription"
+      ],
+      "metrics": [
+        "upcoming_milestones",
+        "days_to_renewal",
+        "active_initiatives",
+        "completed_tasks",
+        "overdue_tasks",
+        "objective_progress"
+      ]
+    },
+    "insights": {
+      "label": "Insights",
+      "order": 9,
+      "description": "AI-generated findings, recommendations, and supporting evidence synthesized from signals.",
+      "spine_entities": ["account"],
+      "memory_types": ["insights", "recommendations", "evidence", "business_context"],
+      "relationships": [
+        "account->has_state->insights",
+        "insights->supported_by->evidence",
+        "recommendations->triggers->task"
+      ],
+      "metrics": [
+        "insight_count",
+        "recommendation_count",
+        "confidence_avg",
+        "last_insight_date",
+        "actioned_recommendations",
+        "pending_recommendations"
+      ]
+    },
+    "risks": {
+      "label": "Risks",
+      "order": 10,
+      "description": "Active risk factors, technical debt, contract exposure, and mitigation status.",
+      "spine_entities": ["account", "contract", "subscription"],
+      "memory_types": ["risk", "technical_debt", "health", "signals"],
+      "relationships": [
+        "account->has_state->risk",
+        "account->owns->contract",
+        "contract->renews->subscription",
+        "deployment->affected_by->technical_debt"
+      ],
+      "metrics": [
+        "risk_score",
+        "risk_count",
+        "critical_risks",
+        "days_to_renewal",
+        "health_trend",
+        "technical_debt_score",
+        "mitigation_tasks_open"
+      ]
+    }
+  },
+  "relationship_depth": {
+    "direct": 1,
+    "indirect": 2
+  },
+  "field_policy": {
+    "account": [
+      "name",
+      "industry",
+      "region",
+      "tier",
+      "arr_usd",
+      "contract_start",
+      "contract_end",
+      "status"
+    ],
+    "person": ["name", "email", "role", "department", "seniority", "phone"],
+    "organization": ["name", "legal_name", "industry", "region", "size"],
+    "contract": ["name", "type", "value_usd", "start_date", "end_date", "status"],
+    "subscription": ["name", "product_id", "quantity", "unit_price_usd", "status", "renewal_date"],
+    "deployment": ["name", "product_id", "environment_id", "status", "version"],
+    "integration": ["name", "type", "status", "api_version", "last_sync_at"],
+    "environment": ["name", "type", "region", "status"],
+    "product": ["name", "sku", "category", "status"],
+    "meeting": ["title", "type", "scheduled_at", "duration_minutes", "outcome"],
+    "task": ["title", "status", "priority", "due_date", "completed_at"],
+    "objective": ["name", "type", "status", "target_date", "progress_pct"],
+    "initiative": ["name", "status", "start_date", "target_date", "progress_pct"],
+    "health": ["score", "score_label", "reasoning", "confidence", "contributing_factors"],
+    "risk": ["score", "score_label", "reasoning", "confidence", "category", "mitigation_status"],
+    "engagement": ["score", "frequency", "last_interaction_at", "channel_breakdown"],
+    "sentiment": ["score", "label", "reasoning", "confidence", "source_channels"],
+    "insights": ["summary", "confidence", "generated_by", "episode_id", "evidence_count"],
+    "recommendations": ["title", "description", "priority", "confidence", "status", "due_date"],
+    "timeline": ["event_type", "event_date", "description", "confidence", "source_entity"],
+    "usage": ["metric_name", "current_value", "trend", "period", "confidence"],
+    "technical_debt": ["category", "severity", "description", "confidence", "remediation_cost"],
+    "architecture_assessment": ["area", "score", "reasoning", "confidence", "recommendations"]
+  },
+  "governance_gates": {
+    "can_view": [
+      "csm",
+      "account_manager",
+      "cs_lead",
+      "tam",
+      "solution_engineer",
+      "onboarding_manager",
+      "support_engineer",
+      "support_manager",
+      "executive",
+      "viewer",
+      "admin"
+    ],
+    "can_edit_spine": [
+      "csm",
+      "account_manager",
+      "cs_lead",
+      "tam",
+      "onboarding_manager",
+      "support_manager",
+      "admin"
+    ],
+    "can_generate_memory": [
+      "csm",
+      "account_manager",
+      "cs_lead",
+      "tam",
+      "solution_engineer",
+      "admin"
+    ],
+    "can_approve": ["cs_lead", "admin"],
+    "can_admin": ["admin"]
+  },
+  "default_projection": "projection-account-success",
+  "compatible_projections": [
+    "projection-account-success",
+    "projection-technical-account-success",
+    "projection-executive",
+    "projection-implementation",
+    "projection-support"
+  ],
+  "source": "SPINE_DOMAIN.md + SPINE_INTELLIGENCE_AGENT.md",
+  "generated_at": "2026-07-06T00:00:00Z",
+  "agent_version": "spine-intelligence-agent@1.0.0"
+}

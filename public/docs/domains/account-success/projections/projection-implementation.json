@@ -1,0 +1,92 @@
+{
+  "projection_id": "projection-implementation",
+  "domain": "account_success",
+  "version": "1.0.0",
+  "target_roles": ["onboarding_manager", "project_lead"],
+  "spine_entities": {
+    "include": ["account", "person", "task", "objective"],
+    "exclude": [
+      "organization",
+      "contract",
+      "subscription",
+      "product",
+      "deployment",
+      "integration",
+      "environment",
+      "meeting",
+      "initiative"
+    ]
+  },
+  "memory_types": {
+    "include": ["milestones", "timeline", "signals", "business_context"],
+    "exclude": [
+      "health",
+      "risk",
+      "sentiment",
+      "usage",
+      "architecture_assessment",
+      "technical_debt",
+      "engagement",
+      "stakeholder_intelligence",
+      "recommendations",
+      "insights",
+      "evidence",
+      "forecast"
+    ]
+  },
+  "relationship_depth": {
+    "direct": 1,
+    "indirect": 2
+  },
+  "field_policy": {
+    "account": ["name", "industry", "region", "tier", "arr_usd", "contract_start", "contract_end"],
+    "person": ["name", "email", "role", "department", "seniority"],
+    "task": [
+      "title",
+      "description",
+      "status",
+      "priority",
+      "assigned_to",
+      "due_date",
+      "completed_at"
+    ],
+    "objective": ["title", "description", "status", "target_date", "progress_percent"],
+    "milestones": [
+      "name",
+      "status",
+      "target_date",
+      "completed_date",
+      "phase",
+      "dependencies",
+      "progress_percent",
+      "score",
+      "reasoning"
+    ],
+    "timeline": ["event_type", "event_date", "description", "confidence", "reasoning"],
+    "signals": [
+      "signal_type",
+      "severity",
+      "description",
+      "detected_at",
+      "source",
+      "confidence",
+      "reasoning"
+    ],
+    "business_context": ["context_type", "summary", "confidence", "reasoning", "valid_from"]
+  },
+  "governance_gates": {
+    "can_act": ["onboarding_manager", "project_lead"],
+    "can_approve": ["cs_lead", "admin"],
+    "can_admin": ["admin"]
+  },
+  "navigation": {
+    "primary": ["accounts", "tasks", "milestones", "timeline", "objectives"],
+    "secondary": ["signals", "business_context", "team"]
+  },
+  "entity_360": {
+    "account": {
+      "tabs": ["overview", "tasks", "objectives", "milestones", "timeline", "team", "signals"],
+      "metrics": ["active_tasks", "completed_milestones", "days_to_go_live", "objective_progress"]
+    }
+  }
+}

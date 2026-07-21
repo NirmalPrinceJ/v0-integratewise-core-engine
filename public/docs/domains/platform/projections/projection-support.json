@@ -1,0 +1,392 @@
+{
+  "projection_name": "projection-support",
+  "description": "Assembles a comprehensive support operations view for the Customer Support team. This projection brings together open support cases, customer profiles, related conversations, knowledge base articles, SLA policies, team assignments, and historical activity timelines. It enables support engineers and managers to diagnose issues, understand customer context, track resolution progress, and identify systemic patterns — all assembled dynamically from the Spine canonical entities and enriched with the latest Memory assessments at query time.",
+  "target_team": "support",
+  "target_roles": [
+    "support_engineer",
+    "support_manager",
+    "support_team_lead",
+    "customer_success_manager"
+  ],
+  "spine_entities": [
+    {
+      "entity_type": "spine_persons",
+      "required_columns": [
+        "id",
+        "canonical_id",
+        "tenant_id",
+        "display_name",
+        "email",
+        "role",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": ["phone", "timezone", "locale", "status", "last_seen_at", "avatar_url"],
+      "default_filters": {
+        "status": "active",
+        "role__in": ["support_engineer", "support_manager", "customer", "admin"]
+      }
+    },
+    {
+      "entity_type": "spine_organizations",
+      "required_columns": [
+        "id",
+        "canonical_id",
+        "tenant_id",
+        "name",
+        "tier",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "industry",
+        "region",
+        "arr_usd",
+        "contract_start",
+        "contract_end",
+        "support_plan",
+        "timezone"
+      ],
+      "default_filters": {
+        "status": "active"
+      }
+    },
+    {
+      "entity_type": "spine_teams",
+      "required_columns": [
+        "id",
+        "canonical_id",
+        "tenant_id",
+        "name",
+        "team_type",
+        "status",
+        "created_at"
+      ],
+      "optional_columns": ["description", "parent_team_id", "escalation_policy_id"],
+      "default_filters": {
+        "status": "active",
+        "team_type": "support"
+      }
+    },
+    {
+      "entity_type": "spine_conversations",
+      "required_columns": [
+        "id",
+        "canonical_id",
+        "tenant_id",
+        "conversation_type",
+        "status",
+        "participant_ids",
+        "created_at",
+        "updated_at"
+      ],
+      "optional_columns": [
+        "title",
+        "source_channel",
+        "priority",
+        "assigned_to_id",
+        "resolved_at",
+        "tags"
+      ],
+      "default_filters": {
+        "conversation_type": "support",
+        "status__in": ["open", "pending", "escalated"]
+      }
+    },
+    {
+      "entity_type": "spine_assets",
+      "required_columns": [
+        "id",
+        "canonical_id",
+        "tenant_id",
+        "asset_type",
+        "name",
+        "status",
+        "created_at"
+      ],
+      "optional_columns": ["version", "owner_id", "metadata", "content_url"],
+      "default_filters": {
+        "asset_type": "knowledge_base_article",
+        "status": "published"
+      }
+    },
+    {
+      "entity_type": "spine_policies",
+      "required_columns": [
+        "id",
+        "canonical_id",
+        "tenant_id",
+        "policy_type",
+        "name",
+        "status",
+        "created_at"
+      ],
+      "optional_columns": ["description", "scope", "rules", "effective_from", "effective_until"],
+      "default_filters": {
+        "policy_type": "sla",
+        "status": "active"
+      }
+    },
+    {
+      "entity_type": "spine_outcomes",
+      "required_columns": [
+        "id",
+        "canonical_id",
+        "tenant_id",
+        "outcome_type",
+        "name",
+        "status",
+        "created_at"
+      ],
+      "optional_columns": ["description", "target_date", "actual_date", "measurement_criteria"],
+      "default_filters": {
+        "outcome_type": "support_resolution",
+        "status__in": ["in_progress", "achieved"]
+      }
+    }
+  ],
+  "memory_types": [
+    {
+      "memory_table": "memory_cases",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_id",
+        "entity_type",
+        "score",
+        "score_label",
+        "reasoning",
+        "confidence",
+        "generated_by",
+        "valid_from",
+        "valid_until"
+      ],
+      "optional_columns": [
+        "contributing_factors",
+        "severity",
+        "category",
+        "resolution_eta",
+        "escalation_reason"
+      ],
+      "default_filters": {
+        "entity_type": "spine_conversations",
+        "score_label__in": ["critical", "high", "medium"],
+        "valid_until__is_null": true
+      },
+      "confidence_threshold": 0.7
+    },
+    {
+      "memory_table": "memory_incidents",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_id",
+        "entity_type",
+        "score",
+        "score_label",
+        "reasoning",
+        "confidence",
+        "generated_by",
+        "valid_from",
+        "valid_until"
+      ],
+      "optional_columns": [
+        "contributing_factors",
+        "affected_services",
+        "root_cause",
+        "mitigation_status"
+      ],
+      "default_filters": {
+        "entity_type": "spine_conversations",
+        "score_label__in": ["critical", "high"],
+        "valid_until__is_null": true
+      },
+      "confidence_threshold": 0.75
+    },
+    {
+      "memory_table": "memory_health",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_id",
+        "entity_type",
+        "score",
+        "score_label",
+        "reasoning",
+        "confidence",
+        "generated_by",
+        "valid_from",
+        "valid_until"
+      ],
+      "optional_columns": ["contributing_factors", "trend_direction", "last_check_at"],
+      "default_filters": {
+        "entity_type__in": ["spine_organizations", "spine_assets"],
+        "valid_until__is_null": true
+      },
+      "confidence_threshold": 0.6
+    },
+    {
+      "memory_table": "memory_sla",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_id",
+        "entity_type",
+        "score",
+        "score_label",
+        "reasoning",
+        "confidence",
+        "generated_by",
+        "valid_from",
+        "valid_until"
+      ],
+      "optional_columns": [
+        "contributing_factors",
+        "breach_risk",
+        "time_remaining_hours",
+        "commitment_level"
+      ],
+      "default_filters": {
+        "entity_type": "spine_conversations",
+        "score_label__in": ["at_risk", "breached", "compliant"],
+        "valid_until__is_null": true
+      },
+      "confidence_threshold": 0.65
+    },
+    {
+      "memory_table": "memory_sentiment",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_id",
+        "entity_type",
+        "score",
+        "score_label",
+        "reasoning",
+        "confidence",
+        "generated_by",
+        "valid_from",
+        "valid_until"
+      ],
+      "optional_columns": ["contributing_factors", "emotion_tags", "friction_points"],
+      "default_filters": {
+        "entity_type__in": ["spine_conversations", "spine_persons"],
+        "valid_until__is_null": true
+      },
+      "confidence_threshold": 0.6
+    },
+    {
+      "memory_table": "memory_signals",
+      "required_columns": [
+        "id",
+        "tenant_id",
+        "entity_id",
+        "entity_type",
+        "signal_type",
+        "signal_value",
+        "confidence",
+        "generated_by",
+        "valid_from",
+        "valid_until"
+      ],
+      "optional_columns": ["source", "context", "priority"],
+      "default_filters": {
+        "signal_type__in": [
+          "support_escalation",
+          "case_volume_spike",
+          "customer_friction",
+          "system_alert"
+        ],
+        "valid_until__is_null": true
+      },
+      "confidence_threshold": 0.7
+    }
+  ],
+  "relationships": [
+    {
+      "relation_type": "belongs_to",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_organizations",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "member_of",
+      "from_entity_type": "spine_persons",
+      "to_entity_type": "spine_teams",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "assigned_to",
+      "from_entity_type": "spine_conversations",
+      "to_entity_type": "spine_persons",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "related_to",
+      "from_entity_type": "spine_conversations",
+      "to_entity_type": "spine_organizations",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "has_participant",
+      "from_entity_type": "spine_conversations",
+      "to_entity_type": "spine_persons",
+      "depth": 1,
+      "direction": "both"
+    },
+    {
+      "relation_type": "applies_to",
+      "from_entity_type": "spine_policies",
+      "to_entity_type": "spine_organizations",
+      "depth": 1,
+      "direction": "outgoing"
+    },
+    {
+      "relation_type": "linked_to",
+      "from_entity_type": "spine_assets",
+      "to_entity_type": "spine_conversations",
+      "depth": 2,
+      "direction": "both"
+    },
+    {
+      "relation_type": "contributes_to",
+      "from_entity_type": "spine_outcomes",
+      "to_entity_type": "spine_conversations",
+      "depth": 1,
+      "direction": "both"
+    },
+    {
+      "relation_type": "escalated_to",
+      "from_entity_type": "spine_conversations",
+      "to_entity_type": "spine_teams",
+      "depth": 2,
+      "direction": "outgoing"
+    }
+  ],
+  "filters": {
+    "global": {
+      "tenant_id__eq": "${tenant_id}",
+      "status__in": ["active", "open", "pending", "escalated", "in_progress"]
+    },
+    "support_priority": {
+      "priority__in": ["critical", "high", "medium"]
+    },
+    "time_window": {
+      "created_at__gte": "${now_minus_90_days}",
+      "updated_at__gte": "${now_minus_7_days}"
+    }
+  },
+  "sort_order": [
+    { "field": "memory_cases.score", "direction": "desc" },
+    { "field": "memory_sla.breach_risk", "direction": "desc" },
+    { "field": "spine_conversations.priority", "direction": "desc" },
+    { "field": "spine_conversations.updated_at", "direction": "desc" },
+    { "field": "memory_cases.resolution_eta", "direction": "asc" }
+  ],
+  "ttl_seconds": 300
+}
