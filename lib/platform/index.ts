@@ -10,6 +10,11 @@
  * or project a whole department:
  *
  *   const ws = platform.workspace("sales")
+ *
+ * Gateway Integration (NEW):
+ *   import { usePlatform, usePlatformClient } from "@/lib/platform"
+ *   const { client } = usePlatform()
+ *   const workbench = await client.getWorkspaceProjection("SALES")
  */
 
 import {
@@ -27,6 +32,22 @@ import {
   spineEntities,
 } from "./data"
 import type { DepartmentId, SurfaceId } from "./types"
+
+// Gateway API exports
+export { PlatformClient, type PlatformConfig } from "./api/client"
+export { createPlatformClient } from "./api/client"
+export {
+  usePlatformClient,
+  useWorkspaceProjection,
+  useWorkspaceEntities,
+  useConnectors,
+  useConnectorCatalog,
+  useIntegrations,
+  useCapabilities,
+  useBrainstorm,
+  useOnboarding,
+} from "./hooks/use-platform"
+export { PlatformProvider, usePlatform } from "./provider"
 
 export * from "./types"
 export { connectedSystems }

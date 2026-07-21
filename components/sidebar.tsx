@@ -110,6 +110,7 @@ const NAV: NavGroup[] = [
     items: [
       { label: "Evidence", href: "/evidence", icon: BarChart3 },
       { label: "Our Business Runs Here", href: "/customer-zero", icon: ShieldCheck },
+      { label: "Template Analysis", href: "/customer-zero/templates", icon: Layers },
     ],
   },
 ]

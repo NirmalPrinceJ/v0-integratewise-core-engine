@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next"
 
 import { ClerkProvider } from "@clerk/nextjs"
 import { Analytics } from "@vercel/analytics/next"
+import { PlatformProvider } from "@/lib/platform"
 import "./globals.css"
 
 import { Inter, Inter as V0_Font_Inter, Geist_Mono as V0_Font_Geist_Mono, Source_Serif_4 as V0_Font_Source_Serif_4 } from 'next/font/google'
@@ -50,12 +51,14 @@ export default function RootLayout({
 
   return (
     <ClerkProvider publishableKey={publishableKey}>
-      <html lang="en" className={inter.variable}>
-        <body className="font-sans antialiased">
-          {children}
-          <Analytics />
-        </body>
-      </html>
+      <PlatformProvider>
+        <html lang="en" className={inter.variable}>
+          <body className="font-sans antialiased">
+            {children}
+            <Analytics />
+          </body>
+        </html>
+      </PlatformProvider>
     </ClerkProvider>
   )
 }
