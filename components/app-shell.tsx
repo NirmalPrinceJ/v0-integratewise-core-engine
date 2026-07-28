@@ -139,7 +139,7 @@ export function AppShell({ children }: AppShellProps) {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search anything..."
+                placeholder="Jump to a record, view, or action..."
                 className="pl-9 h-9 bg-muted/30 border-border/50 focus-visible:ring-1 focus-visible:ring-primary/30 focus-visible:border-primary/50"
                 onClick={() => setSearchOpen(true)}
                 readOnly
