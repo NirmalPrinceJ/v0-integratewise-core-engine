@@ -52,7 +52,7 @@ export default function RootLayout({
   return (
     <ClerkProvider publishableKey={publishableKey}>
       <PlatformProvider>
-        <html lang="en" className={inter.variable}>
+        <html lang="en" className={`${inter.variable} bg-background`}>
           <body className="font-sans antialiased">
             {children}
             <Analytics />
