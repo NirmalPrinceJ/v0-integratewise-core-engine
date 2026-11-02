@@ -9,10 +9,16 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { userId } = await auth()
+  const clerkEnabled = Boolean(
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY,
+  )
 
-  if (!userId) {
-    redirect("/sign-in")
+  if (clerkEnabled) {
+    const { userId } = await auth()
+
+    if (!userId) {
+      redirect("/sign-in")
+    }
   }
 
   return (

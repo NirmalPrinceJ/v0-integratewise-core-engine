@@ -49,16 +49,21 @@ export default function RootLayout({
 }>) {
   const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 
-  return (
-    <ClerkProvider publishableKey={publishableKey}>
-      <PlatformProvider>
-        <html lang="en" className={`${inter.variable} bg-background`}>
-          <body className="font-sans antialiased">
-            {children}
-            <Analytics />
-          </body>
-        </html>
-      </PlatformProvider>
-    </ClerkProvider>
+  const tree = (
+    <PlatformProvider>
+      <html lang="en" className={`${inter.variable} bg-background`}>
+        <body className="font-sans antialiased">
+          {children}
+          <Analytics />
+        </body>
+      </html>
+    </PlatformProvider>
   )
+
+  // Demo and preview deploys run without Clerk. Wrapping without a key crashes every route.
+  if (!publishableKey) {
+    return tree
+  }
+
+  return <ClerkProvider publishableKey={publishableKey}>{tree}</ClerkProvider>
 }

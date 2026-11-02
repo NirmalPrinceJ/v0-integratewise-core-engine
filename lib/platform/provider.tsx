@@ -29,11 +29,13 @@ interface PlatformProviderProps {
   gatewayUrl?: string;
 }
 
-export function PlatformProvider({
+const clerkEnabled = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY)
+
+function PlatformSession({
   children,
-  gatewayUrl = 'https://gateway.dev.integratewise.ai/api/v1',
-}: PlatformProviderProps) {
-  const { user, sessionId } = useAuth();
+  gatewayUrl,
+}: Required<Pick<PlatformProviderProps, 'children'>> & Pick<PlatformProviderProps, 'gatewayUrl'>) {
+  const { user } = useAuth();
   const [client, setClient] = useState<PlatformClient | null>(null);
   const [isReady, setIsReady] = useState(false);
 
@@ -71,4 +73,19 @@ export function PlatformProvider({
       {children}
     </PlatformContext.Provider>
   );
+}
+
+export function PlatformProvider({
+  children,
+  gatewayUrl = 'https://gateway.dev.integratewise.ai/api/v1',
+}: PlatformProviderProps) {
+  if (!clerkEnabled) {
+    return (
+      <PlatformContext.Provider value={{ client: null, isReady: false, config: null }}>
+        {children}
+      </PlatformContext.Provider>
+    )
+  }
+
+  return <PlatformSession gatewayUrl={gatewayUrl}>{children}</PlatformSession>
 }

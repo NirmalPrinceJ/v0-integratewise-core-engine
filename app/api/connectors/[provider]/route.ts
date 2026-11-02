@@ -1,9 +1,13 @@
 /**
  * Individual Connector Routes
- * 
- * GET /api/connectors/[id] - Get a specific connector
- * PATCH /api/connectors/[id] - Update a connector
- * DELETE /api/connectors/[id] - Delete a connector
+ *
+ * GET /api/connectors/[provider] - Get a specific connector by id
+ * PATCH /api/connectors/[provider] - Update a connector
+ * DELETE /api/connectors/[provider] - Delete a connector
+ *
+ * The segment is named `provider` so it can share a dynamic path with
+ * /api/connectors/[provider]/connect|callback|disconnect. Callers still
+ * pass a connector id for these CRUD methods.
  */
 
 import { auth } from '@clerk/nextjs/server'
@@ -21,11 +25,11 @@ async function getTenantId(): Promise<string> {
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ provider: string }> }
 ) {
   try {
     const tenantId = await getTenantId()
-    const { id } = await params
+    const { provider: id } = await params
 
     const connectors = mockConnectors[tenantId] || []
     const connector = connectors.find((c) => c.id === id)
@@ -42,7 +46,7 @@ export async function GET(
       data: { connector },
     })
   } catch (error) {
-    console.error('[v0] GET /api/connectors/[id] error:', error)
+    console.error('[v0] GET /api/connectors/[provider] error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to fetch connector' },
       { status: 500 }
@@ -52,11 +56,11 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ provider: string }> }
 ) {
   try {
     const tenantId = await getTenantId()
-    const { id } = await params
+    const { provider: id } = await params
     const body = await request.json()
 
     if (!mockConnectors[tenantId]) {
@@ -73,12 +77,11 @@ export async function PATCH(
       )
     }
 
-    // Update connector
     const updated = {
       ...connectors[index],
       ...body,
-      id: connectors[index].id, // Preserve ID
-      tenantId: connectors[index].tenantId, // Preserve tenant
+      id: connectors[index].id,
+      tenantId: connectors[index].tenantId,
       updatedAt: Date.now(),
       version: (connectors[index].version || 0) + 1,
     }
@@ -90,7 +93,7 @@ export async function PATCH(
       data: { connector: updated },
     })
   } catch (error) {
-    console.error('[v0] PATCH /api/connectors/[id] error:', error)
+    console.error('[v0] PATCH /api/connectors/[provider] error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to update connector' },
       { status: 500 }
@@ -100,11 +103,11 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ provider: string }> }
 ) {
   try {
     const tenantId = await getTenantId()
-    const { id } = await params
+    const { provider: id } = await params
 
     if (!mockConnectors[tenantId]) {
       return NextResponse.json(
@@ -123,7 +126,6 @@ export async function DELETE(
       )
     }
 
-    // Soft delete by setting status to 'retired'
     connectors[index].status = 'retired'
     connectors[index].updatedAt = Date.now()
 
@@ -132,7 +134,7 @@ export async function DELETE(
       data: { deleted: true },
     })
   } catch (error) {
-    console.error('[v0] DELETE /api/connectors/[id] error:', error)
+    console.error('[v0] DELETE /api/connectors/[provider] error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to delete connector' },
       { status: 500 }
