@@ -26,11 +26,11 @@ export function FooterCTA() {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
-            <Button size="lg" className="bg-primary hover:bg-primary/90">
-              Start Your Free Trial
+            <Button size="lg" className="bg-primary hover:bg-primary/90" asChild>
+              <Link href="/workbench">Start Your Free Trial</Link>
             </Button>
-            <Button size="lg" variant="outline">
-              Learn More
+            <Button size="lg" variant="outline" asChild>
+              <Link href="/customer-zero">Learn More</Link>
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">

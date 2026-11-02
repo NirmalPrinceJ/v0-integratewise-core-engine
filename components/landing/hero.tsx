@@ -31,8 +31,8 @@ export function Hero() {
             <Button size="lg" className="bg-white text-black hover:bg-slate-100 font-semibold" asChild>
               <Link href="/customer-zero">Launch Platform</Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-slate-600 text-slate-200 hover:bg-slate-800">
-              View Documentation
+            <Button size="lg" variant="outline" className="border-slate-600 text-slate-200 hover:bg-slate-800" asChild>
+              <Link href="/data-flow">View the flow</Link>
             </Button>
           </div>
 

@@ -5,6 +5,8 @@ import { PlatformExplorer } from "@/components/customer-zero/platform-explorer"
 import { DocumentationBrowser } from "@/components/customer-zero/documentation-browser"
 import { OnboardingDemo } from "@/components/customer-zero/onboarding-demo"
 import { ServiceTopologyDiagram } from "@/components/customer-zero/service-topology-diagram"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
 import { 
   BookOpen,
   Zap,
@@ -18,14 +20,19 @@ export default function CustomerZeroPage() {
       {/* Header */}
       <div className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/60 rounded-lg flex items-center justify-center">
-              <span className="text-lg font-bold text-primary-foreground">iW</span>
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/60">
+                <span className="text-lg font-bold text-primary-foreground">iW</span>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold">IntegrateWise</h1>
+                <p className="text-xs text-muted-foreground">Customer Zero Platform</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold">IntegrateWise</h1>
-              <p className="text-xs text-muted-foreground">Customer Zero Platform</p>
-            </div>
+            <Button asChild>
+              <Link href="/workbench">Open workbench</Link>
+            </Button>
           </div>
         </div>
       </div>

@@ -1,28 +1,30 @@
 'use client'
 
-import { ReactNode, useState, useMemo } from 'react'
+import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Search,
   Plus,
-  Filter,
   Clock,
-  Users,
-  TrendingUp,
   Eye,
   Compass,
   Brain,
   Zap,
 } from 'lucide-react'
-import { useSpineEntities } from '@/lib/hooks/use-spine'
 import { getDepartment } from '@/lib/platform/departments'
 import type { DepartmentId } from '@/lib/platform/departments'
+import {
+  addOperatingItem,
+  recordOoda,
+  useOperatingFlow,
+  type OodaAction,
+} from '@/lib/platform/operating-flow'
 
 interface DepartmentWorkbenchProps {
   departmentId: DepartmentId
-  onOODAAction?: (action: 'observe' | 'orient' | 'decide' | 'act') => void
+  onOODAAction?: (action: OodaAction) => void
 }
 
 export function DepartmentWorkbench({
@@ -30,117 +32,118 @@ export function DepartmentWorkbench({
   onOODAAction,
 }: DepartmentWorkbenchProps) {
   const [searchQuery, setSearchQuery] = useState('')
-  const [showFilters, setShowFilters] = useState(false)
   const [selectedEntity, setSelectedEntity] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('items')
+  const [lastOutcome, setLastOutcome] = useState<string | null>(null)
+  const { items, events } = useOperatingFlow()
 
   const dept = getDepartment(departmentId)
+  const IconComponent = dept ? require('lucide-react')[dept.icon] || Clock : Clock
+
+  const departmentItems = useMemo(() => {
+    if (!dept) return []
+    const allowed = new Set(dept.primaryEntities)
+    return items.filter((entry) => {
+      if (!allowed.has(entry.type)) return false
+      if (!searchQuery) return true
+      const haystack = `${entry.data.name} ${entry.data.summary}`.toLowerCase()
+      return haystack.includes(searchQuery.toLowerCase())
+    })
+  }, [dept, items, searchQuery])
+
+  useEffect(() => {
+    setSelectedEntity(departmentItems[0]?.id ?? null)
+    setLastOutcome(null)
+  }, [departmentId])
+
   if (!dept) return <div className="p-6">Department not found</div>
 
-  // Load entities for all primary entity types
-  const entityQueries = dept.primaryEntities.map(entityType => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const query = useSpineEntities(entityType)
-    return { entityType, ...query }
-  })
+  const selected = departmentItems.find((entry) => entry.id === selectedEntity) ?? departmentItems[0] ?? null
+  const departmentEvents = events.filter((event) =>
+    departmentItems.some((entry) => entry.id === event.entityId) || event.entityId === selected?.id,
+  )
 
-  const allEntities = useMemo(() => {
-    return entityQueries.flatMap(q => 
-      (q.entities || []).map(e => ({ ...e, category: q.entityType }))
-    ).filter(e => !searchQuery || e.data.name?.toLowerCase().includes(searchQuery.toLowerCase()))
-  }, [entityQueries, searchQuery])
+  const stats = {
+    total: departmentItems.length,
+    active: departmentItems.filter((entry) => entry.data.status === 'active' || entry.data.status === 'open').length,
+  }
 
-  const stats = useMemo(() => {
-    return {
-      total: allEntities.length,
-      today: allEntities.filter((e: any) => {
-        const created = new Date(e.createdAt)
-        const today = new Date()
-        return created.toDateString() === today.toDateString()
-      }).length,
-      active: allEntities.filter((e: any) => e.data.status === 'active' || e.data.status === 'open').length,
-    }
-  }, [allEntities])
+  function runAction(action: OodaAction) {
+    if (!selected) return
+    const verb = dept.ooodaActions[action]
+    const detail = `${verb} — ${selected.data.name}. ${selected.data.summary}`
+    recordOoda(selected.id, action, detail)
+    setLastOutcome(detail)
+    setActiveTab('timeline')
+    onOODAAction?.(action)
+  }
 
-  // Get icon component
-  const IconComponent = require('lucide-react')[dept.icon] || Clock
+  function createItem() {
+    const type = dept.primaryEntities[0] || 'task'
+    const created = addOperatingItem(
+      type,
+      `New ${type.replace('_', ' ')}`,
+      `Opened from the ${dept.name} workbench.`,
+    )
+    setSelectedEntity(created.id)
+    setSearchQuery('')
+    setActiveTab('items')
+    setLastOutcome(`Created ${created.data.name}. Select an OODA action to continue.`)
+  }
 
   return (
-    <div className="h-full flex flex-col bg-background">
-      {/* Header */}
-      <div className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6 py-4">
-        <div className="space-y-4">
-          {/* Title Row */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div 
-                className="p-3 rounded-lg"
-                style={{ backgroundColor: `${dept.color}20` }}
-              >
-                <IconComponent 
-                  className="w-6 h-6"
-                  style={{ color: dept.color }}
-                />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold">{dept.name}</h1>
-                <p className="text-sm text-muted-foreground">{dept.description}</p>
-              </div>
+    <div className="flex h-full min-h-0 flex-col bg-background">
+      <div className="sticky top-0 z-40 border-b border-border bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <IconComponent className="h-4 w-4 shrink-0" style={{ color: dept.color }} />
+              <h1 className="truncate text-base font-semibold">{dept.name}</h1>
+              <span className="hidden text-xs text-muted-foreground sm:inline">{stats.total} items · {stats.active} active</span>
             </div>
-            <Button size="sm" className="bg-primary hover:bg-primary/90">
-              <Plus className="w-4 h-4 mr-2" />
-              New
-            </Button>
           </div>
-
-          {/* Search Bar */}
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <div className="relative w-56 shrink-0">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
-              placeholder={`Search ${dept.primaryEntities.join(', ')}...`}
+              placeholder="Search items"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              onChange={(event) => setSearchQuery(event.target.value)}
+              className="w-full rounded-lg border border-border bg-background py-1.5 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-4 gap-2">
-            <QuickStat label="Today" value={stats.today} icon={<Clock className="w-4 h-4" />} />
-            <QuickStat label="Total" value={stats.total} icon={<Users className="w-4 h-4" />} />
-            <QuickStat label="Active" value={stats.active} icon={<TrendingUp className="w-4 h-4" />} />
-            <QuickStat label="Brief Time" value={`${String(dept.defaultTimeslot).padStart(2, '0')}:00`} />
-          </div>
+          <Button size="sm" onClick={createItem}>
+            <Plus className="mr-2 h-4 w-4" />
+            New
+          </Button>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto">
+      <div className="min-h-0 flex-1 overflow-auto">
         <div className="p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="items">Items ({allEntities.length})</TabsTrigger>
+              <TabsTrigger value="items">Items ({departmentItems.length})</TabsTrigger>
               <TabsTrigger value="signals">Twin Signals</TabsTrigger>
               <TabsTrigger value="timeline">Timeline</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="overview" className="space-y-4 mt-4">
+            <TabsContent value="overview" className="mt-4">
               <Card className="p-6">
-                <h3 className="font-semibold mb-2">Department Overview</h3>
-                <div className="space-y-3 text-sm">
+                <h3 className="mb-2 font-semibold">Department Overview</h3>
+                <div className="flex flex-col gap-3 text-sm">
                   <div>
                     <p className="font-medium text-muted-foreground">Primary Entities</p>
                     <p className="mt-1">{dept.primaryEntities.join(', ')}</p>
                   </div>
                   <div>
-                    <p className="font-medium text-muted-foreground">Daily Brief</p>
-                    <p className="mt-1">Every day at {String(dept.defaultTimeslot).padStart(2, '0')}:00 IST</p>
+                    <p className="font-medium text-muted-foreground">Selected item</p>
+                    <p className="mt-1">{selected ? selected.data.name : 'None yet'}</p>
                   </div>
                   <div>
                     <p className="font-medium text-muted-foreground">OODA Cycle</p>
-                    <div className="mt-2 space-y-1 text-xs">
+                    <div className="mt-2 flex flex-col gap-1 text-xs leading-relaxed">
                       <p><strong>Observe:</strong> {dept.ooodaActions.observe}</p>
                       <p><strong>Orient:</strong> {dept.ooodaActions.orient}</p>
                       <p><strong>Decide:</strong> {dept.ooodaActions.decide}</p>
@@ -151,35 +154,32 @@ export function DepartmentWorkbench({
               </Card>
             </TabsContent>
 
-            <TabsContent value="items" className="space-y-2 mt-4">
-              {entityQueries.some(q => q.isLoading) ? (
-                <div className="text-center py-8 text-muted-foreground">Loading items...</div>
-              ) : allEntities.length === 0 ? (
+            <TabsContent value="items" className="mt-4">
+              {departmentItems.length === 0 ? (
                 <Card className="p-6 text-center">
-                  <p className="text-muted-foreground">No items found</p>
+                  <p className="text-muted-foreground">No items match this department.</p>
                 </Card>
               ) : (
-                <div className="space-y-2">
-                  {allEntities.map((entity: any) => (
+                <div className="flex flex-col gap-2">
+                  {departmentItems.map((entity) => (
                     <Card
                       key={entity.id}
-                      className={`p-4 cursor-pointer hover:bg-accent transition ${
-                        selectedEntity === entity.id ? 'ring-2 ring-primary' : ''
+                      className={`cursor-pointer p-4 transition hover:bg-accent ${
+                        selected?.id === entity.id ? 'ring-2 ring-primary' : ''
                       }`}
                       onClick={() => setSelectedEntity(entity.id)}
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <p className="font-medium">{entity.data.name || 'Untitled'}</p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {entity.category} • {new Date(entity.createdAt).toLocaleDateString()}
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium">{entity.data.name}</p>
+                          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{entity.data.summary}</p>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            {entity.type} · {new Date(entity.createdAt).toLocaleDateString()}
                           </p>
                         </div>
-                        {entity.data.status && (
-                          <div className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
-                            {entity.data.status}
-                          </div>
-                        )}
+                        <div className="rounded-full bg-primary/10 px-2 py-1 text-xs text-primary">
+                          {entity.data.status}
+                        </div>
                       </div>
                     </Card>
                   ))}
@@ -189,87 +189,57 @@ export function DepartmentWorkbench({
 
             <TabsContent value="signals" className="mt-4">
               <Card className="p-6">
-                <h3 className="font-semibold mb-2">Twin Signals</h3>
-                <p className="text-sm text-muted-foreground">
-                  AI-generated signals from the Twin engine analyzing {dept.name.toLowerCase()} data
+                <h3 className="mb-2 font-semibold">Twin Signals</h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {selected
+                    ? `${selected.data.name} is the current focus. ${selected.data.summary}`
+                    : `No item selected in ${dept.name}.`}
                 </p>
               </Card>
             </TabsContent>
 
             <TabsContent value="timeline" className="mt-4">
               <Card className="p-6">
-                <h3 className="font-semibold mb-4">Activity Timeline</h3>
-                <div className="space-y-3">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex gap-3 pb-3 border-b last:border-0">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-1.5 flex-shrink-0"></div>
-                      <div className="flex-1 text-sm">
-                        <p className="font-medium">Activity item {i}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{i * 2} hours ago</p>
+                <h3 className="mb-4 font-semibold">Activity Timeline</h3>
+                {departmentEvents.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    Select an item and run Observe, Orient, Decide, or Act.
+                  </p>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    {departmentEvents.map((event) => (
+                      <div key={event.id} className="flex gap-3 border-b border-border pb-3 last:border-0">
+                        <div className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-primary" />
+                        <div className="min-w-0 flex-1 text-sm">
+                          <p className="font-medium capitalize">{event.action} · {event.entityName}</p>
+                          <p className="mt-1 leading-relaxed text-muted-foreground">{event.detail}</p>
+                          <p className="mt-1 text-xs text-muted-foreground">{new Date(event.at).toLocaleTimeString()}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </Card>
             </TabsContent>
           </Tabs>
         </div>
       </div>
 
-      {/* OODA Action Buttons Footer */}
-      <div className="sticky bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6 py-4">
-        <div className="grid grid-cols-4 gap-3">
-          <OODAButton
-            icon={<Eye className="w-5 h-5" />}
-            label="Observe"
-            description={dept.ooodaActions.observe}
-            disabled={!selectedEntity}
-            onClick={() => onOODAAction?.('observe')}
-          />
-          <OODAButton
-            icon={<Compass className="w-5 h-5" />}
-            label="Orient"
-            description={dept.ooodaActions.orient}
-            disabled={!selectedEntity}
-            onClick={() => onOODAAction?.('orient')}
-          />
-          <OODAButton
-            icon={<Brain className="w-5 h-5" />}
-            label="Decide"
-            description={dept.ooodaActions.decide}
-            disabled={!selectedEntity}
-            onClick={() => onOODAAction?.('decide')}
-          />
-          <OODAButton
-            icon={<Zap className="w-5 h-5" />}
-            label="Act"
-            description={dept.ooodaActions.act}
-            disabled={!selectedEntity}
-            onClick={() => onOODAAction?.('act')}
-          />
+      <div className="sticky bottom-0 z-40 border-t border-border bg-background/95 px-6 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="mb-3 flex flex-col gap-1">
+          <p className="text-xs text-muted-foreground">
+            {selected ? `Acting on ${selected.data.name}` : 'Create or select an item to run the loop'}
+          </p>
+          {lastOutcome ? <p className="text-sm leading-relaxed text-foreground">{lastOutcome}</p> : null}
+        </div>
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <OODAButton icon={<Eye className="h-5 w-5" />} label="Observe" description={dept.ooodaActions.observe} disabled={!selected} onClick={() => runAction('observe')} />
+          <OODAButton icon={<Compass className="h-5 w-5" />} label="Orient" description={dept.ooodaActions.orient} disabled={!selected} onClick={() => runAction('orient')} />
+          <OODAButton icon={<Brain className="h-5 w-5" />} label="Decide" description={dept.ooodaActions.decide} disabled={!selected} onClick={() => runAction('decide')} />
+          <OODAButton icon={<Zap className="h-5 w-5" />} label="Act" description={dept.ooodaActions.act} disabled={!selected} onClick={() => runAction('act')} />
         </div>
       </div>
     </div>
-  )
-}
-
-interface QuickStatProps {
-  label: string
-  value: string | number
-  icon?: ReactNode
-}
-
-function QuickStat({ label, value, icon }: QuickStatProps) {
-  return (
-    <Card className="p-3 bg-muted/30 border-border hover:border-primary/50 transition">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-xs text-muted-foreground">{label}</p>
-          <p className="text-lg font-semibold">{value}</p>
-        </div>
-        {icon && <div className="text-primary/60">{icon}</div>}
-      </div>
-    </Card>
   )
 }
 
@@ -287,13 +257,13 @@ function OODAButton({ icon, label, description, disabled, onClick }: OODAButtonP
       variant="outline"
       disabled={disabled}
       onClick={onClick}
-      className={`h-auto py-3 flex flex-col items-center gap-1.5 ${
-        disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/10'
-      }`}
+      className="h-auto whitespace-normal px-2 py-3"
     >
-      <div className="text-primary">{icon}</div>
-      <span className="font-semibold text-xs">{label}</span>
-      <span className="text-xs text-muted-foreground text-center leading-tight">{description}</span>
+      <span className="flex flex-col items-center gap-1">
+        <span className="text-primary">{icon}</span>
+        <span className="text-xs font-semibold">{label}</span>
+        <span className="line-clamp-2 text-center text-xs leading-snug text-muted-foreground">{description}</span>
+      </span>
     </Button>
   )
 }
